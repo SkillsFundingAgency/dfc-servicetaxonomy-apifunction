@@ -1,0 +1,106 @@
+﻿openapi: 3.0.1
+info:
+  title: Occupation Open Api Specification
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Skills For Occupation
+  description: Returns all skills for a given occupation
+paths:
+  /GetAllSkillsForOccupation/:
+    post:
+      tags:
+      - Occupation
+      summary: Find all skills for an occupation.
+      description: Returns all skills for an occupation
+      operationId: GetSkillsForOccupation
+      requestBody:
+        description: enter esco occupation uri to retrieve all Skills for the Occupation
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Occupation'
+            example:   # Sample object
+                "occupation": "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupation'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Occupation not found
+          content: {}
+      security:
+      - api_key: []
+components:
+  schemas:
+    Occupation:
+      required:
+      - uri
+      type: "object"
+      properties:
+        uri: 
+          type: string
+          example: "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
+        occupation: 
+          type: string
+          example: renewable energy consultant
+        lastmodified: 
+          type: string
+          example: 30/10/2019
+        alternativeLabels: 
+          type: array
+          items: 
+            type: string
+            example: alt 1
+        skills: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
+              skill: 
+                type: string
+                example: "identify customer's needs"
+              relationshipWithOccupation: 
+                type: string
+                example: essential
+                enum:
+                    - essential
+                    - optional
+              skilltype: 
+                type: string
+                example: knowledge
+                enum:
+                  - knowledge
+                  - competency
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+              skillReusability: 
+                type: string
+                example: Transversal
+                enum:
+                    - Transversal
+                    - Cross-sectoral
+                    - Sector-specific
+                    - Occupation-specific
+            xml:
+              name: Occupation
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query

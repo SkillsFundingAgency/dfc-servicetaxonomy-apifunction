@@ -1,0 +1,3 @@
+﻿{ 
+   "query":"MATCH (s:esco__Skill)-[:esco__skillType]->(skilltype) WITH  { skills:COLLECT({ uri:s.uri, skill:head(s.skos__prefLabel), skilltype:head(skilltype.skos__prefLabel), alternativeLabels:s.skos__altLabel }) } as skills return skills"
+}

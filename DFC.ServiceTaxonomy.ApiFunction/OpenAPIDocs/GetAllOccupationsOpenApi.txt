@@ -1,0 +1,64 @@
+﻿openapi: 3.0.1
+info:
+  title: Occupation Open Api Specification
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get All Occupations
+  description: Returns all occupations
+paths:
+  /GetAllOccupations/:
+    get:
+      tags:
+      - Occupation
+      summary: Find all occupations.
+      description: Returns all occupations
+      operationId: GetAllOccupations
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Occupation'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Occupation not found
+          content: {}
+      security:
+      - api_key: []
+components:
+  schemas:
+    Occupation: 
+      type: "object"
+      properties:
+        occupations: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
+              occupation: 
+                type: string
+                example: renewable energy consultant
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+              lastmodified: 
+                type: string
+                example: 08/11/2019
+            xml:
+              name: Occupation
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query

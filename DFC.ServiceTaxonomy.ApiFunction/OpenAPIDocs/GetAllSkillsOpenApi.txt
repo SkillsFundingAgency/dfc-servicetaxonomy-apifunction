@@ -1,0 +1,67 @@
+﻿openapi: 3.0.1
+info:
+  title: Occupation Open Api Specification
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get All Skills
+  description: Returns all skills
+paths:
+  /GetAllSkills/:
+    get:
+      tags:
+      - Skill
+      summary: Find all skills.
+      description: Returns all skills
+      operationId: GetAllSkills
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Occupation not found
+          content: {}
+      security:
+      - api_key: []
+components:
+  schemas:
+    Skill: 
+      type: "object"
+      properties:
+        skills: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
+              skill: 
+                type: string
+                example: "identify customer's needs"
+              skilltype: 
+                type: string
+                example: knowledge
+                enum:
+                  - knowledge
+                  - competency
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+            xml:
+              name: Occupation
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query
