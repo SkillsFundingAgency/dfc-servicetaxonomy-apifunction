@@ -15,7 +15,7 @@ stages:
   jobs:
   - template: /AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
     parameters:
-      ArmTemplateRoot: "${{ variables['Build.SourcesDirectory'] }}/Resources/ArmTemplates"
+      ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
 
   - job:
     displayName: "Build DotNetCore app"
