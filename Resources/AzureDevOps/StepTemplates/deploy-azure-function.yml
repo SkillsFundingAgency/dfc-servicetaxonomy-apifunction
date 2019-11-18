@@ -1,0 +1,28 @@
+parameters:
+  ResourceName: ''
+  AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+  PackageFile: ''
+  ApimImportScript: ''
+
+
+steps:
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Azure App Service Deploy: ${{ parameters.ResourceName }}'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    appType: functionApp
+    WebAppName: '${{ parameters.ResourceName }}'
+    packageForLinux: '$(System.ArtifactsDirectory)/${{ parameters.PackageFile }}'
+
+# - powershell:
+#     Invoke-WebRequest -Uri "${{ parameters.ApimImportScript }}" -OutFile $(Build.BinariesDirectory)
+#   displayName: 'Download apim scripts'
+
+# - task: AzurePowerShell@3
+#   displayName: 'Import Swagger Doc'
+#   inputs:
+#     azureSubscription: '${{ parameters.AzureSubscription }}'
+#     ScriptPath: '$(Build.BinariesDirectory)Import-ApimSwaggerApiDefinition.ps1'
+#     ScriptArguments: '-ApimResourceGroup '${{ variables.ApimSharedResourceGroupName }}' -InstanceName '${{ variables.ApimServiceName }}' -ApiName '${{ variables.apiName }} -SwaggerSpecificationUrl $(SwaggerUrl)'
+#     azurePowerShellVersion: LatestVersion
+    

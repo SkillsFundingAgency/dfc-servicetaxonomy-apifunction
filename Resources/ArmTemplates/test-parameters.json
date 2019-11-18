@@ -1,0 +1,39 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectPrefix": {
+      "value": "dfc-foo-cd"
+    },
+    "storageAccountName": {
+      "value": "dfcfoocdstr"
+    },
+    "appServicePlanSize": {
+      "value": "1"
+    },
+    "appServicePlanInstances": {
+      "value": 1
+    },
+    "aseHostingEnvironmentName": {
+      "value": ""
+    },
+    "aseResourceGroup": {
+      "value": ""
+    },
+    "Neo4jUrl": {
+      "value": "http://some-database-instance/"
+    },
+    "Neo4jUser": {
+      "value": "someUsername"
+    },
+    "Neo4jPassword": {
+      "value": "not-a-real-password"
+    },
+    "ApimResourceGroup": {
+      "value": "resource-group-with-apim-instance"
+    },
+    "ApimServiceName": {
+      "value": "an-apim-instance"
+    }
+  }
+}
