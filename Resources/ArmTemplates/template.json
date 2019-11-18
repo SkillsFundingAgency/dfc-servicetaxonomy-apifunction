@@ -84,27 +84,33 @@
     "allFunctions": [
       {
         "functionType": "GetAllSkills",
-        "functionPrefix": "skills"
+        "functionName": "[concat(parameters('projectPrefix'), '-skills-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skills-fa')]"
       },
       {
         "functionType": "GetAllOccupations",
-        "functionPrefix": "occ"
+        "functionName": "[concat(parameters('projectPrefix'), '-occ-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occ-fa')]"
       },
       {
         "functionType": "GetAllSkillsForOccupation",
-        "functionPrefix": "skillsocc"
+        "functionName": "[concat(parameters('projectPrefix'), '-skillsocc-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsocc-fa')]"
       },
       {
         "functionType": "GetAllOccupationsForSkill",
-        "functionPrefix": "occskills"
+        "functionName": "[concat(parameters('projectPrefix'), '-occskills-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occskills-fa')]"
       },
       {
         "functionType": "GetAlternativeCareersAndSkillsForOccupation",
-        "functionPrefix": "altcar"
+        "functionName": "[concat(parameters('projectPrefix'), '-altcar-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-altcar-fa')]"
       },
       {
         "functionType": "GetSkillsGapForOccupations",
-        "functionPrefix": "skillsgap"
+        "functionName": "[concat(parameters('projectPrefix'), '-skillsgap-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsgap-fa')]"        
       }
     ]
   },
@@ -171,8 +177,6 @@
             }
         }
     },
-
-
     {
       "apiVersion": "2017-05-10",
       "name": "ServiceTaxonomyAppServicePlan",
@@ -204,7 +208,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-ai')]",
+      "name": "[variables('allFunctions')[copyIndex()].appInsightsName]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -214,10 +218,10 @@
         },
         "parameters": {
           "appInsightsName": {
-            "value": "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-ai')]"
+            "value": "[variables('allFunctions')[copyIndex()].appInsightsName]"
           },
           "attachedService": {
-            "value": "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-fa')]"
+            "value": "[variables('allFunctions')[copyIndex()].functionName]"
           }
         }
       },
@@ -228,10 +232,10 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-fa')]",
+      "name": "[variables('allFunctions')[copyIndex()].functionName]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-ai')]",
+        "[variables('allFunctions')[copyIndex()].appInsightsName]",
         "ServiceTaxonomyAppServicePlan",
         "ServiceTaxonomyStorage"
       ],
@@ -243,7 +247,7 @@
         },
         "parameters": {
           "appServiceName": {
-            "value": "[concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-fa')]"
+            "value": "[variables('allFunctions')[copyIndex()].functionName]"
           },
           "appServicePlanName": {
             "value": "[variables('appServicePlanName')]"
@@ -264,7 +268,7 @@
             "value": [
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference(concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-ai')).outputs.InstrumentationKey.value]"
+                "value": "[reference(variables('allFunctions')[copyIndex()].appInsightsName).outputs.InstrumentationKey.value]"
               },
               {
                 "name": "FUNCTIONS_EXTENSION_VERSION",
