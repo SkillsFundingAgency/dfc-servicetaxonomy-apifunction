@@ -296,12 +296,12 @@
               }
             ]
           }
-        },
-        "copy": {
-          "name": "functionLoop",
-          "count": "[length(variables('allFunctions'))]"
-        }        
-      }
+        }      
+      },
+      "copy": {
+        "name": "functionLoop",
+        "count": "[length(variables('allFunctions'))]"
+      } 
     }
   ]
 }
