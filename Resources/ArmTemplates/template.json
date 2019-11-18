@@ -264,7 +264,7 @@
             "value": [
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference('courseDirectoryAppInsights').outputs.InstrumentationKey.value]"
+                "value": "[reference(concat(parameters('projectPrefix'), '-', variables('allFunctions')[copyIndex()].functionPrefix, '-ai')).outputs.InstrumentationKey.value]"
               },
               {
                 "name": "FUNCTIONS_EXTENSION_VERSION",
