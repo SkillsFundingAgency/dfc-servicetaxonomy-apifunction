@@ -15,15 +15,17 @@ stages:
   jobs:
   - template: /AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
     parameters:
-      ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
+      ArmTemplateRoot: "${{ variables['Build.SourceDirectory'] }}/Resources/ArmTemplates"
 
-  - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
-    parameters:
-      SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
-      BuildPlatform: 'any cpu'
-      BuildConfiguration: 'release'
-      PublishWebApp: 'false'
-      TestSuffix: 'Tests'
+  - job:
+    steps:
+    - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
+      parameters:
+        SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
+        BuildPlatform: 'any cpu'
+        BuildConfiguration: 'release'
+        PublishWebApp: 'false'
+        TestSuffix: 'Tests'
 
 - stage: DeployToDevServiceTaxonomy
   displayName: Deploy to DEV_SERVICETAXONOMY
@@ -54,3 +56,4 @@ stages:
               SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
               WebAppPrefix: 'dfc-dev'
               ArtifactRootDirectory: "{{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction"
+
