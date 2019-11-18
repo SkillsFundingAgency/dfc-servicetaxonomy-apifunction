@@ -15,9 +15,11 @@ stages:
   jobs:
   - template: /AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
     parameters:
-      ArmTemplateRoot: "${{ variables['Build.SourceDirectory'] }}/Resources/ArmTemplates"
+      ArmTemplateRoot: "${{ variables['Build.SourcesDirectory'] }}/Resources/ArmTemplates"
 
   - job:
+    displayName: "Build DotNetCore app"
+    pool: 'NCS - CI and CD'
     steps:
     - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
       parameters:
@@ -34,6 +36,7 @@ stages:
 #   - group: dfc-shared-dev
 #   jobs:
 #   - deployment: DeployTemplate
+#     pool: 'NCS - CI and CD'
 #     displayName: "Deploy ARM templates"
 #     environment: DEV_SERVICETAXONOMY
 #     strategy:
