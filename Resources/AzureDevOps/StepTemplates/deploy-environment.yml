@@ -9,11 +9,11 @@ parameters:
   ArmOutputVariableName: 'ARMOutputs'
   WebAppPrefix: ''
   ArtifactRootDirectory: ''
-
-variables:
   PackageFile:  '${{ parameters.ArtifactRootDirectory }}/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip'
   ArmTemplateFolder: '${{ parameters.ArtifactRootDirectory }}/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/'
   ApimImportScript: '${{ parameters.ArtifactRootDirectory }}/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1'
+  SharedResourceGroup: ''
+  ApimServiceName: ''
 
 steps:
 - template: deploy-arm-template.yml
@@ -26,46 +26,47 @@ steps:
     ResourceGroup: '${{ parameters.ResourceGroup }}'
     Location: '${{ parameters.Location }}'
     ArmOutputVariableName: '${{ parameters.ArmOutputVariableName }}'
-    ArmTemplateFolder: '${{ variables.ArmTemplateFolder }}'
+    ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
+    ApimImportScript: '${{ parameters.ApimImportScript }}'
 
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllSkills'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skills-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'
 
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllOccupations'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-occ-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'
 
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllSkillsForOccupation'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skillsocc-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'
 
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllOccupationsForSkill'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-occskills-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'
 
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAlternativeCareersAndSkillsForOccupation'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-altcar-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'
     
 - template: StepTemplates/deploy-azure-function.yml
   parameters:
     FunctionType: 'GetSkillsGapForOccupations'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skillsgap-fa'
     AzureSubscription: '${{ parameters.AzureSubscription }}'
-    PackageFile: '${{ variables.PackageFile }}'
+    PackageFile: '${{ parameters.PackageFile }}'

@@ -18,7 +18,7 @@ The name of the API to update
 The path to save the openapi specification file to update the APIM instance with.
 
 .EXAMPLE
-Import-ApimOpenApiDefinitionFromFile -ApimResourceGroup dfc-foo-bar-rg -InstanceName dfc-foo-bar-apim -ApiName bar -OpenApiSpecificationFile "https://dfc-foo-bar-fa.azurewebsites.net/api/bar/api-definition" -Verbose
+Import-ApimOpenApiDefinitionFromFile -ApimResourceGroup dfc-foo-bar-rg -InstanceName dfc-foo-bar-apim -ApiName bar -OpenApiSpecificationFile some-file.yaml -Verbose
 
 #>
 [CmdletBinding()]

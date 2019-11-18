@@ -1,8 +1,11 @@
 parameters:
-  ResourceName: ''
   AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
   PackageFile: ''
   ApimImportScript: ''
+  SharedResourceGroup: ''
+  ApimServiceName: ''
+  ApiName: ''
+  SpecificationFile: ''
 
 
 steps:
@@ -14,15 +17,13 @@ steps:
     WebAppName: '${{ parameters.ResourceName }}'
     packageForLinux: '$(System.ArtifactsDirectory)/${{ parameters.PackageFile }}'
 
-# - powershell:
-#     Invoke-WebRequest -Uri "${{ parameters.ApimImportScript }}" -OutFile $(Build.BinariesDirectory)
-#   displayName: 'Download apim scripts'
+# TODO: replace PH in  yaml
 
-# - task: AzurePowerShell@3
-#   displayName: 'Import Swagger Doc'
-#   inputs:
-#     azureSubscription: '${{ parameters.AzureSubscription }}'
-#     ScriptPath: '$(Build.BinariesDirectory)Import-ApimSwaggerApiDefinition.ps1'
-#     ScriptArguments: '-ApimResourceGroup '${{ variables.ApimSharedResourceGroupName }}' -InstanceName '${{ variables.ApimServiceName }}' -ApiName '${{ variables.apiName }} -SwaggerSpecificationUrl $(SwaggerUrl)'
-#     azurePowerShellVersion: LatestVersion
+- task: AzurePowerShell@3
+  displayName: 'Import OpenAPI specification'
+  inputs:
+    azureSubscription: '${{ parameters.AzureSubscription }}'
+    ScriptPath: '$(Build.BinariesDirectory)Import-ApimSwaggerApiDefinition.ps1'
+    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.ApiName }} -OpenApiSpecificationFile '${{ parameters.SpecificationFile }}'"
+    azurePowerShellVersion: LatestVersion
     
