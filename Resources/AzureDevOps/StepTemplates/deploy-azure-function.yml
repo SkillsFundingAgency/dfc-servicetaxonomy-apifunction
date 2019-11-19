@@ -28,7 +28,7 @@ steps:
     SourcePath: '${{ parameters.SpecificationPath }}'
     TargetFileNames: '${{ parameters.FunctionType }}OpenApi.txt'
 
-- task: AzurePowerShell@3
+- task: AzurePowerShell@4
   displayName: 'Import OpenAPI specification'
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
