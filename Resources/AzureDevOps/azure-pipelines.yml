@@ -47,7 +47,7 @@ stages:
   jobs:
   - deployment: DeployTemplate
     pool: 'NCS - CI and CD'
-    displayName: "Deploy ARM templates"
+    displayName: "Deploy to DEV environment"
     environment: DEV_SERVICETAXONOMY
     strategy:
       runOnce:
