@@ -26,7 +26,7 @@ jobs:
     
 - deployment: DeployTemplate
   pool: 'NCS - CI and CD'
-  displayName: "Deploy to DEV environment"
+  displayName: "Deploy arm templates"
   environment: DEV_SERVICETAXONOMY
   dependsOn: SetupConditions
   strategy:
@@ -55,7 +55,7 @@ jobs:
   displayName: "Deploy GetAllSkills function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetAllSkills'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllSkills'))
   strategy:
     runOnce:
       deploy:
@@ -83,7 +83,7 @@ jobs:
   displayName: "Deploy GetAllOccupations function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetAllOccupations'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllOccupations'))
   strategy:
     runOnce:
       deploy:
@@ -111,7 +111,7 @@ jobs:
   displayName: "Deploy GetAllSkillsForOccupation function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetAllSkillsForOccupation'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllSkillsForOccupation'))
   strategy:
     runOnce:
       deploy:
@@ -139,7 +139,7 @@ jobs:
   displayName: "Deploy GetAllOccupationsForSkill function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetAllOccupationsForSkill'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllOccupationsForSkill'))
   strategy:
     runOnce:
       deploy:
@@ -167,7 +167,7 @@ jobs:
   displayName: "Deploy GetAlternativeCareersAndSkillsForOccupation function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetAlternativeCareersAndSkillsForOccupation'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAlternativeCareersAndSkillsForOccupation'))
   strategy:
     runOnce:
       deploy:
@@ -195,7 +195,7 @@ jobs:
   displayName: "Deploy GetSkillsGapForOccupations function"
   environment: DEV_SERVICETAXONOMY
   dependsOn: DeployTemplate
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask'], 'GetSkillsGapForOccupations'))
+  condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetSkillsGapForOccupations'))
   strategy:
     runOnce:
       deploy:
