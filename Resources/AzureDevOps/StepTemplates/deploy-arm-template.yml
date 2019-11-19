@@ -38,9 +38,9 @@ steps:
     csmParametersFile: '${{ parameters.ArmTemplateFolder }}/parameters.json'
     deploymentOutputs: '$(ArmOutputVariableName)'
 
-- task: DeleteFiles@1
-  displayName: 'Delete tokenised parameters.json file'
-  inputs:
-    SourceFolder: '${{ parameters.ArmTemplateFolder }}'
-    Contents: parameters.json
-  condition: always()
+# - task: DeleteFiles@1
+#   displayName: 'Delete tokenised parameters.json file'
+#   inputs:
+#     SourceFolder: '${{ parameters.ArmTemplateFolder }}'
+#     Contents: parameters.json
+#   condition: always()
