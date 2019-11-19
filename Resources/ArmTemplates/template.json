@@ -79,6 +79,7 @@
     }
   },
   "variables": {
+    "ApimProductName": "Service Taxonomy",
     "BuildingBlocksDfcBaseUrl": "https://raw.githubusercontent.com/SkillsFundingAgency/dfc-devops/master/ArmTemplates/",
     "appServicePlanName": "[concat(parameters('projectPrefix'), '-asp')]",
     "allFunctions": [
@@ -90,27 +91,27 @@
       {
         "functionType": "GetAllOccupations",
         "functionName": "[concat(parameters('projectPrefix'), '-occ-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-occ-fa')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occ-ai')]"
       },
       {
         "functionType": "GetAllSkillsForOccupation",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsocc-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsocc-fa')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsocc-ai')]"
       },
       {
         "functionType": "GetAllOccupationsForSkill",
         "functionName": "[concat(parameters('projectPrefix'), '-occskills-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-occskills-fa')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occskills-ai')]"
       },
       {
         "functionType": "GetAlternativeCareersAndSkillsForOccupation",
         "functionName": "[concat(parameters('projectPrefix'), '-altcar-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-altcar-fa')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-altcar-ai')]"
       },
       {
         "functionType": "GetSkillsGapForOccupations",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsgap-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsgap-fa')]"        
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsgap-ai')]"
       }
     ]
   },
@@ -133,7 +134,7 @@
       }
     },
     {
-        "name": "compositeui-apim-logger",
+        "name": "servicetaxonomy-apim-logger",
         "type": "Microsoft.Resources/deployments",
         "resourceGroup": "[parameters('ApimResourceGroup')]",
         "apiVersion": "2017-05-10",
@@ -148,13 +149,13 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "Service Taxonomy"
+                    "value": "[variables('ApimProductName')]"
                 }
             }
         }
     },
     {
-        "name": "compositeui-apim-product",
+        "name": "service-taxonomy-apim-product",
         "type": "Microsoft.Resources/deployments",
         "resourceGroup": "[parameters('ApimResourceGroup')]",
         "apiVersion": "2017-05-10",
@@ -172,10 +173,41 @@
                     "value": "[parameters('ApimServiceName')]"
                 },
                 "productDisplayName": {
-                    "value": "Service Taxonomy"
+                    "value": "[variables('ApimProductName')]"
                 }
             }
         }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[variables('allFunctions')[copyIndex()].functionName]",
+      "resourceGroup": "[parameters('ApimResourceGroup')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'APIM/apim-api.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimServiceName": {
+            "value": "[parameters('ApimServiceName')]"
+          },
+          "apiName": {
+            "value": "[variables('allFunctions')[copyIndex()].functionName]"
+          },
+          "apimProductInstanceName": {
+            "value": "Service Taxonomy"
+          },
+          "apimLoggerName": {
+            "value": "[reference('servicetaxonomy-apim-logger').outputs.ApimLoggerName.value]"
+          }
+        }
+      },
+      "copy": {
+        "name": "apiCount",
+        "count": "[length(variables('allFunctions'))]"
+      }
     },
     {
       "apiVersion": "2017-05-10",
