@@ -201,10 +201,10 @@
             "value": "[parameters('ApimServiceName')]"
           },
           "apiName": {
-            "value": "[variables('allFunctions')[copyIndex()].functionName]"
+            "value": "[variables('allFunctions')[copyIndex()].functionType]"
           },
           "apimProductInstanceName": {
-            "value": "Service Taxonomy"
+            "value": "service-taxonomy"
           },
           "apimLoggerName": {
             "value": "[reference('servicetaxonomy-apim-logger').outputs.ApimLoggerName.value]"
