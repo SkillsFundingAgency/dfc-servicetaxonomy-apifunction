@@ -19,7 +19,7 @@ steps:
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: "${{ variables['System.DefaultWorkingDirectory'] }}/Set-EsfaResourceGroupTags.ps1"
-    ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "$(ParentBusiness)" -ServiceOffering "$(ServiceOffering)" -Verbose'
+    ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "${{ parameters.ParentBusiness }}" -ServiceOffering "${{ parameters.ServiceOffering }}" -Verbose'
     azurePowerShellVersion: LatestVersion
 
 - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
