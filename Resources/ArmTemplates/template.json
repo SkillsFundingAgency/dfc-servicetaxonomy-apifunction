@@ -86,7 +86,7 @@
       {
         "functionType": "GetAllSkills",
         "functionName": "[concat(parameters('projectPrefix'), '-skills-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-skills-fa')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skills-ai')]"
       },
       {
         "functionType": "GetAllOccupations",

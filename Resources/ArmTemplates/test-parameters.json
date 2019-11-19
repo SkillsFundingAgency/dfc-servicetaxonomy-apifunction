@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "projectPrefix": {
-      "value": "dfc-foo-cd"
+      "value": "dfc-foo-stax"
     },
     "storageAccountName": {
-      "value": "dfcfoocdstr"
+      "value": "dfcfoostaxstr"
     },
     "appServicePlanSize": {
       "value": "1"
