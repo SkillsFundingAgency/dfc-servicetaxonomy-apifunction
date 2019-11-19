@@ -28,7 +28,6 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy arm templates"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: SetupConditions
   strategy:
     runOnce:
       deploy:
@@ -54,7 +53,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetAllSkills function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllSkills'))
   strategy:
     runOnce:
@@ -82,7 +83,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetAllOccupations function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllOccupations'))
   strategy:
     runOnce:
@@ -110,7 +113,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetAllSkillsForOccupation function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllSkillsForOccupation'))
   strategy:
     runOnce:
@@ -138,7 +143,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetAllOccupationsForSkill function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAllOccupationsForSkill'))
   strategy:
     runOnce:
@@ -166,7 +173,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetAlternativeCareersAndSkillsForOccupation function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetAlternativeCareersAndSkillsForOccupation'))
   strategy:
     runOnce:
@@ -194,7 +203,9 @@ jobs:
   pool: 'NCS - CI and CD'
   displayName: "Deploy GetSkillsGapForOccupations function"
   environment: DEV_SERVICETAXONOMY
-  dependsOn: DeployTemplate
+  dependsOn: 
+  - DeployTemplate
+  - SetupConditions
   condition: or(eq(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], '*'), contains(dependencies.SetupConditions.outputs['projectsToDeploy.setupConditionTask'], 'GetSkillsGapForOccupations'))
   strategy:
     runOnce:
