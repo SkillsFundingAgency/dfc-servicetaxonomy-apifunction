@@ -1,12 +1,17 @@
 parameters:
+  FunctionType: ''
   AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-  PackageFile: ''
-  ApimImportScript: ''
   SharedResourceGroup: ''
   ApimServiceName: ''
-  ApiName: ''
-  SpecificationFile: ''
+  ApimImportScript: ''
+  SpecificationPath: ''
+  WebAppName: ''
+  FunctionAppDomain: ''
+  PackageFile: ''
 
+variables:
+  SpecificationFile: '${{ parameters.FunctionType }}OpenApi.txt'
+  FunctionAppUrl: 'https://${{ parameters.WebAppName }}.${{ parameters.FunctionAppDomain }}'
 
 steps:
 - task: AzureRmWebAppDeployment@4
@@ -15,15 +20,23 @@ steps:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     appType: functionApp
     WebAppName: '${{ parameters.ResourceName }}'
-    packageForLinux: '$(System.ArtifactsDirectory)/${{ parameters.PackageFile }}'
+    packageForLinux: "${{ variables['System.ArtifactsDirectory'] }}/${{ parameters.PackageFile }}"
 
-# TODO: replace PH in  yaml
+- powershell: |
+    Write-Host "##vso[task.setvariable variable=FunctionAppUrl]${{ variables.FunctionAppUrl }}"
+  displayName: "Set full hostname as variable"
+
+- task: esfadevops.Tokenization.custom-build-task.Tokenization@0
+  displayName: 'Tokenization: Transform file ${{ variables.SpecificationFile }}'
+  inputs:
+    SourcePath: '${{ parameters.SpecificationPath }}'
+    TargetFileNames: '${{ variables.SpecificationFile }}'
 
 - task: AzurePowerShell@3
   displayName: 'Import OpenAPI specification'
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
-    ScriptPath: '$(Build.BinariesDirectory)Import-ApimSwaggerApiDefinition.ps1'
-    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.ApiName }} -OpenApiSpecificationFile '${{ parameters.SpecificationFile }}'"
+    ScriptPath: '${{ parameters.ApimImportScript }}'
+    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.FunctionType }} -OpenApiSpecificationFile '${{ parameters.SpecificationPath }}/${{ variables.SpecificationFile }}'"
     azurePowerShellVersion: LatestVersion
     

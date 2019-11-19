@@ -21,6 +21,14 @@ stages:
     displayName: "Build DotNetCore app"
     pool: 'NCS - CI and CD'
     steps:
+    - task: CopyFiles@2
+      displayName: "Copy OpenAPI specification docs to artifacts"
+      inputs:
+        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
+        contents: |
+          *.txt
+        targetFolder: '$(build.artifactstagingdirectory)\Artifact\OpenApiDocs'
+
     - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
       parameters:
         SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
@@ -28,36 +36,34 @@ stages:
         BuildConfiguration: 'release'
         PublishWebApp: 'false'
         TestSuffix: 'Tests'
- 
-# - stage: DeployToDevServiceTaxonomy
-#   displayName: Deploy to DEV_SERVICETAXONOMY
-#   variables:
-#   - group: dfc-stax-shared-dev
-#   - group: dfc-shared-dev
-#   jobs:
-#   - deployment: DeployTemplate
-#     pool: 'NCS - CI and CD'
-#     displayName: "Deploy ARM templates"
-#     environment: DEV_SERVICETAXONOMY
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - task: DownloadBuildArtifacts@0
-#             displayName: "Download build artifacts"
-#             inputs:
-#               buildType: 'current'
-#           - template: StepTemplates/deploy-environment.yml
-#             parameters:
-#               AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-#               EnvironmentTag: 'DEV/Test'
-#               ParentBusiness: 'National Careers Service'
-#               ServiceOffering: 'Service Taxonomy'
-#               ResourceGroup: 'dfc-dev-stax-api-rg'
-#               Location: 'West Europe'
-#               ArtifactName: 'DFC.ServiceTaxonomy.ApiFunction'
-#               SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
-#               WebAppPrefix: 'dfc-dev'
-#               ArtifactRootDirectory: "{{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction"
-#               SharedResourceGroup: 'dfc-dev-shared-rg'
-#               ApimServiceName: 'dfc-dev-shared-apim'
+
+- stage: DeployToDevServiceTaxonomy
+  displayName: Deploy to DEV_SERVICETAXONOMY
+  variables:
+  - group: dfc-stax-shared-dev
+  - group: dfc-shared-dev
+  jobs:
+  - deployment: DeployTemplate
+    pool: 'NCS - CI and CD'
+    displayName: "Deploy ARM templates"
+    environment: DEV_SERVICETAXONOMY
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: "Download build artifacts"
+            inputs:
+              buildType: 'current'
+          - template: StepTemplates/deploy-environment.yml
+            parameters:
+              AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+              EnvironmentTag: 'DEV/Test'
+              ParentBusiness: 'National Careers Service'
+              ServiceOffering: 'Service Taxonomy'
+              ResourceGroup: 'dfc-dev-stax-api-rg'
+              WebAppPrefix: 'dfc-dev'
+              ArtifactRootDirectory: "'${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction'"
+              SharedResourceGroup: 'dfc-dev-shared-rg'
+              ApimServiceName: 'dfc-dev-shared-apim'
+              FunctionAppDomain: '${{ variables.FunctionAppDomain }}'
