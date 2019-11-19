@@ -21,14 +21,6 @@ stages:
     displayName: "Build DotNetCore app"
     pool: 'NCS - CI and CD'
     steps:
-    - task: CopyFiles@2
-      displayName: "Copy OpenAPI specification docs to artifacts"
-      inputs:
-        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
-        contents: |
-          *.txt
-        targetFolder: '$(build.artifactstagingdirectory)\Artifact\OpenApiDocs'
-
     - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
       parameters:
         SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
@@ -36,6 +28,13 @@ stages:
         BuildConfiguration: 'release'
         PublishWebApp: 'false'
         TestSuffix: 'Tests'
+    - task: CopyFiles@2
+      displayName: "Copy OpenAPI specification docs to artifacts"
+      inputs:
+        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
+        contents: |
+          *.txt
+        targetFolder: '$(build.artifactstagingdirectory)\Artifact\OpenApiDocs'
 
 - stage: DeployToDevServiceTaxonomy
   displayName: Deploy to DEV_SERVICETAXONOMY
@@ -55,6 +54,7 @@ stages:
             displayName: "Download build artifacts"
             inputs:
               buildType: 'current'
+              artifactName: 'DFC.ServiceTaxonomy.ApiFunction'
           - template: StepTemplates/deploy-environment.yml
             parameters:
               AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
