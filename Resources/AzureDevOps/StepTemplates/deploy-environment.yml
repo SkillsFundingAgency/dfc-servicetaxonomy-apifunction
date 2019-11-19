@@ -29,7 +29,7 @@ steps:
     ArmOutputVariableName: '${{ parameters.ArmOutputVariableName }}'
     ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
 
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllSkills'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skills-fa'
@@ -41,7 +41,7 @@ steps:
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
 
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllOccupations'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-occ-fa'
@@ -53,7 +53,7 @@ steps:
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
 
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllSkillsForOccupation'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skillsocc-fa'
@@ -65,7 +65,7 @@ steps:
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
 
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAllOccupationsForSkill'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-occskills-fa'
@@ -77,7 +77,7 @@ steps:
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
 
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetAlternativeCareersAndSkillsForOccupation'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-altcar-fa'
@@ -89,7 +89,7 @@ steps:
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
     
-- template: StepTemplates/deploy-azure-function.yml
+- template: deploy-azure-function.yml
   parameters:
     FunctionType: 'GetSkillsGapForOccupations'
     WebAppName: '${{ parameters.WebAppPrefix }}-stax-skillsgap-fa'
