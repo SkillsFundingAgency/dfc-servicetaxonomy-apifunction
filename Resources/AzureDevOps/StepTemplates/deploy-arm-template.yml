@@ -11,7 +11,7 @@ parameters:
 
 steps:
 - powershell:
-    Invoke-WebRequest -Uri "${{ parameters.SetSubscriptionScript }}" -OutFile "${{ variables['System.DefaultWorkingDirectory']}}"
+    Invoke-WebRequest -Uri "${{ parameters.SetSubscriptionScript }}" -OutFile "${{ variables['System.DefaultWorkingDirectory']}}/Set-EsfaResourceGroupTags.ps1"
   displayName: "Download scripts from dfc-devops repo"
 
 - task: AzurePowerShell@3
