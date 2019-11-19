@@ -56,7 +56,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetAllSkills'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllSkills'))
   strategy:
     runOnce:
       deploy:
@@ -86,7 +86,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetAllOccupations'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllOccupations'))
   strategy:
     runOnce:
       deploy:
@@ -116,7 +116,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetAllSkillsForOccupation'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllSkillsForOccupation'))
   strategy:
     runOnce:
       deploy:
@@ -146,7 +146,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetAllOccupationsForSkill'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllOccupationsForSkill'))
   strategy:
     runOnce:
       deploy:
@@ -176,7 +176,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetAlternativeCareersAndSkillsForOccupation'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAlternativeCareersAndSkillsForOccupation'))
   strategy:
     runOnce:
       deploy:
@@ -206,7 +206,7 @@ jobs:
   dependsOn: 
   - DeployTemplate
   - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionTask.projectsToDeploy'], 'GetSkillsGapForOccupations'))
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetSkillsGapForOccupations'))
   strategy:
     runOnce:
       deploy:
