@@ -11,14 +11,14 @@ parameters:
 
 steps:
 - powershell:
-    Invoke-WebRequest -Uri "${{ parameters.SetSubscriptionScript }}" -OutFile $(Build.BinariesDirectory)
+    Invoke-WebRequest -Uri "${{ parameters.SetSubscriptionScript }}" -OutFile "${{ variables['System.DefaultWorkingDirectory']}}"
   displayName: "Download scripts from dfc-devops repo"
 
 - task: AzurePowerShell@3
   displayName:  "Create resource groups with tags"
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
-    ScriptPath: '$(Build.BinariesDirectory)/Set-EsfaResourceGroupTags.ps1'
+    ScriptPath: "${{ variables['System.DefaultWorkingDirectory'] }}/Set-EsfaResourceGroupTags.ps1"
     ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "$(ParentBusiness)" -ServiceOffering "$(ServiceOffering)" -Verbose'
     azurePowerShellVersion: LatestVersion
 
