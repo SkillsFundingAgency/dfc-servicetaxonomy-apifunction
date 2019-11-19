@@ -15,7 +15,7 @@ steps:
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     appType: functionApp
-    WebAppName: '${{ parameters.ResourceName }}'
+    WebAppName: '${{ parameters.WebAppName }}'
     packageForLinux: "${{ variables['System.ArtifactsDirectory'] }}/${{ parameters.PackageFile }}"
 
 - powershell: |
