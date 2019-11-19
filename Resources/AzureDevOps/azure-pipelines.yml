@@ -10,9 +10,6 @@ resources:
     ref: refs/tags/v1.6.11
     endpoint: 'GitHub (ESFA)'
 
-variables:
-- group: dfc-stax-shared-all
-
 stages:
 - stage: Build
   jobs:
@@ -24,6 +21,14 @@ stages:
     displayName: "Build DotNetCore app"
     pool: 'NCS - CI and CD'
     steps:
+    - task: CopyFiles@2
+      displayName: "Copy OpenAPI specification docs to artifacts"
+      inputs:
+        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
+        contents: |
+          *.txt
+        targetFolder: '$(build.artifactstagingdirectory)\Artifact\DFC.ServiceTaxonomy.ApiFunction\OpenApiDocs'
+
     - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
       parameters:
         SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
@@ -31,17 +36,11 @@ stages:
         BuildConfiguration: 'release'
         PublishWebApp: 'false'
         TestSuffix: 'Tests'
-    - task: CopyFiles@2
-      displayName: "Copy OpenAPI specification docs to artifacts"
-      inputs:
-        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
-        contents: |
-          *.txt
-        targetFolder: '$(build.artifactstagingdirectory)\Artifact\OpenApiDocs'
 
 - stage: DeployToDevServiceTaxonomy
   displayName: Deploy to DEV_SERVICETAXONOMY
   variables:
+  - group: dfc-stax-shared-all
   - group: dfc-stax-shared-dev
   - group: dfc-shared-dev
   jobs:
