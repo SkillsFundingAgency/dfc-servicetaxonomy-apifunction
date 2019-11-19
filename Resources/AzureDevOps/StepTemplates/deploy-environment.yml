@@ -40,6 +40,7 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
 
 - template: deploy-azure-function.yml
   parameters:
@@ -52,6 +53,7 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
 
 - template: deploy-azure-function.yml
   parameters:
@@ -64,6 +66,7 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
 
 - template: deploy-azure-function.yml
   parameters:
@@ -76,6 +79,7 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
 
 - template: deploy-azure-function.yml
   parameters:
@@ -88,6 +92,7 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
     
 - template: deploy-azure-function.yml
   parameters:
@@ -100,3 +105,4 @@ steps:
     SpecificationPath:  '${{ parameters.SpecificationPath }}'
     FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
     PackageFile: '${{ parameters.PackageFile }}'
+    ResourceGroup: '${{ parameters.ResourceGroup }}'
