@@ -12,7 +12,6 @@ parameters:
   ServiceOffering: ''
   ResourceGroup: ''
   WebAppPrefix: ''
-  ArtifactRootDirectory: ''
   SharedResourceGroup: ''
   ApimServiceName: ''
   FunctionAppDomain: ''

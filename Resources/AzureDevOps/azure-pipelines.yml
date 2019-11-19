@@ -64,6 +64,10 @@ stages:
               ResourceGroup: 'dfc-dev-stax-api-rg'
               WebAppPrefix: 'dfc-dev'
               ArtifactRootDirectory: "'${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction'"
+              PackageFile:  "${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+              ArmTemplateFolder: "${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
+              ApimImportScript: "${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+              SpecificationPath: "${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction/OpenApiDocs"
               SharedResourceGroup: 'dfc-dev-shared-rg'
               ApimServiceName: 'dfc-dev-shared-apim'
               FunctionAppDomain: '${{ variables.FunctionAppDomain }}'
