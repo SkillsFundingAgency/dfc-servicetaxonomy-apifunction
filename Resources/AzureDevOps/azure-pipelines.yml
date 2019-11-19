@@ -46,28 +46,18 @@ stages:
   - group: dfc-stax-apifunctions-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
-
-  - deployment: DeployTemplate
-    pool: 'NCS - CI and CD'
-    displayName: "Deploy to DEV environment"
-    environment: DEV_SERVICETAXONOMY
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: JobTemplates/deploy-environment.yml
-            parameters:
-              AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-              EnvironmentTag: 'DEV/Test'
-              ParentBusiness: 'National Careers Service'
-              ServiceOffering: '$(ServiceOffering)'
-              ResourceGroup: 'dfc-dev-stax-api-rg'
-              WebAppPrefix: 'dfc-dev'
-              ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
-              PackageFile:  "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
-              ArmTemplateFolder: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
-              ApimImportScript: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-              SpecificationPath: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenApiDocs"
-              SharedResourceGroup: 'dfc-dev-shared-rg'
-              ApimServiceName: 'dfc-dev-shared-apim'
-              FunctionAppDomain: '$(FunctionAppDomain)'
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: 'DEV/Test'
+      ParentBusiness: 'National Careers Service'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: 'dfc-dev-stax-api-rg'
+      WebAppPrefix: 'dfc-dev'
+      ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
+      PackageFile:  "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+      ArmTemplateFolder: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
+      ApimImportScript: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenApiDocs"
+      SharedResourceGroup: 'dfc-dev-shared-rg'
+      ApimServiceName: 'dfc-dev-shared-apim'
+      FunctionAppDomain: '$(FunctionAppDomain)'
