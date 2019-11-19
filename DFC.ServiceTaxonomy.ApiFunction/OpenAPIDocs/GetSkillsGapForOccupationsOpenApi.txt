@@ -1,0 +1,94 @@
+﻿openapi: 3.0.1
+info:
+  title: Skills Gap Open Api Specification
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Skills Gap For Occupations
+  description: Returns skills gap for secondary occupation
+paths:
+  /GetSkillsGapForOccupations/:
+    post:
+      tags:
+      - Skills Gap
+      summary: Retrieve skills gap for secondary occupation.
+      description: Returns skills gap for secondary occupation.
+      operationId: GetSkillsGapForOccupations
+      requestBody:
+        description: Enter primary and secondary esco occupation uri to retrieve skills gap for secondary occupation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillsGap'
+            example:   # Sample object
+                "PrimaryOccupation": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"
+                "SecondaryOccupation": "http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473"
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillsGap'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Occupation not found
+          content: {}
+      security:
+      - api_key: []
+components:
+  schemas:
+      SkillsGap: 
+        type: "object"
+        properties:
+          missingPrimaryOccupationSkills: 
+            type: array
+            items: 
+              type: object
+              properties: 
+                uri: 
+                  type: string
+                  example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
+                skill: 
+                  type: string
+                  example: identify customer's needs
+                skilltype: 
+                  type: string
+                  example: knowledge
+                  enum:
+                    - knowledge
+                    - competency
+                alternativeLabels: 
+                  type: array
+                  items: 
+                    type: string
+                    example: "alt 1"
+                skillReusability: 
+                  type: string
+                  example: Occupation-specific
+                  enum:
+                  - Transversal
+                  - Cross-sectoral
+                  - Sector-specific
+                  - Occupation-specific
+                lastmodified: 
+                  type: string
+                  example: 19/11/2019
+                relationshipType:            
+                  type: string
+                  example: essential
+                  enum:
+                   - essential 
+                   - optional
+        xml:
+          name: Skill
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query

@@ -30,6 +30,9 @@
     <Content Include="CypherQueries\GetAllSkillsForOccupation.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="CypherQueries\GetSkillsGapForOccupations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="CypherQueries\GetAlternativeCareersAndSkillsForOccupation.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

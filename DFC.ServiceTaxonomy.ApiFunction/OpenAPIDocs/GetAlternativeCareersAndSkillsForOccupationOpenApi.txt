@@ -19,7 +19,7 @@ paths:
       requestBody:
         description: enter esco occupation uri to retrieve all Alternative Careers and Skills for the Occupation
         content:
-          '*/*':
+          application/json:
             schema:
               $ref: '#/components/schemas/Occupation'
             example:   # Sample object

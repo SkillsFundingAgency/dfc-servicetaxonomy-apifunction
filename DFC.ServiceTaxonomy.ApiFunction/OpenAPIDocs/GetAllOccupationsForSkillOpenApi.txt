@@ -19,7 +19,7 @@ paths:
       requestBody:
         description: enter esco skill uri to retrieve all Occupations for the Skill
         content:
-          '*/*':
+          application/json:
             schema:
               $ref: '#/components/schemas/Skill'
             example:   # Sample object
