@@ -60,8 +60,3 @@ components:
                   example: "alt 1"
             xml:
               name: Occupation
-  securitySchemes:
-    apikeyQuery:
-      type: apiKey
-      name: code
-      in: query
