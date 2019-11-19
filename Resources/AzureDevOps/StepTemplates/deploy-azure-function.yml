@@ -16,7 +16,7 @@ steps:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     appType: functionApp
     WebAppName: '${{ parameters.WebAppName }}'
-    packageForLinux: "${{ variables['System.ArtifactsDirectory'] }}/${{ parameters.PackageFile }}"
+    packageForLinux: "${{ parameters.PackageFile }}"
 
 - powershell: |
     Write-Host "##vso[task.setvariable variable=FunctionAppUrl]https://${{ parameters.WebAppName }}.${{ parameters.FunctionAppDomain }}"
