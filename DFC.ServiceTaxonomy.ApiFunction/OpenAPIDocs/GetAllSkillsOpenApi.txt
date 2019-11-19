@@ -29,8 +29,6 @@ paths:
         404:
           description: Occupation not found
           content: {}
-      security:
-      - api_key: []
 components:
   schemas:
     Skill: 
@@ -60,3 +58,8 @@ components:
                   example: "alt 1"
             xml:
               name: Occupation
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query
