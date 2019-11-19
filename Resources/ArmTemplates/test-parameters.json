@@ -6,7 +6,7 @@
       "value": "dfc-foo-stax"
     },
     "storageAccountName": {
-      "value": "dfcfoostaxstr"
+      "value": "dfcfoostr"
     },
     "appServicePlanSize": {
       "value": "1"
@@ -30,7 +30,7 @@
       "value": "not-a-real-password"
     },
     "ApimResourceGroup": {
-      "value": "resource-group-with-apim-instance"
+      "value": "dfc-test-template-rg"
     },
     "ApimServiceName": {
       "value": "an-apim-instance"

@@ -159,6 +159,9 @@
         "type": "Microsoft.Resources/deployments",
         "resourceGroup": "[parameters('ApimResourceGroup')]",
         "apiVersion": "2017-05-10",
+        "dependsOn": [
+          "servicetaxonomy-apim-logger"
+        ],
         "properties": {
             "mode": "Incremental",
             "templateLink": {
@@ -183,6 +186,10 @@
       "name": "[concat('service-taxononmy-', variables('allFunctions')[copyIndex()].functionName)]",
       "resourceGroup": "[parameters('ApimResourceGroup')]",
       "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "service-taxonomy-apim-product",
+        "servicetaxonomy-apim-logger"
+      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -207,35 +214,6 @@
       "copy": {
         "name": "apiCount",
         "count": "[length(variables('allFunctions'))]"
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "ServiceTaxonomyAppServicePlan",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[variables('appServicePlanName')]"
-          },
-          "aspSize": {
-            "value": "[parameters('appServicePlanSize')]"
-          },
-          "aspInstances": {
-            "value": "[parameters('appServicePlanInstances')]"
-          },
-          "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
-          },
-          "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
-          }
-        }
       }
     },
     {
@@ -338,6 +316,35 @@
         "name": "functionLoop",
         "count": "[length(variables('allFunctions'))]"
       } 
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "ServiceTaxonomyAppServicePlan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('appServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('appServicePlanSize')]"
+          },
+          "aspInstances": {
+            "value": "[parameters('appServicePlanInstances')]"
+          },
+          "aseHostingEnvironmentName": {
+            "value": "[parameters('aseHostingEnvironmentName')]"
+          },
+          "aseResourceGroup": {
+            "value": "[parameters('aseResourceGroup')]"
+          }
+        }
+      }
     }
   ]
 }
