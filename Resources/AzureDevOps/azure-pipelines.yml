@@ -10,6 +10,9 @@ resources:
     ref: refs/tags/v1.6.11
     endpoint: 'GitHub (ESFA)'
 
+variables:
+- group: dfc-stax-shared-all
+
 stages:
 - stage: Build
   jobs:
@@ -60,7 +63,7 @@ stages:
               AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
               EnvironmentTag: 'DEV/Test'
               ParentBusiness: 'National Careers Service'
-              ServiceOffering: 'Service Taxonomy'
+              ServiceOffering: '${{ variables.ServiceOffering }}'
               ResourceGroup: 'dfc-dev-stax-api-rg'
               WebAppPrefix: 'dfc-dev'
               ArtifactRootDirectory: "'${{ variables['System.ArtifactsDirectory'] }}/DFC.ServiceTaxonomy.ApiFunction'"
