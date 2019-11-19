@@ -9,6 +9,7 @@ parameters:
   ResourceGroup: ''
   FunctionAppDomain: ''
   PackageFile: ''
+  # TODO: Add conditions
 
 steps:
 - task: AzureRmWebAppDeployment@4

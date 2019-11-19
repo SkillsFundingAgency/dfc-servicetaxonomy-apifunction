@@ -45,6 +45,8 @@ stages:
   - group: dfc-shared-dev
   - group: dfc-stax-apifunctions-dev
   jobs:
+  - template: JobTemplates/deploy-environment.yml
+
   - deployment: DeployTemplate
     pool: 'NCS - CI and CD'
     displayName: "Deploy to DEV environment"
@@ -53,12 +55,7 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: DownloadBuildArtifacts@0
-            displayName: "Download build artifacts"
-            inputs:
-              buildType: 'current'
-              artifactName: 'DFC.ServiceTaxonomy.ApiFunction'
-          - template: StepTemplates/deploy-environment.yml
+          - template: JobTemplates/deploy-environment.yml
             parameters:
               AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
               EnvironmentTag: 'DEV/Test'
