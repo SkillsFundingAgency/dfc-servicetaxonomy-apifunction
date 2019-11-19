@@ -9,10 +9,6 @@ parameters:
   FunctionAppDomain: ''
   PackageFile: ''
 
-variables:
-  SpecificationFile: '${{ parameters.FunctionType }}OpenApi.txt'
-  FunctionAppUrl: 'https://${{ parameters.WebAppName }}.${{ parameters.FunctionAppDomain }}'
-
 steps:
 - task: AzureRmWebAppDeployment@4
   displayName: 'Azure App Service Deploy: ${{ parameters.ResourceName }}'
@@ -23,14 +19,14 @@ steps:
     packageForLinux: "${{ variables['System.ArtifactsDirectory'] }}/${{ parameters.PackageFile }}"
 
 - powershell: |
-    Write-Host "##vso[task.setvariable variable=FunctionAppUrl]${{ variables.FunctionAppUrl }}"
+    Write-Host "##vso[task.setvariable variable=FunctionAppUrl]https://${{ parameters.WebAppName }}.${{ parameters.FunctionAppDomain }}"
   displayName: "Set full hostname as variable"
 
 - task: esfadevops.Tokenization.custom-build-task.Tokenization@0
-  displayName: 'Tokenization: Transform file ${{ variables.SpecificationFile }}'
+  displayName: 'Tokenization: Transform file ${{ parameters.FunctionType }}OpenApi.txt'
   inputs:
     SourcePath: '${{ parameters.SpecificationPath }}'
-    TargetFileNames: '${{ variables.SpecificationFile }}'
+    TargetFileNames: '${{ parameters.FunctionType }}OpenApi.txt'
 
 - task: AzurePowerShell@3
   displayName: 'Import OpenAPI specification'
