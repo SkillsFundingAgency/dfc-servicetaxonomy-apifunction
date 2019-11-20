@@ -40,7 +40,7 @@ jobs:
         - template: ../StepTemplates/deploy-arm-template.yml
           parameters: 
             AzureSubscription: '${{ parameters.AzureSubscription }}'
-            SetEsfaResourceGroupTagsScript: '${{ parameters.SetSubscriptionScript }}'
+            SetEsfaResourceGroupTagsScript: '${{ parameters.SetEsfaResourceGroupTagsScript }}'
             EnvironmentTag: '${{ parameters.EnvironmentTag }}'
             ParentBusiness: '${{ parameters.ParentBusiness }}'
             ServiceOffering: '${{ parameters.ServiceOffering }}'
