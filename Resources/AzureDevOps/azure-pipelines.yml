@@ -38,6 +38,7 @@ stages:
         TestSuffix: 'Tests'
 
 - stage: DeployToDevServiceTaxonomy
+  condition: ne(variables['Build.Reason'], 'PullRequest')
   displayName: Deploy to DEV_SERVICETAXONOMY
   variables:
   - group: dfc-stax-shared-all
