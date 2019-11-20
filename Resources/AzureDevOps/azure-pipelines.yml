@@ -37,16 +37,18 @@ stages:
 - stage: DeployToDevServiceTaxonomy
   displayName: Deploy to DEV_SERVICETAXONOMY
   variables:
-  - group: dfc-stax-shared-dev
+  - group: dfc-shared-all
+  - group: dfc-stax-shared-all
   - group: dfc-shared-dev
+  - group: dfc-stax-shared-dev
   - group: dfc-stax-apifunctions-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
       AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
-      EnvironmentTag: 'DEV/Test'
-      ParentBusiness: 'National Careers Service'
-      ServiceOffering: 'Data Sharing Service'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: 'dfc-dev-stax-api-rg'
       WebAppPrefix: 'dfc-dev'
       ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
