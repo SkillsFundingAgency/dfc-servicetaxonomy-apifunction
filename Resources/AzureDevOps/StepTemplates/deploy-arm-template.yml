@@ -10,7 +10,7 @@ parameters:
   ArmOutputVariableName: 'ARMOutputs'
 
 steps:
-- powershell:
+- powershell: |
     Invoke-WebRequest -Uri "${{ parameters.SetEsfaResourceGroupTagsScript }}" -OutFile "${{ variables['System.DefaultWorkingDirectory']}}/Set-EsfaResourceGroupTags.ps1"
   displayName: "Download scripts from dfc-devops repo"
 
