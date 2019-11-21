@@ -39,8 +39,6 @@ paths:
         404:
           description: Occupation not found
           content: {}
-      security:
-      - api_key: []
 components:
   schemas:
       SkillsGap: 

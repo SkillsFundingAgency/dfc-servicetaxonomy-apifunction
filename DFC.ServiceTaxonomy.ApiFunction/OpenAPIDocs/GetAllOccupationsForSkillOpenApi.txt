@@ -1,6 +1,6 @@
 ﻿openapi: 3.0.1
 info:
-  title: Skill Open Api Specification
+  title: Get Occupations For Given Skill
   description: 'Sample Description for Query'
   version: 1.0.0
 servers:
@@ -38,8 +38,6 @@ paths:
         404:
           description: Occupation not found
           content: {}
-      security:
-      - api_key: []
 components:
   schemas:
     Skill: 

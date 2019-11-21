@@ -1,6 +1,6 @@
 ﻿openapi: 3.0.1
 info:
-  title: Occupation Open Api Specification
+  title: Get All Occupations
   description: 'Sample Description for Query'
   version: 1.0.0
 servers:
@@ -29,8 +29,6 @@ paths:
         404:
           description: Occupation not found
           content: {}
-      security:
-      - api_key: []
 components:
   schemas:
     Occupation: 
