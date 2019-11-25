@@ -6,7 +6,10 @@
       "value": "dfc-foo-stax"
     },
     "storageAccountName": {
-      "value": "dfcfoostr"
+      "value": "dfcfoostaxsharedstr"
+    },
+    "storageAccountResourceGroup": {
+      "value": "dfc-foo-stax-shared-rg"
     },
     "appServicePlanSize": {
       "value": "1"

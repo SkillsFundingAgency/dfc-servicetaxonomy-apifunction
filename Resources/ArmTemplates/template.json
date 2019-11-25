@@ -14,6 +14,12 @@
         "description": "Name of the project storage account (as it follows a different naming convention)"
       }
     },
+    "storageAccountResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the project storage account's resource group"
+      }
+    },
     "appServicePlanSize": {
       "type": "string",
       "defaultValue": "1",
@@ -116,23 +122,6 @@
     ]
   },
   "resources": [
-    {
-      "apiVersion": "2017-05-10",
-      "name": "ServiceTaxonomyStorage",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'storage-account.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "storageAccountName": {
-            "value": "[parameters('storageAccountName')]"
-          }
-        }
-      }
-    },
     {
         "name": "servicetaxonomy-apim-logger",
         "type": "Microsoft.Resources/deployments",
@@ -290,7 +279,7 @@
               },
               {
                 "name": "AzureWebJobsStorage",
-                "value": "[reference('ServiceTaxonomyStorage').outputs.storageConnectionString.value]"
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
               },
               {
                 "name": "Function",

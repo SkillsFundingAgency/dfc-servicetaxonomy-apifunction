@@ -6,7 +6,10 @@
       "value": "__projectPrefix__"
     },
     "storageAccountName": {
-      "value": "__storageAccountName__"
+      "value": "__StaxSharedStorageAccountName__"
+    },
+    "storageAccountResourceGroup": {
+      "value": "__StaxSharedResourceGroup__"
     },
     "appServicePlanSize": {
       "value": "__appServicePlanSize__"
