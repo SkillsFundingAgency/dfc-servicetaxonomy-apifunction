@@ -37,7 +37,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             var functionToProcess = _serviceTaxonomyApiSettings.Value.Function;
