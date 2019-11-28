@@ -9,11 +9,11 @@ tags:
 - name: Get Skills Gap For Occupations
   description: Returns skills gap for secondary occupation
 paths:
-  /GetSkillsGapForOccupations/:
+  /Execute/:
     post:
       tags:
       - Skills Gap
-      summary: Retrieve skills gap for secondary occupation.
+      summary: Get skills gap for secondary occupation.
       description: Returns skills gap for secondary occupation.
       operationId: GetSkillsGapForOccupations
       requestBody:

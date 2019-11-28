@@ -9,11 +9,11 @@ tags:
 - name: Get All Occupations
   description: Returns all occupations
 paths:
-  /GetAllOccupations/:
+  /Execute/:
     get:
       tags:
       - Occupation
-      summary: Find all occupations.
+      summary: Get all occupations.
       description: Returns all occupations
       operationId: GetAllOccupations
       responses:

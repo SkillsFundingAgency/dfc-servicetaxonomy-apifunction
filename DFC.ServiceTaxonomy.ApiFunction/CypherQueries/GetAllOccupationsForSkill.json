@@ -1,8 +1,8 @@
 ﻿{
 	"query": "MATCH (o:esco__Occupation)-[r:esco__relatedEssentialSkill|:esco__relatedOptionalSkill]->(s:esco__Skill {uri:{skill}}), (s)-[:esco__skillType]->(skilltype), (s)-[:esco__skillReuseLevel]->(reuse) WITH{ uri:s.uri, skill:head(s.skos__prefLabel), skilltype:head(skilltype.skos__prefLabel), skillReusability:head(reuse.skos__prefLabel), alternativeLabels:s.skos__altLabel, lastModified:s.dct__modified, occupation:collect({ uri:o.uri, occupation:head(o.skos__prefLabel), relationshipWithSkill:case type(r) when 'esco__relatedEssentialSkill' then 'essential' when 'esco__relatedOptionalSkill' then 'optional' end, alternativeLabels:o.skos__altLabel, lastModified:head(o.dct__modified) }) } as skills return skills",
-    "queryParam":[ 
-      { 
-         "name":"skill"
-	  }
-   ]
+  "queryParam": [
+    {
+      "name": "skill"
+    }
+  ]
 }

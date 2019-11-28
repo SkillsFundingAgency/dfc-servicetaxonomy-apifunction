@@ -9,11 +9,11 @@ tags:
 - name: Get Occupations For Given Skill
   description: Returns all occupation for a given skill
 paths:
-  /GetAllOccupationsForSkill/:
+  /Execute/:
     post:
       tags:
       - Skill
-      summary: Find occupations for a given skill.
+      summary: Get occupations for a given skill.
       description: Returns occupation for a given skill
       operationId: GetOccupationsForSkill
       requestBody:

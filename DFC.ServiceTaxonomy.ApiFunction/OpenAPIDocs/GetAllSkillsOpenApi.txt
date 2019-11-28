@@ -9,11 +9,11 @@ tags:
 - name: Get All Skills
   description: Returns all skills
 paths:
-  /GetAllSkills/:
+  /Execute/:
     get:
       tags:
       - Skill
-      summary: Find all skills.
+      summary: Get all skills.
       description: Returns all skills
       operationId: GetAllSkills
       responses:

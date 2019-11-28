@@ -9,11 +9,11 @@ tags:
 - name: Get Alternative Careers And Skills For Given Occupation
   description: Returns all skills
 paths:
-  /GetAlternativeCareersAndSkillsForOccupation/:
+  /Execute/:
     post:
       tags:
       - Skill
-      summary: Find Alternative Careers And Skills For Given Occupation.
+      summary: Get Alternative Careers And Skills For Given Occupation.
       description: Returns Alternative Careers And Skills For Given Occupation
       operationId: GetAlternativeCareersAndSkillsForOccupation
       requestBody:
