@@ -19,7 +19,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.StartUp
                 .Configure<IConfiguration>((settings, configuration) => { configuration.Bind(settings); });
 
             builder.Services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
+            builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
             builder.Services.AddSingleton<INeo4JHelper, Neo4JHelper>();
+            builder.Services.AddSingleton<IFileHelper, FileHelper>();
 
         }
     }
