@@ -21,9 +21,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
     {
         private readonly IOptions<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
         private readonly IHttpRequestHelper _httpRequestHelper;
+        private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
+        private readonly IFileHelper _fileHelper;
 
-        public Execute(IOptions<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper)
+        public Execute(IOptions<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
                                           throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
@@ -31,8 +33,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             _httpRequestHelper = httpRequestHelper ??
                                  throw new ArgumentNullException(nameof(httpRequestHelper));
 
+            _jsonHelper = jsonHelper ??
+                  throw new ArgumentNullException(nameof(jsonHelper));
+
             _neo4JHelper = neo4JHelper ?? 
                            throw new ArgumentNullException(nameof(neo4JHelper));
+
+            _fileHelper = fileHelper ??
+                          throw new ArgumentNullException(nameof(fileHelper));
         }
 
         [FunctionName("Execute")]
@@ -85,7 +93,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                cypherQueryJsonConfig = File.ReadAllText(queryFileNameAndDir);
+                cypherQueryJsonConfig = _fileHelper.ReadAllTextFromFile(queryFileNameAndDir);
             }
             catch (Exception ex)
             {
@@ -102,7 +110,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                cypherModel = JsonConvert.DeserializeObject<Cypher>(cypherQueryJsonConfig);
+                cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
             }
             catch (JsonException ex)
             {
@@ -133,14 +141,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 }
 
                 if (cypherModel.QueryParam.Any() && !cypherQueryStatementParameters.Any())
-                    return new BadRequestErrorMessageResult("No Query Parameters have been provided in the request body");
+                    return new BadRequestObjectResult("No Query Parameters have been provided in the request body");
             }
 
             log.LogInformation("Attempting to query neo4j");
 
             var statementResult = _neo4JHelper.ExecuteCypherQueryInNeo4J(cypherQuery, cypherQueryStatementParameters);
             
-            if(statementResult == null)
+            if(statementResult == null || !statementResult.Any())
                 return new NoContentResult();
 
             if (statementResult.Summary != null)
