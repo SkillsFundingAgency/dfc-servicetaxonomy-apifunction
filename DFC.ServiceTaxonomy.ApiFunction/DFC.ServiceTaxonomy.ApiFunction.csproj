@@ -3,40 +3,20 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="CypherQueries\GetAllOccupations.json" />
-    <None Remove="CypherQueries\GetAllOccupationsForSkill.json" />
-    <None Remove="CypherQueries\GetAllSkills.json" />
-    <None Remove="CypherQueries\GetAllSkillsForOccupation.json" />
-    <None Remove="CypherQueries\GetAlternativeCareersAndSkillsForOccupation.json" />
-    <None Remove="CypherQueries\GetSkillsGapForOccupations.json" />
-  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
     <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="CypherQueries\GetAllOccupations.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CypherQueries\GetAllOccupationsForSkill.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CypherQueries\GetAllSkills.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CypherQueries\GetAllSkillsForOccupation.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CypherQueries\GetSkillsGapForOccupations.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CypherQueries\GetAlternativeCareersAndSkillsForOccupation.json">
+
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Content Include="CypherQueries\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -46,4 +26,15 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
+  </ItemGroup>
+  
+  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">    
+    <Message Text="Copying CypherQueryFiles to $(PublishDir)bin\CypherQueries\"  />
+    <Copy 
+      SourceFiles="@(CypherQueryFiles)"
+      DestinationFolder="$(PublishDir)bin\CypherQueries\" />
+  </Target>
 </Project>
