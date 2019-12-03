@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Skill'
+              $ref: '#/components/schemas/SkillRequestBody'
             example:   # Sample object
                 "skill": "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
         required: true
@@ -46,9 +46,15 @@ paths:
           content: {}
 components:
   schemas:
-    Skill: 
+    SkillRequestBody: 
       required:
-      - uri
+      - skill
+      type: "object"
+      properties:
+        skill: 
+          type: string
+          example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
+    Skill: 
       type: "object"
       properties:
         uri: 

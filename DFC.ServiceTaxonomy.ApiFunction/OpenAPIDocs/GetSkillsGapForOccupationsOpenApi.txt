@@ -21,10 +21,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillsGap'
+              $ref: '#/components/schemas/SkillsGapRequestBody'
             example:   # Sample object
                 "PrimaryOccupation": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"
-                "SecondaryOccupation": "http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473"
+                "secondaryOccupation": "http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473"
         required: true
       responses:
         200:
@@ -47,6 +47,18 @@ paths:
           content: {}
 components:
   schemas:
+      SkillsGapRequestBody:
+        required:
+        - primaryOccupation
+        - secondaryOccupation
+        type: "object"
+        properties:
+          primaryOccupation: 
+            type: string
+            example: http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc
+          secondaryOccupation: 
+            type: string
+            example: http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473
       SkillsGap: 
         type: "object"
         properties:

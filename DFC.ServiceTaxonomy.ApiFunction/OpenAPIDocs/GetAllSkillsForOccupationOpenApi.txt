@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Occupation'
+              $ref: '#/components/schemas/OccupationRequestBody'
             example:   # Sample object
                 "occupation": "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
         required: true
@@ -46,9 +46,15 @@ paths:
           content: {}
 components:
   schemas:
-    Occupation:
+    OccupationRequestBody: 
       required:
-      - uri
+      - occupation
+      type: "object"
+      properties:
+        occupation: 
+          type: string
+          example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
+    Occupation:
       type: "object"
       properties:
         uri: 
