@@ -191,34 +191,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
         
         [Fact]
-        public async Task Execute_WhenNoResultsAreReturnedFromNeo4J_ReturnsNoContentResult()
-        {
-            _config.Value.Function = "GetAllSkills";
-            var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns(query);
-
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
-
-            var dict = new Dictionary<string, object>
-            {
-                {"occupation", "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"}
-            };
-            
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync("query", dict)).Returns((IStatementResultCursor) null);
-
-            var result = await RunFunction();
-
-            var noContentResult = result as NoContentResult;
-
-            // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.True(result is NoContentResult);
-            Assert.Equal((int?)HttpStatusCode.NoContent, noContentResult.StatusCode);
-        }
-
-        [Fact]
         public async Task Execute_WhenCodeIsValid_ReturnsOkObjectResult()
         {
             _config.Value.Function = "GetAllSkills";

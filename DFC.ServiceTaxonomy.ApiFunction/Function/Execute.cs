@@ -155,7 +155,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError($"Unable To Run Query", ex);
                 return new InternalServerErrorResult();
             }
-            
+
             var listOfResults = await _neo4JHelper.GetListOfRecordsAsync(statementResultAsync);
 
             if (listOfResults == null)

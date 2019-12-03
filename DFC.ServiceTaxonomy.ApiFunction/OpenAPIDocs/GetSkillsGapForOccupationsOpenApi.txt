@@ -23,7 +23,7 @@ paths:
             schema:
               $ref: '#/components/schemas/SkillsGapRequestBody'
             example:   # Sample object
-                "PrimaryOccupation": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"
+                "primaryOccupation": "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"
                 "secondaryOccupation": "http://data.europa.eu/esco/occupation/b00e9e89-fd8d-4655-b6a2-f58b17629473"
         required: true
       responses:
