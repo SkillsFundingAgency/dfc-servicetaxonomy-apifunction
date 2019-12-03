@@ -51,7 +51,7 @@ components:
               skill: 
                 type: string
                 example: "identify customer's needs"
-              skilltype: 
+              skillType: 
                 type: string
                 example: knowledge
                 enum:

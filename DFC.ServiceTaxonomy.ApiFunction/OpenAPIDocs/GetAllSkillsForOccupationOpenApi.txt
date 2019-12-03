@@ -63,9 +63,9 @@ components:
         occupation: 
           type: string
           example: renewable energy consultant
-        lastmodified: 
+        lastModified: 
           type: string
-          example: 30/10/2019
+          example: 03-12-2019T00:00:00Z
         alternativeLabels: 
           type: array
           items: 
@@ -88,7 +88,7 @@ components:
                 enum:
                     - essential
                     - optional
-              skilltype: 
+              skillType: 
                 type: string
                 example: knowledge
                 enum:

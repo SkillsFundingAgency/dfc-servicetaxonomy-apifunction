@@ -82,9 +82,9 @@ components:
                 items: 
                   type: string
                   example: "alt 1"
-        lastmodified: 
+        lastModified: 
           type: string
-          example: 08/11/2019
+          example: 03-12-2019T00:00:00Z
         occupations: 
           type: array
           items: 
@@ -107,9 +107,9 @@ components:
                 items: 
                   type: string
                   example: "alt 1"
-              lastmodified: 
+              lastModified: 
                 type: string
-                example: 08/11/2019
+                example: 03-12-2019T00:00:00Z
             xml:
               name: Skill
   securitySchemes:

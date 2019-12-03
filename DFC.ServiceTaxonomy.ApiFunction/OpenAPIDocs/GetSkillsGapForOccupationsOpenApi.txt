@@ -73,7 +73,7 @@ components:
                 skill: 
                   type: string
                   example: identify customer's needs
-                skilltype: 
+                skillType: 
                   type: string
                   example: knowledge
                   enum:
@@ -92,9 +92,9 @@ components:
                   - Cross-sectoral
                   - Sector-specific
                   - Occupation-specific
-                lastmodified: 
+                lastModified: 
                   type: string
-                  example: 19/11/2019
+                  example: 03-12-2019T00:00:00Z
                 relationshipType:            
                   type: string
                   example: essential

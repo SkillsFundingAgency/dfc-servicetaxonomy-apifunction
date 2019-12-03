@@ -89,7 +89,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"{"CypherQueries"}\{functionToProcess}.{"json"}";
+            var queryFileNameAndDir = $@"CypherQueries\{functionToProcess}.json";
 
             string cypherQueryJsonConfig = null;
 

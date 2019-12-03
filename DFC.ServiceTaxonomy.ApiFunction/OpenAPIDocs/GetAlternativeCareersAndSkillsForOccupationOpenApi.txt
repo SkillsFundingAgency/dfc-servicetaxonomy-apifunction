@@ -68,9 +68,9 @@ components:
           items: 
             type: string
             example: alt 1
-        lastmodified: 
+        lastModified: 
           type: string
-          example: 30/10/2019
+          example: 03-12-2019T00:00:00Z
         totalEssentialSkills: 
           type: integer
           example: 10
@@ -100,9 +100,9 @@ components:
               matchingOptionalSkills: 
                 type: integer
                 example: 8
-              lastmodified: 
+              lastModified: 
                   type: string
-                  example: 30/10/2019
+                  example: 03-12-2019T00:00:00Z
             xml:
               name: Occupation
   securitySchemes:
