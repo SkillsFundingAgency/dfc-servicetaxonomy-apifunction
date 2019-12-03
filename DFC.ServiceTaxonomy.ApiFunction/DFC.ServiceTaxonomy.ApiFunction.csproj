@@ -32,9 +32,9 @@
   </ItemGroup>
   
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">    
-    <Message Text="Copying CypherQueryFiles to $(PublishDir)bin\CypherQueries\"  />
+    <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
     <Copy 
       SourceFiles="@(CypherQueryFiles)"
-      DestinationFolder="$(PublishDir)bin\CypherQueries\" />
+      DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
   </Target>
 </Project>
