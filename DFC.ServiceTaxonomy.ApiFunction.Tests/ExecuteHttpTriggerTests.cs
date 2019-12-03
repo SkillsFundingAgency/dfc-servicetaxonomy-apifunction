@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -26,13 +27,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
-        private IOptions<ServiceTaxonomyApiSettings> _config;
-        private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
-        private INeo4JHelper _neo4JHelper;
-        private IFileHelper _fileHelper;
-        private Cypher _blankCypherModel = null;
-        private Cypher _cypherModel;
+        private readonly IOptions<ServiceTaxonomyApiSettings> _config;
+        private readonly IHttpRequestHelper _httpRequestHelper;
+        private readonly IJsonHelper _jsonHelper;
+        private readonly INeo4JHelper _neo4JHelper;
+        private readonly IFileHelper _fileHelper;
+        private readonly Cypher _blankCypherModel = null;
+        private readonly Cypher _cypherModel;
 
         public ExecuteHttpTriggerTests()
         {
@@ -57,21 +58,22 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_ReturnsBadRequestObjectResult_WhenFunctionAppSettingIsNullOrEmpty()
+        public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsBadRequestObjectResult()
         {
             _config.Value.Function = null;
 
             var result = await RunFunction();
 
-            var badRequestObjectResult = result as BadRequestObjectResult;
+            var internalServerErrorResult = result as InternalServerErrorResult;
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
+            Assert.True(result is InternalServerErrorResult);
+            Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
 
         [Fact]
-        public async Task Execute_ReturnsBadRequestObjectResult_WhenUnableToReadRequestBody()
+        public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
         {
             _config.Value.Function = "GetAllSkills";
 
@@ -83,13 +85,17 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is BadRequestObjectResult);
             Assert.Equal((int?) HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
 
         [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenUnableToDeserializeRequestBody()
+        public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
             _config.Value.Function = "GetAllSkills";
+            
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"test: test1");
+
 
             A.CallTo(() => _jsonHelper.DeserializeObject(A.Dummy<string>())).Throws<JsonException>();
 
@@ -99,12 +105,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is UnprocessableEntityObjectResult);
             Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
         }
 
 
         [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenUnableToReadJsonConfigQueryFile()
+        public async Task Execute_WhenUnableToReadJsonConfigQueryFile_ReturnsInternalServerErrorResult()
         {
             _config.Value.Function = "GetAllSkills";
 
@@ -114,34 +121,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var result = await RunFunction();
 
-            var unprocessableEntityObjectResult = result as UnprocessableEntityObjectResult;
+            var internalServerErrorResult = result as InternalServerErrorResult;
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
+            Assert.True(result is InternalServerErrorResult);
+            Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
 
         [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenJsonConfigQueryFileIsNullOrEmpty()
-        {
-            _config.Value.Function = "GetAllSkills";
-
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns(string.Empty);
-
-            var result = await RunFunction();
-
-            var unprocessableEntityObjectResult = result as UnprocessableEntityObjectResult;
-
-            // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
-        }
-
-
-        [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenJsonConfigQueryFileHasInvalidJson()
+        public async Task Execute_WhenJsonConfigQueryFileHasInvalidJson_ReturnsInternalServerErrorResult()
         {
             _config.Value.Function = "GetAllSkills";
 
@@ -151,53 +140,37 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var result = await RunFunction();
 
-            var unprocessableEntityObjectResult = result as UnprocessableEntityObjectResult;
+            var internalServerErrorResult = result as InternalServerErrorResult;
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
-        }
-
-        [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenJsonConfigQueryFileHasEmptyJson()
-        {
-            _config.Value.Function = "GetAllSkills";
-
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns(string.Empty);
-
-            var result = await RunFunction();
-
-            var unprocessableEntityObjectResult = result as UnprocessableEntityObjectResult;
-
-            // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
-        }
-
-        [Fact]
-        public async Task Execute_ReturnsUnprocessableEntityObjectResult_WhenCypherQueryIsEmpty()
-        {
-            _config.Value.Function = "GetAllSkills";
-
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns("{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"Occupation\"}]}");
-           
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(A.Dummy<string>())).Returns(_blankCypherModel);
-
-            var result = await RunFunction();
-
-            var unprocessableEntityObjectResult = result as UnprocessableEntityObjectResult;
-
-            // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
-            Assert.Equal((int?) HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
+            Assert.True(result is InternalServerErrorResult);
+            Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
         
         [Fact]
-        public async Task Execute_ReturnsBadRequestErrorMessageResult_WhenRequestBodyDoesntContainFieldsForCypherQuery()
+        public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult()
+        {
+            _config.Value.Function = "GetAllSkills";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns("{}");
+           
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>("{}")).Returns(null);
+
+            var result = await RunFunction();
+
+            var internalServerErrorResult = result as InternalServerErrorResult;
+
+            // Assert
+            Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is InternalServerErrorResult);
+            Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
+        }
+        
+        [Fact]
+        public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
             _config.Value.Function = "GetAllSkills";
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
@@ -213,11 +186,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is BadRequestObjectResult);
             Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
         
         [Fact]
-        public async Task Execute_ReturnsNoContentResult_WhenNoResultsAreReturnedFromNeo4J()
+        public async Task Execute_WhenNoResultsAreReturnedFromNeo4J_ReturnsNoContentResult()
         {
             _config.Value.Function = "GetAllSkills";
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
@@ -232,7 +206,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"occupation", "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"}
             };
             
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4J("query", dict)).Returns((IStatementResult) null);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync("query", dict)).Returns((IStatementResultCursor) null);
 
             var result = await RunFunction();
 
@@ -240,7 +214,42 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is NoContentResult);
             Assert.Equal((int?)HttpStatusCode.NoContent, noContentResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task Execute_WhenCodeIsValid_ReturnsOkObjectResult()
+        {
+            _config.Value.Function = "GetAllSkills";
+            var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequest(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFile("CypherQueries\\GetAllSkills.json")).Returns(query);
+
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
+
+            var dict = new Dictionary<string, object>
+            {
+                {"occupation", "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"}
+            };
+
+            var statementResult = A.Fake<IStatementResultCursor>();
+            var resultSummary = A.Fake<IResultSummary>();
+            var records = new List<object> {new object()};
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync("query", dict)).Returns(statementResult);
+            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync(statementResult)).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync(statementResult)).Returns(resultSummary);
+            
+            var result = await RunFunction();
+
+            var okObjectResult = result as OkObjectResult;
+
+            // Assert
+            Assert.IsAssignableFrom<IActionResult>(result);
+            Assert.True(result is OkObjectResult);
+            Assert.Equal((int?)HttpStatusCode.OK, okObjectResult.StatusCode);
         }
 
         private async Task<IActionResult> RunFunction()

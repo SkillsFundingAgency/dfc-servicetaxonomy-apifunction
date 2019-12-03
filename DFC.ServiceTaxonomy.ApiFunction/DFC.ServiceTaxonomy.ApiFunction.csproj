@@ -11,7 +11,7 @@
     <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup>
     <Content Include="CypherQueries\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -31,7 +31,7 @@
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
   </ItemGroup>
   
-  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">    
+  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">    
     <Message Text="Copying CypherQueryFiles to $(PublishDir)bin\CypherQueries\"  />
     <Copy 
       SourceFiles="@(CypherQueryFiles)"

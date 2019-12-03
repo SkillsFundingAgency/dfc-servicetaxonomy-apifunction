@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public class FileHelper : IFileHelper
     {
-        public string ReadAllTextFromFile(string fileName)
+        public async Task<string> ReadAllTextFromFile(string fileName)
         {
-            return File.ReadAllText(fileName);
+            return await File.ReadAllTextAsync(fileName);
         }
     }
 }

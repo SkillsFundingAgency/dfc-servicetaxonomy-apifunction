@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Neo4j.Driver.V1;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
@@ -50,10 +51,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             var functionToProcess = _serviceTaxonomyApiSettings.Value.Function;
 
-            if(string.IsNullOrWhiteSpace(functionToProcess))
-                return new BadRequestObjectResult("Function cannot be found in app settings");
+            if (string.IsNullOrWhiteSpace(functionToProcess))
+            {
+                log.LogInformation("Missing App Settings");
+                return new InternalServerErrorResult();
+            }
 
-            log.LogInformation(string.Format("{0} HTTP trigger function processed a request.", functionToProcess));
+            log.LogInformation($"{functionToProcess} HTTP trigger function is processing a request.");
 
             log.LogInformation("Attempting to read body from http request");
 
@@ -85,25 +89,22 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("generating file name and dir to read json config");
 
-            var queryFileNameAndDir = string.Format(@"{0}\{1}.{2}", "CypherQueries" , functionToProcess, "json");
+            var queryFileNameAndDir = $@"{"CypherQueries"}\{functionToProcess}.{"json"}";
 
-            string cypherQueryJsonConfig = string.Empty;
+            string cypherQueryJsonConfig = null;
 
             log.LogInformation("Attempting to read json config");
 
             try
             {
-                cypherQueryJsonConfig = _fileHelper.ReadAllTextFromFile(queryFileNameAndDir);
+                cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFile(queryFileNameAndDir);
             }
             catch (Exception ex)
             {
-                log.LogError(string.Format("Unable to read {0} query file", queryFileNameAndDir), ex);
-                return new UnprocessableEntityObjectResult(string.Format("Unable to read {0} query file", queryFileNameAndDir));
+                log.LogError($"Unable to read {queryFileNameAndDir} query file", ex);
+                return new InternalServerErrorResult();
             }
-
-            if (string.IsNullOrWhiteSpace(cypherQueryJsonConfig))
-                return new UnprocessableEntityObjectResult(string.Format("No content in {0} query file", functionToProcess));
-
+            
             log.LogInformation("Attempting to Deserialize json config to cypher model");
 
             Cypher cypherModel;
@@ -114,17 +115,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (JsonException ex)
             {
-                log.LogError(string.Format("Unable to Deserialize json from {0}", queryFileNameAndDir), ex);
-                return new UnprocessableEntityObjectResult(string.Format("Unable to Deserialize json from {0}", queryFileNameAndDir));
+                log.LogError($"Unable to Deserialize json from {queryFileNameAndDir}", ex);
+                return new InternalServerErrorResult();
             }
 
             if (cypherModel == null)
-                return new UnprocessableEntityObjectResult(string.Format("Unable to deserialize {0} text file", functionToProcess));
+                return new InternalServerErrorResult();
 
             var cypherQuery = cypherModel.Query;
-
-            if(string.IsNullOrWhiteSpace(cypherQuery))
-                return new UnprocessableEntityObjectResult("Query cannot be empty");
 
             var cypherQueryStatementParameters = new Dictionary<string, object>();
 
@@ -140,27 +138,39 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                         cypherQueryStatementParameters.Add(json.Name, json.Value.ToString());
                 }
 
-                if (cypherModel.QueryParam.Any() && !cypherQueryStatementParameters.Any())
-                    return new BadRequestObjectResult("No Query Parameters have been provided in the request body");
+                if (cypherModel.QueryParam.Count != cypherQueryStatementParameters.Count)
+                    return new BadRequestObjectResult($"Expected {cypherModel.QueryParam.Count} query parameters, only {cypherQueryStatementParameters.Count} have been provided in the request body");
             }
 
             log.LogInformation("Attempting to query neo4j");
 
-            var statementResult = _neo4JHelper.ExecuteCypherQueryInNeo4J(cypherQuery, cypherQueryStatementParameters);
+            IStatementResultCursor statementResultAsync;
+
+            try
+            {
+                statementResultAsync = await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherQuery, cypherQueryStatementParameters);
+            }
+            catch (Exception ex)
+            {
+                log.LogError($"Unable To Run Query", ex);
+                return new InternalServerErrorResult();
+            }
             
-            if(statementResult == null || !statementResult.Any())
+            var listOfResults = await _neo4JHelper.GetListOfRecordsAsync(statementResultAsync);
+
+            if (listOfResults == null)
                 return new NoContentResult();
 
-            if (statementResult.Summary != null)
-                log.LogInformation(string.Format("Query: {0} \n Results Available After: {1}", 
-                    statementResult.Summary.Statement.Text, 
-                    statementResult.Summary.ResultAvailableAfter));
+            var statementResult = await _neo4JHelper.GetResultSummaryAsync(statementResultAsync);
+
+            if (statementResult != null)
+                log.LogInformation(
+                    $"Query: {statementResult.Statement.Text} \n Results Available After: {statementResult.ResultAvailableAfter}");
 
             log.LogInformation("request has successfully been completed with results");
 
-            return new OkObjectResult(JsonConvert.SerializeObject(statementResult.SelectMany(x => x.Values.Values)));
+            return new OkObjectResult(JsonConvert.SerializeObject(listOfResults));
           
         }
     }
-
 }

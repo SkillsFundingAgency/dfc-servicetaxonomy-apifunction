@@ -23,11 +23,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Skill'
-        400:
-          description: Invalid ID supplied
+        204:
+          description: No content can be found.
           content: {}
-        404:
-          description: Occupation not found
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
           content: {}
 components:
   schemas:
