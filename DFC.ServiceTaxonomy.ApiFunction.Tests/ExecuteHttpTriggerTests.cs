@@ -11,6 +11,7 @@ using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
 using Neo4j.Driver.V1;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
+        private readonly ExecutionContext _executionContext;
         private readonly IOptions<ServiceTaxonomyApiSettings> _config;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IJsonHelper _jsonHelper;
@@ -34,6 +36,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public ExecuteHttpTriggerTests()
         {
             _request = new DefaultHttpRequest(new DefaultHttpContext());
+            _executionContext =  new ExecutionContext();
             var options = new ServiceTaxonomyApiSettings
             {
                 Function = "GetAllSkills",
@@ -151,7 +154,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("CypherQueries\\GetAllSkills.json")).Returns("{}");
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("{}");
            
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>("{}")).Returns(null);
 
@@ -172,7 +175,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("CypherQueries\\GetAllSkills.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
@@ -193,7 +196,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("CypherQueries\\GetAllSkills.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
@@ -222,7 +225,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
         private async Task<IActionResult> RunFunction()
         {
-            return await _executeFunction.Run(_request, _log).ConfigureAwait(false);
+            return await _executeFunction.Run(_request, _log, _executionContext).ConfigureAwait(false);
         }
     }
 }

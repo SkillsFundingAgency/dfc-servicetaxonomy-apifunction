@@ -47,7 +47,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log, ExecutionContext context)
         {
             var functionToProcess = _serviceTaxonomyApiSettings.Value.Function;
 
@@ -89,7 +89,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"CypherQueries\{functionToProcess}.json";
+            var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
 
             string cypherQueryJsonConfig = null;
 
