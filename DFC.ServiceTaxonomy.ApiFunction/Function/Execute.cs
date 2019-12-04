@@ -152,8 +152,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (Exception ex)
             {
-                log.LogError($"Unable To Run Query", ex);
-                return new InternalServerErrorResult();
+                log.LogError($"Unable To Run Query \n Exception:" + ex, ex);
+                throw new Exception("Unable To Run Query", ex);
             }
 
             var listOfResults = await _neo4JHelper.GetListOfRecordsAsync(statementResultAsync);
