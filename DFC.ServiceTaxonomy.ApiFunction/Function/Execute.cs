@@ -101,7 +101,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (Exception ex)
             {
-                log.LogError($"Unable to read {queryFileNameAndDir} query file", ex);
+                log.LogError($"Unable to read {queryFileNameAndDir} query file, Exception:" + ex, ex);
                 throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
             }
             
