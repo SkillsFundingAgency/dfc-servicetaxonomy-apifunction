@@ -89,7 +89,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
+            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
 
             string cypherQueryJsonConfig = null;
 
@@ -101,7 +101,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (Exception ex)
             {
-                log.LogError($"Unable to read {queryFileNameAndDir} query file, Exception:" + ex, ex);
+                log.LogError($"Unable to read {queryFileNameAndDir} query file, \n Function Directory: {context.FunctionDirectory} \n Function App Directory: {context.FunctionAppDirectory}  \n Exception:" + ex, ex);
                 throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
             }
             
