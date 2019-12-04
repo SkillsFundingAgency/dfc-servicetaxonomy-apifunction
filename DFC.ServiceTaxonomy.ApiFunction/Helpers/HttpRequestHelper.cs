@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -9,7 +6,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public class HttpRequestHelper : IHttpRequestHelper
     {
-        public async Task<string> GetBodyFromHttpRequest(HttpRequest httpRequest)
+        public async Task<string> GetBodyFromHttpRequestAsync(HttpRequest httpRequest)
         {
             using (var sr = new StreamReader(httpRequest.Body))
             {

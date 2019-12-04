@@ -5,6 +5,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public interface IHttpRequestHelper
     {
-        Task<string> GetBodyFromHttpRequest(HttpRequest httpRequest);
+        Task<string> GetBodyFromHttpRequestAsync(HttpRequest httpRequest);
     }
 }

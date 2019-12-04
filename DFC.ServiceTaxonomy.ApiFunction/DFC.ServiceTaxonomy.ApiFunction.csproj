@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   
   <ItemGroup>
@@ -30,10 +31,10 @@
   <ItemGroup>
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
   </ItemGroup>
-  
-  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">    
+
+  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
-    <Copy 
+    <Copy
       SourceFiles="@(CypherQueryFiles)"
       DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
   </Target>

@@ -27,19 +27,24 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         public async Task<IStatementResultCursor> ExecuteCypherQueryInNeo4JAsync(string query, Dictionary<string, object> statementParameters)
         {
             var neo4JDriver = GetNeo4JDriver();
-            using var session = neo4JDriver.Session();
-            IStatementResultCursor statementResultCursor;
 
-            try
+            using (var session = neo4JDriver.Session())
             {
-                statementResultCursor = await session.ReadTransactionAsync(async tx => await tx.RunAsync(query, statementParameters));
-            }
-            finally
-            {
-                await session.CloseAsync();
+                IStatementResultCursor statementResultCursor;
+
+                try
+                {
+                    statementResultCursor =
+                        await session.ReadTransactionAsync(async tx => await tx.RunAsync(query, statementParameters));
+                }
+                finally
+                {
+                    await session.CloseAsync();
+                }
+
+                return statementResultCursor;
             }
 
-            return statementResultCursor;
         }
 
         public async Task<IEnumerable<object>> GetListOfRecordsAsync(IStatementResultCursor statementResultCursor)
@@ -59,7 +64,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 
         private IDriver GetNeo4JDriver()
         {
-            return _neo4JDriver ??= GraphDatabase.Driver(_serviceTaxonomyApiSettings.Value.Neo4jUrl, _authToken);
+            return _neo4JDriver ??
+                   (_neo4JDriver = GraphDatabase.Driver(_serviceTaxonomyApiSettings.Value.Neo4jUrl, _authToken));
         }
 
     }

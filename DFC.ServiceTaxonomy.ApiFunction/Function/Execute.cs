@@ -65,7 +65,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                requestBody = await _httpRequestHelper.GetBodyFromHttpRequest(req);
+                requestBody = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
             }
             catch (IOException ex)
             {
@@ -97,12 +97,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFile(queryFileNameAndDir);
+                cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFileAsync(queryFileNameAndDir);
             }
             catch (Exception ex)
             {
                 log.LogError($"Unable to read {queryFileNameAndDir} query file", ex);
-                return new InternalServerErrorResult();
+                throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
             }
             
             log.LogInformation("Attempting to Deserialize json config to cypher model");

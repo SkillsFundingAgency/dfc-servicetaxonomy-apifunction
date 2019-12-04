@@ -1,3 +1,3 @@
 ﻿{ 
-   "query":"MATCH (o:esco__Occupation) WITH{ occupation:collect({ uri:o.uri, occupations:head(o.skos__prefLabel), alternativeLabels:o.skos__altLabel, lastModified:head(o.dct__modified) }) } as occupations return occupations"
+   "query":"MATCH (o:esco__Occupation) WITH { occupations:collect({ uri:o.uri, occupation:head(o.skos__prefLabel), alternativeLabels:o.skos__altLabel, lastModified:head(o.dct__modified) }) } as occupations return occupations"
 }
