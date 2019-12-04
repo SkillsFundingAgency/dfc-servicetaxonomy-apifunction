@@ -108,26 +108,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.Equal((int?)HttpStatusCode.UnprocessableEntity, unprocessableEntityObjectResult.StatusCode);
         }
 
-
-        //[Fact]
-        //public async Task Execute_WhenUnableToReadJsonConfigQueryFile_ReturnsInternalServerErrorResult()
-        //{
-        //    _config.Value.Function = "GetAllSkills";
-
-        //    A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
-
-        //    A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("CypherQueries\\GetAllSkills.json")).Throws<Exception>();
-
-        //    var result = await RunFunction();
-
-        //    var internalServerErrorResult = result as InternalServerErrorResult;
-
-        //    // Assert
-        //    Assert.IsAssignableFrom<IActionResult>(result);
-        //    Assert.True(result is InternalServerErrorResult);
-        //    Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
-        //}
-
         [Fact]
         public async Task Execute_WhenJsonConfigQueryFileHasInvalidJson_ReturnsInternalServerErrorResult()
         {
