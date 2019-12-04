@@ -1,5 +1,5 @@
 ﻿{
-  "query": "QUERY HERE",
+  "query": "QUERY",
   "queryParam": [
     {
       "name": "PrimaryOccupation"
