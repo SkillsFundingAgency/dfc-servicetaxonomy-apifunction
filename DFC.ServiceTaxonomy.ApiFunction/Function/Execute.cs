@@ -20,13 +20,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
     {
-        private readonly IOptions<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
+        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
 
-        public Execute(IOptions<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
+        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
                                           throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
@@ -49,7 +49,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            var functionToProcess = _serviceTaxonomyApiSettings.Value.Function;
+            var functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
 
             if (string.IsNullOrWhiteSpace(functionToProcess))
             {
@@ -142,13 +142,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                     return new BadRequestObjectResult($"Expected {cypherModel.QueryParam.Count} query parameters, only {cypherQueryStatementParameters.Count} have been provided in the request body");
             }
 
-            log.LogInformation("Attempting to query neo4j");
+            log.LogInformation($"Attempting to query neo4j with the following query: {cypherQuery}");
 
-            IStatementResultCursor statementResultAsync;
 
             try
             {
-                statementResultAsync = await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherQuery, cypherQueryStatementParameters);
+                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherQuery, cypherQueryStatementParameters);
             }
             catch (Exception ex)
             {
@@ -156,12 +155,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 throw new Exception("Unable To Run Query", ex);
             }
 
-            var listOfResults = await _neo4JHelper.GetListOfRecordsAsync(statementResultAsync);
+            var listOfResults = await _neo4JHelper.GetListOfRecordsAsync();
 
             if (listOfResults == null)
                 return new NoContentResult();
 
-            var statementResult = await _neo4JHelper.GetResultSummaryAsync(statementResultAsync);
+            var statementResult = await _neo4JHelper.GetResultSummaryAsync();
 
             if (statementResult != null)
                 log.LogInformation(

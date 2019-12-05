@@ -1,5 +1,4 @@
-﻿using System;
-using DFC.ServiceTaxonomy.ApiFunction.Helpers;
+﻿using DFC.ServiceTaxonomy.ApiFunction.Helpers;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using DFC.ServiceTaxonomy.ApiFunction.StartUp;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;

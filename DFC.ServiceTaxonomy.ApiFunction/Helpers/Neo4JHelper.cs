@@ -8,48 +8,48 @@ using Neo4j.Driver.V1;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
-    public class Neo4JHelper : INeo4JHelper
+    public class Neo4JHelper : INeo4JHelper, IDisposable
     {
 
-        private readonly IOptions<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
+        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
         private readonly IAuthToken _authToken = AuthTokens.None;
         private IDriver _neo4JDriver;
+        private IStatementResultCursor _statementResultCursor;
 
-        public Neo4JHelper(IOptions<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings)
+        public Neo4JHelper(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
                                           throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
 
-            if (!string.IsNullOrEmpty(_serviceTaxonomyApiSettings.Value.Neo4jUser) && !string.IsNullOrEmpty(_serviceTaxonomyApiSettings.Value.Neo4jPassword))
-                _authToken = AuthTokens.Basic(_serviceTaxonomyApiSettings.Value.Neo4jUser, _serviceTaxonomyApiSettings.Value.Neo4jPassword);
+            if (!string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser) && 
+                !string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword))
+                _authToken = AuthTokens.Basic(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser, _serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword);
+
+            _neo4JDriver = GraphDatabase.Driver(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUrl, _authToken);
+
         }
         
-        public async Task<IStatementResultCursor> ExecuteCypherQueryInNeo4JAsync(string query, Dictionary<string, object> statementParameters)
+        public async Task ExecuteCypherQueryInNeo4JAsync(string query, Dictionary<string, object> statementParameters)
         {
-            var neo4JDriver = GetNeo4JDriver();
-
-            using (var session = neo4JDriver.Session())
+           
+            using (var session = _neo4JDriver.Session())
             {
-                IStatementResultCursor statementResultCursor;
-
                 try
                 {
-                    statementResultCursor =
+                    _statementResultCursor =
                         await session.ReadTransactionAsync(async tx => await tx.RunAsync(query, statementParameters));
                 }
                 finally
                 {
                     await session.CloseAsync();
                 }
-
-                return statementResultCursor;
             }
 
         }
 
-        public async Task<IEnumerable<object>> GetListOfRecordsAsync(IStatementResultCursor statementResultCursor)
+        public async Task<IEnumerable<object>> GetListOfRecordsAsync()
         {
-            var records =  await statementResultCursor.ToListAsync();
+            var records =  await _statementResultCursor.ToListAsync();
 
             if (records == null || !records.Any())
                 return null;
@@ -57,15 +57,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             return records.SelectMany(x => x.Values.Values);
         }
 
-        public async Task<IResultSummary> GetResultSummaryAsync(IStatementResultCursor statementResultCursor)
+        public async Task<IResultSummary> GetResultSummaryAsync()
         {
-            return await statementResultCursor.SummaryAsync();
+            return await _statementResultCursor.SummaryAsync();
         }
 
-        private IDriver GetNeo4JDriver()
+        public void Dispose()
         {
-            return _neo4JDriver ??
-                   (_neo4JDriver = GraphDatabase.Driver(_serviceTaxonomyApiSettings.Value.Neo4jUrl, _authToken));
+            _neo4JDriver?.Dispose();
         }
 
     }

@@ -6,11 +6,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public interface INeo4JHelper
     {
-        Task<IStatementResultCursor> ExecuteCypherQueryInNeo4JAsync(string query,
+        Task ExecuteCypherQueryInNeo4JAsync(string query,
             Dictionary<string, object> statementParameters);
 
-        Task<IEnumerable<object>> GetListOfRecordsAsync(IStatementResultCursor statementResultCursor);
+        Task<IEnumerable<object>> GetListOfRecordsAsync();
 
-        Task<IResultSummary> GetResultSummaryAsync(IStatementResultCursor statementResultCursor);
+        Task<IResultSummary> GetResultSummaryAsync();
     }
 }

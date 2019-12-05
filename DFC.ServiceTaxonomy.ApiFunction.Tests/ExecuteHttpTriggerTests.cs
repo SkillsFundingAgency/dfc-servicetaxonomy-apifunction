@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly ILogger _log;
         private readonly HttpRequest _request;
         private readonly ExecutionContext _executionContext;
-        private readonly IOptions<ServiceTaxonomyApiSettings> _config;
+        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _config;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
@@ -37,20 +36,21 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             _request = new DefaultHttpRequest(new DefaultHttpContext());
             _executionContext =  new ExecutionContext();
-            var options = new ServiceTaxonomyApiSettings
-            {
-                Function = "GetAllSkills",
-                Neo4jUrl = "bolt://localhost:11002",
-                Neo4jUser = "NeoUser",
-                Neo4jPassword = "NeoPass"
-            };
-            _config = Options.Create(options);
+
+            _config = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
+            var serviceTaxonomyApiSettings = A.Fake<ServiceTaxonomyApiSettings>();
+            serviceTaxonomyApiSettings.Function = "GetAllSkills";
+            serviceTaxonomyApiSettings.Neo4jUrl = "bolt://localhost:11002";
+            serviceTaxonomyApiSettings.Neo4jUser = "NeoUser";
+            serviceTaxonomyApiSettings.Neo4jPassword = "NeoPass";
+            A.CallTo(() => _config.CurrentValue).Returns(serviceTaxonomyApiSettings);
+
             _log = A.Fake<ILogger>();
             _httpRequestHelper = A.Fake<IHttpRequestHelper>();
             _jsonHelper = A.Fake<IJsonHelper>();
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
-            _cypherModel = new Cypher {Query = "query", QueryParam = new List<QueryParam>{ new QueryParam { Name = "occupation" } } };
+            _cypherModel = new Cypher {Query = "query", QueryParam = new List<QueryParam>() };
 
             _executeFunction = new Execute(_config, _httpRequestHelper, _jsonHelper, _neo4JHelper, _fileHelper);
 
@@ -59,7 +59,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsBadRequestObjectResult()
         {
-            _config.Value.Function = null;
+             _config.CurrentValue.Function = null;
 
             var result = await RunFunction();
 
@@ -74,7 +74,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
         {
-            _config.Value.Function = "GetAllSkills";
+             _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
             
@@ -91,7 +91,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
-            _config.Value.Function = "GetAllSkills";
+             _config.CurrentValue.Function = "GetAllSkills";
             
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"test: test1");
 
@@ -111,7 +111,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenJsonConfigQueryFileHasInvalidJson_ReturnsInternalServerErrorResult()
         {
-            _config.Value.Function = "GetAllSkills";
+             _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
@@ -130,7 +130,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult()
         {
-            _config.Value.Function = "GetAllSkills";
+             _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
@@ -151,11 +151,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
-            _config.Value.Function = "GetAllSkills";
+             _config.CurrentValue.Function = "GetAllSkills";
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            
+            _cypherModel.QueryParam.Add(new QueryParam { Name = "occupation" });
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
@@ -170,37 +172,82 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
         
         [Fact]
-        public async Task Execute_WhenCodeIsValid_ReturnsOkObjectResult()
+        public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse()
         {
-            _config.Value.Function = "GetAllSkills";
-            var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
+             _config.CurrentValue.Function = "GetAllSkills";
+            var expectedJson = @"[{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}]";
+            
+            var query = "{\"query\": \"QUERY HERE\"}";
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
-            var dict = new Dictionary<string, object>
+            var dict = new Dictionary<string, object>();
+
+            var resultSummary = A.Fake<IResultSummary>();
+            var values = new Dictionary<string, object>
             {
-                {"occupation", "http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"}
+                {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
+                {"skill", "identify customer's needs"},
+                {"skillType", "knowledge"},
+                {"alternativeLabels", new string[3] {"alt 1", "alt 2", "alt 3"}},
+                {"jobProfile", "http://tbc"}
             };
 
-            var statementResult = A.Fake<IStatementResultCursor>();
-            var resultSummary = A.Fake<IResultSummary>();
-            var records = new List<object> {new object()};
+            var returnedList = new Dictionary<string, object> { { "skills", new object[1] { values } } };
+            var records = new List<object> { returnedList };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync("query", dict)).Returns(statementResult);
-            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync(statementResult)).Returns(records);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync(statementResult)).Returns(resultSummary);
-            
+            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
+
             var result = await RunFunction();
 
             var okObjectResult = result as OkObjectResult;
 
             // Assert
-            Assert.IsAssignableFrom<IActionResult>(result);
             Assert.True(result is OkObjectResult);
-            Assert.Equal((int?)HttpStatusCode.OK, okObjectResult.StatusCode);
+            Assert.Equal(expectedJson, okObjectResult.Value);
+        }
+        
+        [Fact]
+        public async Task Execute_WhenCodeIsValidForGetAllOccupations_ReturnsCorrectJsonResponse()
+        {
+             _config.CurrentValue.Function = "GetAllOccupations";
+            var expectedJson = @"[{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}]";
+            var query = @"{""query"": ""QUERY HERE""}]}";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
+
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
+
+            var dict = new Dictionary<string, object>();
+
+            var resultSummary = A.Fake<IResultSummary>();
+            var values = new Dictionary<string, object>
+            {
+                {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
+                {"occupation", "renewable energy consultant"},
+                {"alternativeLabels", new string[3] {"alt 1", "alt 2", "alt 3"}},
+                {"lastModified", "05-12-2019T00:00:00Z"}
+            };
+
+            var returnedList = new Dictionary<string, object> { { "occupations", new object[1] { values } } };
+            var records = new List<object> { returnedList };
+
+            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
+
+            var result = await RunFunction();
+
+            var okObjectResult = result as OkObjectResult;
+
+            // Assert
+            Assert.True(result is OkObjectResult);
+            Assert.Equal(expectedJson, okObjectResult.Value);
         }
 
         private async Task<IActionResult> RunFunction()
