@@ -1,0 +1,11 @@
+﻿{
+  "query": "QUERY",
+  "queryParam": [
+    {
+      "name": "PrimaryOccupation"
+    },
+    {
+      "name": "SecondaryOccupation"
+    }
+  ]
+}

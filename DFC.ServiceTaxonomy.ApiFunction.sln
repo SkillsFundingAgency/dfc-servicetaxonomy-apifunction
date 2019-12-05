@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.ServiceTaxonomy.ApiFunction", "DFC.ServiceTaxonomy.ApiFunction\DFC.ServiceTaxonomy.ApiFunction.csproj", "{81AF2CF8-DC05-40DA-95FE-A06671FC3F14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.ServiceTaxonomy.ApiFunction", "DFC.ServiceTaxonomy.ApiFunction\DFC.ServiceTaxonomy.ApiFunction.csproj", "{81AF2CF8-DC05-40DA-95FE-A06671FC3F14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.ServiceTaxonomy.ApiFunction.Tests", "DFC.ServiceTaxonomy.ApiFunction.Tests\DFC.ServiceTaxonomy.ApiFunction.Tests.csproj", "{ECF4B13D-F001-424B-A565-3D790D3340AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.ServiceTaxonomy.ApiFunction.Tests", "DFC.ServiceTaxonomy.ApiFunction.Tests\DFC.ServiceTaxonomy.ApiFunction.Tests.csproj", "{ECF4B13D-F001-424B-A565-3D790D3340AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

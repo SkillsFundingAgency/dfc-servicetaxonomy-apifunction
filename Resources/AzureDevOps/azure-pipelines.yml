@@ -1,13 +1,62 @@
-variables:
-    SolutionBaseName: 'DFC.Composite.Shell'
-    BuildPlatform: 'any cpu'
-    BuildConfiguration: 'release'
-
 resources:
   repositories:
   - repository: self
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.6.5
+    ref: refs/tags/v1.6.11
     endpoint: 'GitHub (ESFA)'
+
+stages:
+- stage: Build
+  jobs:
+  - template: /AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
+    parameters:
+      ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
+
+  - job:
+    displayName: "Build DotNetCore app"
+    pool: 'NCS - CI and CD'
+    steps:
+    - task: CopyFiles@2
+      displayName: "Copy OpenAPI specification docs to artifacts"
+      inputs:
+        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
+        contents: |
+          *.txt
+        targetFolder: '$(build.artifactstagingdirectory)\Artifact\DFC.ServiceTaxonomy.ApiFunction\OpenApiDocs'
+
+    - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
+      parameters:
+        SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
+        BuildPlatform: 'any cpu'
+        BuildConfiguration: 'release'
+        PublishWebApp: true
+        TestSuffix: 'Tests'
+
+- stage: DeployToDevServiceTaxonomy
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Deploy to DEV_SERVICETAXONOMY
+  variables:
+  - group: dfc-shared-all
+  - group: dfc-stax-shared-all
+  - group: dfc-shared-dev
+  - group: dfc-stax-shared-dev
+  - group: dfc-stax-apifunctions-dev
+  jobs:
+  - template: JobTemplates/deploy-environment.yml
+    parameters:
+      AzureSubscription: 'SFA-CDH-Dev/Test (962cae10-2950-412a-93e3-d8ae92b17896)'
+      EnvironmentTag: '$(EnvironmentTag)'
+      ParentBusiness: '$(ParentBusiness)'
+      ServiceOffering: '$(ServiceOffering)'
+      ResourceGroup: 'dfc-dev-stax-api-rg'
+      WebAppPrefix: 'dfc-dev'
+      ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
+      PackageFile:  "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+      ArmTemplateFolder: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
+      ApimImportScript: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenApiDocs"
+      SharedResourceGroup: 'dfc-dev-shared-rg'
+      ApimServiceName: 'dfc-dev-shared-apim'
+      FunctionAppDomain: '$(FunctionAppDomain)'

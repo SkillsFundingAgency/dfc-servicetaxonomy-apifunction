@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DFC.ServiceTaxonomy.ApiFunction.Models;
+using Microsoft.Extensions.Options;
+using Neo4j.Driver.V1;
+
+namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
+{
+    public class Neo4JHelper : INeo4JHelper, IDisposable
+    {
+
+        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
+        private readonly IAuthToken _authToken = AuthTokens.None;
+        private IDriver _neo4JDriver;
+        private IStatementResultCursor _statementResultCursor;
+
+        public Neo4JHelper(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings)
+        {
+            _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
+                                          throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
+
+            if (!string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser) && 
+                !string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword))
+                _authToken = AuthTokens.Basic(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser, _serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword);
+
+            _neo4JDriver = GraphDatabase.Driver(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUrl, _authToken);
+
+        }
+        
+        public async Task ExecuteCypherQueryInNeo4JAsync(string query, Dictionary<string, object> statementParameters)
+        {
+           
+            using (var session = _neo4JDriver.Session())
+            {
+                try
+                {
+                    _statementResultCursor =
+                        await session.ReadTransactionAsync(async tx => await tx.RunAsync(query, statementParameters));
+                }
+                finally
+                {
+                    await session.CloseAsync();
+                }
+            }
+
+        }
+
+        public async Task<IEnumerable<object>> GetListOfRecordsAsync()
+        {
+            var records =  await _statementResultCursor.ToListAsync();
+
+            if (records == null || !records.Any())
+                return null;
+
+            return records.SelectMany(x => x.Values.Values);
+        }
+
+        public async Task<IResultSummary> GetResultSummaryAsync()
+        {
+            return await _statementResultCursor.SummaryAsync();
+        }
+
+        public void Dispose()
+        {
+            _neo4JDriver?.Dispose();
+        }
+
+    }
+}
