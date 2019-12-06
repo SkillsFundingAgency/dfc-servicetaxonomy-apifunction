@@ -1,0 +1,82 @@
+﻿openapi: 3.0.1
+info:
+  title: Get All Skills That Have A Relationship With Job Profile
+  description: 'Return ESCO skills that have a relationship with an ESCO occupation that has a mapping to a Job Profile'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get All Skills With Relationship To Job Profile
+  description: Returns all skills with relationship to job profile
+paths:
+  /Execute/:
+    get:
+      tags:
+      - Skill
+      summary: Get All Skills With Relationship To Job Profile.
+      description: Return ESCO skills that have a relationship with an ESCO occupation that has a mapping to a Job Profile
+      operationId: GetAllSkillsWithRelationshipToJobProfile
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    Skill: 
+      type: "object"
+      properties:
+        skills: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/skill/ab986bc4-df92-4351-9ac1-aa75af943cf7"
+              skill: 
+                type: string
+                example: "perform clerical duties"
+              skillType: 
+                type: string
+                example: competency
+                enum:
+                  - knowledge
+                  - competency
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+              skillReusability: 
+                type: string
+                example: Occupation-specific
+                enum:
+                  - Transversal
+                  - Cross-sectoral
+                  - Sector-specific
+                  - Occupation-specific
+              lastModified: 
+                type: string
+                example: 05-12-2019T00:00:00Z
+            xml:
+              name: Skill
+  securitySchemes:
+    apikeyQuery:
+      type: apiKey
+      name: code
+      in: query

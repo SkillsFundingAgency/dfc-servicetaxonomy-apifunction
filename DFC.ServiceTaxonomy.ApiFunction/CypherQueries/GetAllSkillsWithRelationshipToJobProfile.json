@@ -1,0 +1,3 @@
+﻿{
+  "query": "MATCH (js:ncs__JobProfile)-->(o:esco__Occupation)-->(s:esco__Skill)-[:esco__skillType]->(skillType), (s)-[:esco__skillReuseLevel]->(reuse) WITH { skills:COLLECT({ uri:s.uri, skill:head(s.skos__prefLabel), skillType:case head(skillType.skos__prefLabel) when 'skill' then 'competency' when 'knowledge' then 'knowledge' end, alternativeLabels:s.skos__altLabel, skillReusability:case head(reuse.skos__prefLabel) when 'cross-sector skills and competences' then 'Cross-sectoral' when 'sector specific skills and competences' then 'Sector-specific' when 'occupation specific skills and competences' then 'Occupation-specific' when 'transversal skills and competences' then 'Transversal' end, lastModified:head(s.dct__modified) }) } as skills return skills"
+}

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -37,7 +35,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public ExecuteHttpTriggerTests()
         {
             _request = new DefaultHttpRequest(new DefaultHttpContext());
-            _executionContext =  new ExecutionContext();
+            _executionContext = new ExecutionContext();
 
             _config = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
             var serviceTaxonomyApiSettings = A.Fake<ServiceTaxonomyApiSettings>();
@@ -52,7 +50,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _jsonHelper = A.Fake<IJsonHelper>();
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
-            _cypherModel = new Cypher {Query = "query", QueryParam = new List<QueryParam>() };
+            _cypherModel = new Cypher { Query = "query", QueryParam = new List<QueryParam>() };
 
             _executeFunction = new Execute(_config, _httpRequestHelper, _jsonHelper, _neo4JHelper, _fileHelper);
 
@@ -61,7 +59,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsBadRequestObjectResult()
         {
-             _config.CurrentValue.Function = null;
+            _config.CurrentValue.Function = null;
 
             var result = await RunFunction();
 
@@ -76,25 +74,25 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
+            _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
-            
+
             var result = await RunFunction();
-            
+
             var badRequestObjectResult = result as BadRequestObjectResult;
 
             // Assert
             Assert.IsAssignableFrom<IActionResult>(result);
             Assert.True(result is BadRequestObjectResult);
-            Assert.Equal((int?) HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
+            Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
 
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
-            
+            _config.CurrentValue.Function = "GetAllSkills";
+
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"test: test1");
 
 
@@ -113,11 +111,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenJsonConfigQueryFileHasInvalidJson_ReturnsInternalServerErrorResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
+            _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(A.Dummy<string>())).Throws<JsonException>();
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(A.Dummy<string>())).Throws<JsonException>();
 
             var result = await RunFunction();
 
@@ -128,16 +126,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is InternalServerErrorResult);
             Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
-        
+
         [Fact]
         public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
+            _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("{}");
-           
+
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>("{}")).Returns(null);
 
             var result = await RunFunction();
@@ -149,16 +147,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is InternalServerErrorResult);
             Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
-        
+
         [Fact]
         public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
+            _config.CurrentValue.Function = "GetAllSkills";
             var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
-            
+
             _cypherModel.QueryParam.Add(new QueryParam { Name = "occupation" });
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
@@ -172,13 +170,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is BadRequestObjectResult);
             Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
-        
+
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
+            _config.CurrentValue.Function = "GetAllSkills";
             var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
-            
+
             var query = "{\"query\": \"QUERY HERE\"}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
@@ -212,11 +210,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is OkObjectResult);
             Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
         }
-        
+
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetAllOccupations_ReturnsCorrectJsonResponse()
         {
-             _config.CurrentValue.Function = "GetAllOccupations";
+            _config.CurrentValue.Function = "GetAllOccupations";
             var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
             var query = @"{""query"": ""QUERY HERE""}]}";
 
@@ -236,6 +234,47 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             };
 
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
+            object records = dictionaryOfRecords;
+
+            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
+
+            var result = await RunFunction();
+
+            var okObjectResult = result as OkObjectResult;
+
+            // Assert
+            Assert.True(result is OkObjectResult);
+            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        }
+
+        [Fact]
+        public async Task Execute_WhenCodeIsValidForGetAllSkillsWithRelationshipToJobProfile_ReturnsCorrectJsonResponse()
+        {
+            _config.CurrentValue.Function = "GetAllSkillsWithRelationshipToJobProfile";
+            var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/ab986bc4-df92-4351-9ac1-aa75af943cf7"",""skill"":""perform clerical duties"",""skillType"":""competency"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""skillReusability"":""Cross-sectoral"",""lastModified"":""05-12-2019T00:00:00Z""}]}";
+            var query = @"{""query"": ""QUERY HERE""}]}";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkillsWithRelationshipToJobProfile.json")).Returns(query);
+
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
+
+            var dict = new Dictionary<string, object>();
+
+            var resultSummary = A.Fake<IResultSummary>();
+            var record = new Dictionary<string, object>
+            {
+                {"uri", "http://data.europa.eu/esco/skill/ab986bc4-df92-4351-9ac1-aa75af943cf7"},
+                {"skill", "perform clerical duties"},
+                {"skillType", "competency"},
+                {"alternativeLabels", new string[3] {"alt 1", "alt 2", "alt 3"}},
+                {"skillReusability", "Cross-sectoral"},
+                {"lastModified", "05-12-2019T00:00:00Z"}
+            };
+
+            var dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[1] { record } } };
             object records = dictionaryOfRecords;
 
             A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
