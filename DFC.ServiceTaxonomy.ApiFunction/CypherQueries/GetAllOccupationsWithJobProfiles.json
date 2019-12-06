@@ -1,0 +1,3 @@
+﻿{
+  "query": "MATCH (jp:ncs__JobProfile)-->(o:esco__Occupation) WITH { occupations:collect({ uri:o.uri, jobProfileUri:jp.uri, occupation:head(o.skos__prefLabel), jobProfileTitle:jp.skos__prefLabel, alternativeLabels:o.skos__altLabel, lastModified:head(o.dct__modified) }) } as occupations return occupations"
+}
