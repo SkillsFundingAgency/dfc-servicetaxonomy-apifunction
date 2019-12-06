@@ -9,7 +9,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         Task ExecuteCypherQueryInNeo4JAsync(string query,
             Dictionary<string, object> statementParameters);
 
-        Task<IEnumerable<object>> GetListOfRecordsAsync();
+        Task<object> GetListOfRecordsAsync();
 
         Task<IResultSummary> GetResultSummaryAsync();
     }

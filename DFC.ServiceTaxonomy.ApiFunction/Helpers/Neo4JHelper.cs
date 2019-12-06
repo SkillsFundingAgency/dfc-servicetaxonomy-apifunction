@@ -10,22 +10,20 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public class Neo4JHelper : INeo4JHelper, IDisposable
     {
-
-        private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
         private readonly IAuthToken _authToken = AuthTokens.None;
-        private IDriver _neo4JDriver;
+        private readonly IDriver _neo4JDriver;
         private IStatementResultCursor _statementResultCursor;
 
         public Neo4JHelper(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings)
         {
-            _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
-                                          throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
+            var taxonomyApiSettings = serviceTaxonomyApiSettings ?? 
+                                                          throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
 
-            if (!string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser) && 
-                !string.IsNullOrEmpty(_serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword))
-                _authToken = AuthTokens.Basic(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUser, _serviceTaxonomyApiSettings.CurrentValue.Neo4jPassword);
+            if (!string.IsNullOrEmpty(taxonomyApiSettings.CurrentValue.Neo4jUser) && 
+                !string.IsNullOrEmpty(taxonomyApiSettings.CurrentValue.Neo4jPassword))
+                _authToken = AuthTokens.Basic(taxonomyApiSettings.CurrentValue.Neo4jUser, taxonomyApiSettings.CurrentValue.Neo4jPassword);
 
-            _neo4JDriver = GraphDatabase.Driver(_serviceTaxonomyApiSettings.CurrentValue.Neo4jUrl, _authToken);
+            _neo4JDriver = GraphDatabase.Driver(taxonomyApiSettings.CurrentValue.Neo4jUrl, _authToken);
 
         }
         
@@ -47,14 +45,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 
         }
 
-        public async Task<IEnumerable<object>> GetListOfRecordsAsync()
+        public async Task<object> GetListOfRecordsAsync()
         {
             var records =  await _statementResultCursor.ToListAsync();
 
             if (records == null || !records.Any())
                 return null;
 
-            return records.SelectMany(x => x.Values.Values);
+            var neoRecords = records.SelectMany(x => x.Values.Values).ToList();
+
+            return neoRecords.FirstOrDefault();
         }
 
         public async Task<IResultSummary> GetResultSummaryAsync()

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -175,7 +177,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse()
         {
              _config.CurrentValue.Function = "GetAllSkills";
-            var expectedJson = @"[{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}]";
+            var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
             
             var query = "{\"query\": \"QUERY HERE\"}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
@@ -187,7 +189,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var dict = new Dictionary<string, object>();
 
             var resultSummary = A.Fake<IResultSummary>();
-            var values = new Dictionary<string, object>
+            var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
                 {"skill", "identify customer's needs"},
@@ -196,8 +198,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"jobProfile", "http://tbc"}
             };
 
-            var returnedList = new Dictionary<string, object> { { "skills", new object[1] { values } } };
-            var records = new List<object> { returnedList };
+            var dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[1] { record } } };
+            object records = dictionaryOfRecords;
 
             A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
@@ -208,14 +210,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.True(result is OkObjectResult);
-            Assert.Equal(expectedJson, okObjectResult.Value);
+            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
         }
         
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetAllOccupations_ReturnsCorrectJsonResponse()
         {
              _config.CurrentValue.Function = "GetAllOccupations";
-            var expectedJson = @"[{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}]";
+            var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
             var query = @"{""query"": ""QUERY HERE""}]}";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
@@ -224,10 +226,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
-            var dict = new Dictionary<string, object>();
-
             var resultSummary = A.Fake<IResultSummary>();
-            var values = new Dictionary<string, object>
+            var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
                 {"occupation", "renewable energy consultant"},
@@ -235,8 +235,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"lastModified", "05-12-2019T00:00:00Z"}
             };
 
-            var returnedList = new Dictionary<string, object> { { "occupations", new object[1] { values } } };
-            var records = new List<object> { returnedList };
+            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
+            object records = dictionaryOfRecords;
 
             A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
@@ -247,7 +247,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             // Assert
             Assert.True(result is OkObjectResult);
-            Assert.Equal(expectedJson, okObjectResult.Value);
+            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
         }
 
         private async Task<IActionResult> RunFunction()

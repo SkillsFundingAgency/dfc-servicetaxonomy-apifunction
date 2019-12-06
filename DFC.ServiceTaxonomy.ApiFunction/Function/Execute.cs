@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Neo4j.Driver.V1;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -128,23 +129,22 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("Attempting to read json body object");
 
-            if (jsonBody != null)
+            if (jsonBody != null && cypherModel.QueryParam != null)
             {
                 foreach (var json in jsonBody)
                 {
-                    var queryParam = cypherModel.QueryParam.FirstOrDefault(x => x.Name.Contains(json.Name));
+                    var queryParam = cypherModel.QueryParam?.FirstOrDefault(x => x.Name.Contains(json.Name));
 
                     if (queryParam != null)
                         cypherQueryStatementParameters.Add(json.Name, json.Value.ToString());
                 }
-
-                if (cypherModel.QueryParam.Count != cypherQueryStatementParameters.Count)
-                    return new BadRequestObjectResult($"Expected {cypherModel.QueryParam.Count} query parameters, only {cypherQueryStatementParameters.Count} have been provided in the request body");
             }
 
+            if (cypherModel.QueryParam != null && cypherModel.QueryParam.Count != cypherQueryStatementParameters.Count)
+                return new BadRequestObjectResult($"Expected {cypherModel.QueryParam.Count} query parameters, only {cypherQueryStatementParameters.Count} have been provided in the request body");
+
             log.LogInformation($"Attempting to query neo4j with the following query: {cypherQuery}");
-
-
+            
             try
             {
                 await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherQuery, cypherQueryStatementParameters);
@@ -155,9 +155,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 throw new Exception("Unable To Run Query", ex);
             }
 
-            var listOfResults = await _neo4JHelper.GetListOfRecordsAsync();
+            var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
 
-            if (listOfResults == null)
+            if (recordsResult == null)
                 return new NoContentResult();
 
             var statementResult = await _neo4JHelper.GetResultSummaryAsync();
@@ -168,8 +168,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("request has successfully been completed with results");
 
-            return new OkObjectResult(JsonConvert.SerializeObject(listOfResults));
-          
+            return new OkObjectResult(recordsResult);
+
         }
     }
 }
