@@ -168,10 +168,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("request has successfully been completed with results");
 
-            return new OkObjectResult(recordsResult)
-            {
-                ContentTypes = new MediaTypeCollection { "application/json" }
-            };
+            return new OkObjectResult(recordsResult);
 
         }
     }
