@@ -18,7 +18,7 @@ steps:
     appType: functionApp
     WebAppName: '${{ parameters.WebAppName }}'
     Package: "${{ parameters.PackageFile }}"
-    DeployToSlotSlotOrASEFlag: true
+    deployToSlotOrASE: true
     ResourceGroupName: '${{ parameters.ResourceGroup }}'
     SlotName: staging
 
