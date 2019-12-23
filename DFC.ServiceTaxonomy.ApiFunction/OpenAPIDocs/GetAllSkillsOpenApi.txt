@@ -22,7 +22,30 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: '#/components/schemas/Skill'
+                type: "object"
+                properties:
+                  skills: 
+                    type: array
+                    items: 
+                      type: object
+                      properties: 
+                        uri: 
+                          type: string
+                          example: "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
+                        skill: 
+                          type: string
+                          example: "identify customer's needs"
+                        skillType: 
+                          type: string
+                          example: knowledge
+                          enum:
+                            - knowledge
+                            - competency
+                        alternativeLabels: 
+                          type: array
+                          items: 
+                            type: string
+                            example: "alt 1"
         204:
           description: No content can be found.
           content: {}
@@ -50,7 +73,7 @@ components:
                 example: "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
               skill: 
                 type: string
-                example: "identify customer's needs"
+                example: "identify the customer's needs"
               skillType: 
                 type: string
                 example: knowledge
@@ -64,8 +87,3 @@ components:
                   example: "alt 1"
             xml:
               name: Occupation
-  securitySchemes:
-    apikeyQuery:
-      type: apiKey
-      name: code
-      in: query
