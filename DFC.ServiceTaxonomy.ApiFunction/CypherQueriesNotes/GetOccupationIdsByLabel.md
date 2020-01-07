@@ -1,5 +1,5 @@
 
-# Query Notes
+# GetOccupationIdsByLabel Query Notes
 
 ## Current Query
 
