@@ -6,8 +6,16 @@
 Here's the current query, formatted and with params replaced by literals...
 
 ```
-match (o:esco__Occupation) where head(o.skos__prefLabel) contains 'toxic' or any(alt in o.skos__altLabel where alt contains 'toxic') or any(hidden in o.skos__hiddenLabel where hidden contains 'toxic')
-WITH { occupations:collect(
+match (o:esco__Occupation)
+where head(o.skos__prefLabel) contains 'toxic' or 
+case true
+  when true then
+    any(alt in o.skos__altLabel where alt contains 'toxic')
+    or any(hidden in o.skos__hiddenLabel where hidden contains 'toxic')
+  else
+    false
+  end
+with { occupations:collect(
 {
   uri:o.uri,
   occupation:head(o.skos__prefLabel),
