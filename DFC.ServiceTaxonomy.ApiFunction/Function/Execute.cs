@@ -13,8 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Neo4j.Driver.V1;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
