@@ -31,7 +31,7 @@ with { occupations:collect(
 return occupations
 ```
 
-## Previous Query #1
+## Previous Query 1
 
 Here's a previous version of the query that returns just the matches and ids (in case we need to revert)...
 
@@ -43,7 +43,7 @@ with {Occupations:collect( {Label: matchedLabels, Uri: uri})} as matches
 return matches
 ```
 
-## Alternative for Previous Query #1
+## Alternative for Previous Query 1
 
 Here's a simpler looking, but slower version of the query...
 
