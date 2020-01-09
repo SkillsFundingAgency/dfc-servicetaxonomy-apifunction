@@ -10,12 +10,21 @@ tags:
   description: Get occupations whose labels match a search term
 paths:
   /Execute/:
-    get:
+    post:
       tags:
       - Occupation
       summary: Get Occupations By Label
       description: Get occupations whose labels match a search term
       operationId: GetOccupationsByLabel
+      parameters:
+        - in: query
+          name: matchAltLabels
+          schema:
+            type: boolean
+            default: false
+          description: Find occupations where the search term is part of an alt label
+          required: false
+          allowEmptyValue: false
       requestBody:
         description: Supply the search term
         content:
