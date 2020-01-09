@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -52,7 +50,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _jsonHelper = A.Fake<IJsonHelper>();
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
-            _cypherModel = new Cypher {Query = "query", QueryParam = new List<QueryParam>() };
+            _cypherModel = new Cypher {Query = "query", QueryParams = new List<QueryParam>() };
 
             _executeFunction = new Execute(_config, _httpRequestHelper, _jsonHelper, _neo4JHelper, _fileHelper);
 
@@ -159,7 +157,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
             
-            _cypherModel.QueryParam.Add(new QueryParam { Name = "occupation" });
+            _cypherModel.QueryParams.Add(new QueryParam { Name = "occupation" });
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 

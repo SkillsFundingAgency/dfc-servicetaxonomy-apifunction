@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -47,140 +48,149 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
-            var functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
-
-            if (string.IsNullOrWhiteSpace(functionToProcess))
-            {
-                log.LogInformation("Missing App Settings");
-                return new InternalServerErrorResult();
-            }
-
-            log.LogInformation($"{functionToProcess} HTTP trigger function is processing a request.");
-
-            log.LogInformation("Attempting to read body from http request");
-
-            string requestBodyString;
-
             try
             {
-                requestBodyString = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
-            }
-            catch (Exception ex)
-            {
-                log.LogError("Unable to read body from req", ex);
-                return new BadRequestObjectResult("Unable to read body from req");
-            }
+                string functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
 
-            log.LogInformation("Attempting to Deserialize request body");
-
-            JObject requestBody;
-
-            try
-            {
-                requestBody = JObject.Parse(requestBodyString);
-            }
-            catch (Exception ex)
-            {
-                log.LogError("Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult("Unable to deserialize request body");
-            }
-
-            log.LogInformation("generating file name and dir to read json config");
-
-            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
-            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
-
-            string cypherQueryJsonConfig;
-
-            log.LogInformation("Attempting to read json config");
-
-            try
-            {
-                cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFileAsync(queryFileNameAndDir);
-            }
-            catch (Exception ex)
-            {
-                log.LogError($"Unable to read {queryFileNameAndDir} query file, \n Function Directory: {context.FunctionDirectory} \n Function App Directory: {context.FunctionAppDirectory}  \n Exception:" + ex, ex);
-                throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
-            }
-            
-            log.LogInformation("Attempting to Deserialize json config to cypher model");
-
-            Cypher cypherModel;
-
-            try
-            {
-                cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
-            }
-            catch (Exception ex)
-            {
-                log.LogError($"Unable to Deserialize json from {queryFileNameAndDir}", ex);
-                return new InternalServerErrorResult();
-            }
-
-            if (cypherModel == null)
-                return new InternalServerErrorResult();
-
-            var cypherQueryStatementParameters = new Dictionary<string, object>();
-
-            log.LogInformation("Attempting to read json body object");
-
-            var queryParams = req.Query.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
-
-            if (cypherModel.QueryParam != null)
-            {
-                //todo: rename everything to be descriptive
-                foreach (var cypherParam in cypherModel.QueryParam)
+                if (string.IsNullOrWhiteSpace(functionToProcess))
                 {
-                    // let query param override param in message body
-                    string foundParamValue = queryParams.GetValueOrDefault(cypherParam.Name)
-                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToString()
-                                             ?? cypherParam.Default;
-
-                    if (foundParamValue == null)
-                    {
-                        //todo: don't have dupe logs and returns
-                        string error = $"Required parameter {cypherParam.Name} not found in request body or query params";
-                        log.LogInformation(error);
-                        return new BadRequestObjectResult(error);
-                    }
-                    
-                    cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
+                    log.LogInformation("Missing App Settings");
+                    return new InternalServerErrorResult();
                 }
+
+                log.LogInformation($"{functionToProcess} HTTP trigger function is processing a request.");
+
+                log.LogInformation("Attempting to read body from http request");
+
+                string requestBodyString;
+
+                try
+                {
+                    requestBodyString = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError("Unable to read body from req", ex);
+                    return new BadRequestObjectResult("Unable to read body from req");
+                }
+
+                log.LogInformation("Attempting to Deserialize request body");
+
+                JObject requestBody;
+
+                try
+                {
+                    requestBody = JObject.Parse(requestBodyString);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError("Unable to retrieve body from req", ex);
+                    return new UnprocessableEntityObjectResult("Unable to deserialize request body");
+                }
+
+                log.LogInformation("generating file name and dir to read json config");
+
+                //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
+                var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
+
+                string cypherQueryJsonConfig;
+
+                log.LogInformation("Attempting to read json config");
+
+                try
+                {
+                    cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFileAsync(queryFileNameAndDir);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError($"Unable to read {queryFileNameAndDir} query file, \n Function Directory: {context.FunctionDirectory} \n Function App Directory: {context.FunctionAppDirectory}  \n Exception:" + ex, ex);
+                    throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
+                }
+                
+                log.LogInformation("Attempting to Deserialize json config to cypher model");
+
+                Cypher cypherModel;
+
+                try
+                {
+                    cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError($"Unable to Deserialize json from {queryFileNameAndDir}", ex);
+                    return new InternalServerErrorResult();
+                }
+
+                if (cypherModel == null)
+                    return new InternalServerErrorResult();
+
+                log.LogInformation("Attempting to read json body object");
+
+                var cypherQueryStatementParameters = GetCypherQueryParameters(req.Query, log, cypherModel, requestBody);
+
+                log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
+                
+                try
+                {
+                    await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryStatementParameters);
+                }
+                catch (Exception ex)
+                {
+                    log.LogError($"Unable To Run Query \n Exception:" + ex, ex);
+                    throw new Exception("Unable To Run Query", ex);
+                }
+
+                var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
+
+                if (recordsResult == null)
+                    return new NoContentResult();
+
+                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
+
+                if (statementResult != null)
+                    log.LogInformation(
+                        $"Query: {statementResult.Statement.Text} \n Results Available After: {statementResult.ResultAvailableAfter}");
+
+                log.LogInformation("request has successfully been completed with results");
+
+                return new OkObjectResult(recordsResult);
             }
- 
-            log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
+            catch (ApiFunctionException e)
+            {
+                log.LogError(e.Message);
+                return e.ActionResult;
+            }
+        }
+
+        private static Dictionary<string, object> GetCypherQueryParameters(IQueryCollection queryCollection, ILogger log, Cypher cypherModel, JObject requestBody)
+        {
+            var cypherQueryStatementParameters = new Dictionary<string, object>();
             
-            try
+            if (cypherModel.QueryParams == null)
+                return cypherQueryStatementParameters;
+
+            var queryParams = queryCollection.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
+            
+            //todo: rename everything to be descriptive
+            foreach (var cypherParam in cypherModel.QueryParams)
             {
-                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryStatementParameters);
+                // let query param override param in message body
+                string foundParamValue = queryParams.GetValueOrDefault(cypherParam.Name)
+                                         ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToString()
+                                         ?? cypherParam.Default;
+
+                if (foundParamValue == null)
+                    throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
+
+                cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
             }
-            catch (Exception ex)
-            {
-                log.LogError($"Unable To Run Query \n Exception:" + ex, ex);
-                throw new Exception("Unable To Run Query", ex);
-            }
 
-            var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
-
-            if (recordsResult == null)
-                return new NoContentResult();
-
-            var statementResult = await _neo4JHelper.GetResultSummaryAsync();
-
-            if (statementResult != null)
-                log.LogInformation(
-                    $"Query: {statementResult.Statement.Text} \n Results Available After: {statementResult.ResultAvailableAfter}");
-
-            log.LogInformation("request has successfully been completed with results");
-
-            return new OkObjectResult(recordsResult);
+            return cypherQueryStatementParameters;
         }
     }
 }
 
 //todo:
-// api docs
 // tests
 // refactor
 // non-nullable
