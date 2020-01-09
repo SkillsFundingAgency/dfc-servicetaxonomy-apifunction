@@ -64,22 +64,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var cypherModel = await GetCypherQuery(functionToProcess, context, log);
 
-                log.LogInformation("Attempting to read json body object");
+                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody, log);
 
-                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody);
-
-                log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
-
-                try
-                {
-                    await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query,
-                        cypherQueryStatementParameters);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError($"Unable To Run Query \n Exception:" + ex, ex);
-                    throw new Exception("Unable To Run Query", ex);
-                }
+                await ExecuteCypherQuery(cypherModel, cypherQueryStatementParameters, log);
 
                 var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
 
@@ -105,6 +92,23 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
+            }
+        }
+
+        private async Task ExecuteCypherQuery(Cypher cypherModel,
+            Dictionary<string, object> cypherQueryStatementParameters, ILogger log)
+        {
+            //todo: return the cursor?
+            log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
+
+            try
+            {
+                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query,
+                    cypherQueryStatementParameters);
+            }
+            catch (Exception ex)
+            {
+                throw ApiFunctionException.InternalServerError("Unable To run query", ex);
             }
         }
 
@@ -177,8 +181,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             return requestBody;
         }
 
-        private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody)
+        private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody, ILogger log)
         {
+            log.LogInformation("Attempting to read json body object");
+
             var cypherQueryStatementParameters = new Dictionary<string, object>();
             
             if (cypherModel.QueryParams == null)
