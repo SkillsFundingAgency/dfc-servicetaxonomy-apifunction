@@ -50,11 +50,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                string functionName = GetFunctionName();
+                log.LogInformation("HTTP trigger function is processing a request");
 
-                log.LogInformation($"{functionName} HTTP trigger function is processing a request.");
-
-                Task<Cypher> cypherModelTask = GetCypherQuery(functionName, context, log);
+                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, log);
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
                 
                 Cypher cypherModel = await cypherModelTask; 
@@ -113,12 +111,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private async Task<Cypher> GetCypherQuery(string functionToProcess, ExecutionContext context, ILogger log)
+        private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, ILogger log)
         {
             log.LogInformation("Generating file name and dir to read json config");
 
-            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
-            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
+            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionName}.json";
+            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionName}.json";
 
             string cypherQueryJsonConfig;
 
