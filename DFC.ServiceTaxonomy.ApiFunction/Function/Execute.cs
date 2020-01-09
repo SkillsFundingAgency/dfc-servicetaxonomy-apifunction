@@ -126,7 +126,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation("Attempting to read json body object");
 
-                var cypherQueryStatementParameters = GetCypherQueryParameters(req.Query, log, cypherModel, requestBody);
+                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody);
 
                 log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
                 
@@ -162,7 +162,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private static Dictionary<string, object> GetCypherQueryParameters(IQueryCollection queryCollection, ILogger log, Cypher cypherModel, JObject requestBody)
+        private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody)
         {
             var cypherQueryStatementParameters = new Dictionary<string, object>();
             
