@@ -68,16 +68,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 await ExecuteCypherQuery(cypherModel, cypherQueryStatementParameters, log);
 
+                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
+                if (statementResult != null)
+                    log.LogInformation($"Query: {statementResult.Statement.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
+                
                 var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
-
                 if (recordsResult == null)
                     return new NoContentResult();
-
-                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
-
-                if (statementResult != null)
-                    log.LogInformation(
-                        $"Query: {statementResult.Statement.Text} \n Results Available After: {statementResult.ResultAvailableAfter}");
 
                 log.LogInformation("request has successfully been completed with results");
 
