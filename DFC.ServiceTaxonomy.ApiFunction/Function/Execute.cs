@@ -62,51 +62,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 JObject requestBody = await GetRequestBody(req, log);
 
-                log.LogInformation("generating file name and dir to read json config");
-
-                //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
-                var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
-
-                string cypherQueryJsonConfig;
-
-                log.LogInformation("Attempting to read json config");
-
-                try
-                {
-                    cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFileAsync(queryFileNameAndDir);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError($"Unable to read {queryFileNameAndDir} query file, \n Function Directory: {context.FunctionDirectory} \n Function App Directory: {context.FunctionAppDirectory}  \n Exception:" + ex, ex);
-                    throw new Exception($"Unable to read {queryFileNameAndDir} query file", ex);
-                }
-                
-                log.LogInformation("Attempting to Deserialize json config to cypher model");
-
-                Cypher cypherModel;
-
-                try
-                {
-                    cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError($"Unable to Deserialize json from {queryFileNameAndDir}", ex);
-                    return new InternalServerErrorResult();
-                }
-
-                if (cypherModel == null)
-                    return new InternalServerErrorResult();
+                var cypherModel = await GetCypherQuery(functionToProcess, context, log);
 
                 log.LogInformation("Attempting to read json body object");
 
                 var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody);
 
                 log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
-                
+
                 try
                 {
-                    await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryStatementParameters);
+                    await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query,
+                        cypherQueryStatementParameters);
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +98,53 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (ApiFunctionException e)
             {
-                log.LogError(e.Message);
+                log.LogError(e.ToString());
                 return e.ActionResult;
             }
+            catch (Exception e)
+            {
+                log.LogError(e.ToString());
+                return new InternalServerErrorResult();
+            }
+        }
+
+        private async Task<Cypher> GetCypherQuery(string functionToProcess, ExecutionContext context, ILogger log)
+        {
+            log.LogInformation("Generating file name and dir to read json config");
+
+            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
+            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
+
+            string cypherQueryJsonConfig;
+
+            log.LogInformation($"Attempting to read json config from {queryFileNameAndDir}");
+
+            try
+            {
+                cypherQueryJsonConfig = await _fileHelper.ReadAllTextFromFileAsync(queryFileNameAndDir);
+            }
+            catch (Exception ex)
+            {
+                throw ApiFunctionException.InternalServerError("Unable to read query file", ex);
+            }
+
+            log.LogInformation("Attempting to deserialize json config to cypher model");
+
+            Cypher cypherModel;
+
+            try
+            {
+                cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
+            }
+            catch (Exception ex)
+            {
+                throw ApiFunctionException.InternalServerError("Unable to deserialize query file", ex);
+            }
+
+            if (cypherModel == null)
+                throw ApiFunctionException.InternalServerError("Null deserialized cypher model");
+            
+            return cypherModel;
         }
 
         private async Task<JObject> GetRequestBody(HttpRequest req, ILogger log)
