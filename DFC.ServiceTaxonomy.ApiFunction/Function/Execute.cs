@@ -27,20 +27,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
-            _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? 
-                                          throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
-
-            _httpRequestHelper = httpRequestHelper ??
-                                 throw new ArgumentNullException(nameof(httpRequestHelper));
-
-            _jsonHelper = jsonHelper ??
-                          throw new ArgumentNullException(nameof(jsonHelper));
-
-            _neo4JHelper = neo4JHelper ?? 
-                           throw new ArgumentNullException(nameof(neo4JHelper));
-
-            _fileHelper = fileHelper ??
-                          throw new ArgumentNullException(nameof(fileHelper));
+            _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
+            _httpRequestHelper = httpRequestHelper ?? throw new ArgumentNullException(nameof(httpRequestHelper));
+            _jsonHelper = jsonHelper ?? throw new ArgumentNullException(nameof(jsonHelper));
+            _neo4JHelper = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
+            _fileHelper = fileHelper ?? throw new ArgumentNullException(nameof(fileHelper));
         }
 
         [FunctionName("Execute")]
