@@ -27,6 +27,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
             return new ApiFunctionException(new BadRequestObjectResult(message), message, innerException);
         }
 
+        public static ApiFunctionException UnprocessableEntityObjectResult(string message, Exception innerException = null)
+        {
+            return new ApiFunctionException(new UnprocessableEntityObjectResult(message), message, innerException);
+        }
+        
         public static ApiFunctionException InternalServerError(string message, Exception innerException = null)
         {
             return new ApiFunctionException(new InternalServerErrorResult(), message, innerException);

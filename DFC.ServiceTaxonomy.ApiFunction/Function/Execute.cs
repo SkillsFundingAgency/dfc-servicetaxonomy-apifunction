@@ -60,23 +60,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation($"{functionToProcess} HTTP trigger function is processing a request.");
 
-                log.LogInformation("Attempting to read body from http request");
-
-                string requestBodyString = await GetRequestBody(req);
-
-                log.LogInformation("Attempting to Deserialize request body");
-
-                JObject requestBody;
-
-                try
-                {
-                    requestBody = JObject.Parse(requestBodyString);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError("Unable to retrieve body from req", ex);
-                    return new UnprocessableEntityObjectResult("Unable to deserialize request body");
-                }
+                JObject requestBody = await GetRequestBody(req, log);
 
                 log.LogInformation("generating file name and dir to read json config");
 
@@ -152,8 +136,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private async Task<string> GetRequestBody(HttpRequest req)
+        private async Task<JObject> GetRequestBody(HttpRequest req, ILogger log)
         {
+            log.LogInformation("Attempting to read body from http request");
+
             string requestBodyString;
             try
             {
@@ -164,7 +150,20 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 throw ApiFunctionException.BadRequest("Unable to read body from request", ex);
             }
 
-            return requestBodyString;
+            log.LogInformation("Attempting to Deserialize request body");
+
+            JObject requestBody;
+
+            try
+            {
+                requestBody = JObject.Parse(requestBodyString);
+            }
+            catch (Exception ex)
+            {
+                throw ApiFunctionException.UnprocessableEntityObjectResult("Unable to deserialize request body", ex);
+            }
+
+            return requestBody;
         }
 
         private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody)
