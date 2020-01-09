@@ -180,7 +180,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 }
 
 //todo:
-// better handle bool
 // api docs
 // tests
 // refactor
