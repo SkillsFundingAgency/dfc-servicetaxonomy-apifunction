@@ -50,15 +50,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                var functionName = GetFunctionName();
+                string functionName = GetFunctionName();
 
                 log.LogInformation($"{functionName} HTTP trigger function is processing a request.");
 
-                JObject requestBody = await GetRequestBody(req, log);
-
-                var cypherModel = await GetCypherQuery(functionName, context, log);
-
-                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody, log);
+                Task<Cypher> cypherModelTask = GetCypherQuery(functionName, context, log);
+                Task<JObject> requestBodyTask = GetRequestBody(req, log);
+                
+                Cypher cypherModel = await cypherModelTask; 
+                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
 
                 await ExecuteCypherQuery(cypherModel, cypherQueryStatementParameters, log);
 
