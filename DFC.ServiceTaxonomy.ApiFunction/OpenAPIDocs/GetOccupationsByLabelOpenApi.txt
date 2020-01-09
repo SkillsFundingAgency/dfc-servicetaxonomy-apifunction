@@ -47,18 +47,47 @@ components:
             properties: 
               uri: 
                 type: string
-                example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
+                example: "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"
               occupation: 
                 type: string
-                example: renewable energy consultant
+                example: hazardous waste technician
               alternativeLabels: 
                 type: array
                 items: 
                   type: string
-                  example: "alt 1"
+                  example:
+                      - "waste disposal site compliance technician"
+                      - "toxic waste removal technician"
+                      - "hazardous waste removal technician"
+                      - "waste treatment technician"
+                      - "landfill site technician"
+                      - "hazardous waste disposal technician"
+                      - "hazardous waste treatment technician"
+                      - "toxic waste disposal technician"
+                      - "waste sortation technician"
+                      - "waste disposal compliance technician"
+                      - "toxic waste treatment technician"
+                      - "toxic waste technician"
               lastModified: 
                 type: string
                 example: 03-12-2019T00:00:00Z
+              matches: 
+                properties: 
+                  occupation: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                    example: []
+                  alternativeLabels: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                    example: 
+                      - "toxic waste removal technician"
+                      - "toxic waste disposal technician"
+                      - "toxic waste treatment technician"
+                      - "toxic waste technician"
+                type: "object"
             xml:
               name: Occupation
   securitySchemes:
