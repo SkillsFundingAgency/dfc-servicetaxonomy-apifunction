@@ -1,6 +1,6 @@
 {
   "query": "match (o:esco__Occupation)\nwhere head(o.skos__prefLabel) contains $label or \ncase toLower($matchaltlabels)\n  when 'true' then\n    any(alt in o.skos__altLabel where alt contains $label)\n    or any(hidden in o.skos__hiddenLabel where hidden contains $label)\n  else\n    false\n  end\nwith { occupations:collect(\n{\n  uri:o.uri,\n  occupation:head(o.skos__prefLabel),\n  alternativeLabels:coalesce(o.skos__altLabel, o.skos__hiddenLabel),\n  lastModified:head(o.dct__modified),\n  matches:\n  {\n    occupation:[preflab in o.skos__prefLabel where preflab contains $label],\n    alternativeLabels:coalesce([altlab in o.skos__altLabel where altlab contains $label], [hidlab in o.skos__hiddenLabel where hidlab contains $label])\n  }\n}\n)} as occupations \nreturn occupations",
-  "queryParam": [
+  "queryParams": [
     {
       "name": "label"
     },

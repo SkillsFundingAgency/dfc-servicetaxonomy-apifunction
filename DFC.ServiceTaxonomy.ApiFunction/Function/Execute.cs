@@ -47,15 +47,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
                 
                 Cypher cypherModel = await cypherModelTask; 
-                var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
+                var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
 
-                await ExecuteCypherQuery(cypherModel, cypherQueryStatementParameters, log);
+                await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
                 var statementResult = await _neo4JHelper.GetResultSummaryAsync();
                 if (statementResult != null)
                     log.LogInformation($"Query: {statementResult.Statement.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
                 
-                var recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
+                object recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
                 if (recordsResult == null)
                     return new NoContentResult();
 
@@ -86,15 +86,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         }
 
         private async Task ExecuteCypherQuery(Cypher cypherModel,
-            Dictionary<string, object> cypherQueryStatementParameters, ILogger log)
+            Dictionary<string, object> cypherQueryParameters, ILogger log)
         {
             //todo: return the cursor?
             log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
 
             try
             {
-                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query,
-                    cypherQueryStatementParameters);
+                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters);
             }
             catch (Exception ex)
             {
@@ -155,7 +154,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 throw ApiFunctionException.BadRequest("Unable to read body from request", ex);
             }
 
-            log.LogInformation("Attempting to Deserialize request body");
+            log.LogInformation("Attempting to deserialize request body");
 
             JObject requestBody;
 
@@ -207,3 +206,4 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 // non-nullable
 // update to v3 func 3.1 core
 // sonar?
+// update packages

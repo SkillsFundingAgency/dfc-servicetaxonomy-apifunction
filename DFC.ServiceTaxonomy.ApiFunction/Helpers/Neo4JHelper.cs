@@ -52,7 +52,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
                     await session.CloseAsync();
                 }
             }
-
         }
 
         public async Task<object> GetListOfRecordsAsync()
@@ -62,7 +61,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             if (records == null || !records.Any())
                 return null;
 
-            var neoRecords = records.SelectMany(x => x.Values.Values).ToList();
+            var neoRecords = records.SelectMany(x => x.Values.Values);
 
             return neoRecords.FirstOrDefault();
         }
@@ -76,6 +75,5 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         {
             _neo4JDriver?.Dispose();
         }
-
     }
 }
