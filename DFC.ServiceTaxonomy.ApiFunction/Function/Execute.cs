@@ -125,7 +125,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("Attempting to read json body object");
 
-            var queryParams = req.Query.ToDictionary(p => p.Key, p => p.Value.Last());
+            var queryParams = req.Query.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
 
             if (cypherModel.QueryParam != null)
             {
@@ -134,7 +134,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 {
                     // let query param override param in message body
                     string foundParamValue = queryParams.GetValueOrDefault(cypherParam.Name)
-                                             ?? requestBody[cypherParam.Name]?.ToString()
+                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToString()
                                              ?? cypherParam.Default;
 
                     if (foundParamValue == null)
@@ -180,7 +180,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 }
 
 //todo:
-// case insensitive
 // better handle bool
 // api docs
 // tests
