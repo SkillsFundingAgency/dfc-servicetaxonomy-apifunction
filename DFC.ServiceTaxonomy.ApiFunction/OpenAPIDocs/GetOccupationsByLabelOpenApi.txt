@@ -16,6 +16,15 @@ paths:
       summary: Get Occupations By Label
       description: Get occupations whose labels match a search term
       operationId: GetOccupationsByLabel
+      requestBody:
+        description: Supply the search term
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBody'
+            example:   # Sample object
+                "label": "toxic"
+        required: true
       responses:
         200:
           description: successful operation
@@ -37,6 +46,14 @@ paths:
           content: {}
 components:
   schemas:
+    RequestBody:
+      required:
+      - label
+      type: "object"
+      properties:
+        label: 
+          type: string
+          example: "toxic"
     Occupation: 
       type: "object"
       properties:
