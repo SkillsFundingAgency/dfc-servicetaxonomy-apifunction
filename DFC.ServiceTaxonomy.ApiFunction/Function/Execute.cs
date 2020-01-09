@@ -50,19 +50,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                string functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
+                var functionName = GetFunctionName();
 
-                if (string.IsNullOrWhiteSpace(functionToProcess))
-                {
-                    log.LogInformation("Missing App Settings");
-                    return new InternalServerErrorResult();
-                }
-
-                log.LogInformation($"{functionToProcess} HTTP trigger function is processing a request.");
+                log.LogInformation($"{functionName} HTTP trigger function is processing a request.");
 
                 JObject requestBody = await GetRequestBody(req, log);
 
-                var cypherModel = await GetCypherQuery(functionToProcess, context, log);
+                var cypherModel = await GetCypherQuery(functionName, context, log);
 
                 var cypherQueryStatementParameters = GetCypherQueryParameters(cypherModel, req.Query, requestBody, log);
 
@@ -90,6 +84,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+
+        private string GetFunctionName()
+        {
+            string functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
+
+            if (string.IsNullOrWhiteSpace(functionToProcess))
+                throw ApiFunctionException.InternalServerError("Missing function name in settings");
+
+            return functionToProcess;
         }
 
         private async Task ExecuteCypherQuery(Cypher cypherModel,
