@@ -62,17 +62,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation("Attempting to read body from http request");
 
-                string requestBodyString;
-
-                try
-                {
-                    requestBodyString = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError("Unable to read body from req", ex);
-                    return new BadRequestObjectResult("Unable to read body from req");
-                }
+                string requestBodyString = await GetRequestBody(req);
 
                 log.LogInformation("Attempting to Deserialize request body");
 
@@ -160,6 +150,21 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.Message);
                 return e.ActionResult;
             }
+        }
+
+        private async Task<string> GetRequestBody(HttpRequest req)
+        {
+            string requestBodyString;
+            try
+            {
+                requestBodyString = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
+            }
+            catch (Exception ex)
+            {
+                throw ApiFunctionException.BadRequest("Unable to read body from request", ex);
+            }
+
+            return requestBodyString;
         }
 
         private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody)

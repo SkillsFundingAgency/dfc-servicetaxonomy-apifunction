@@ -1,4 +1,5 @@
 using System;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
@@ -7,22 +8,28 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Exceptions
     {
         public ActionResult ActionResult { get; }
         
-        // just 1 ctor accepting ActionResult?
-        public ApiFunctionException(StatusCodeResult statusCodeResult, string logMessage)
-        : base(logMessage)
+        // could split into StatusCodeResult & ObjectResult
+        
+        public ApiFunctionException(ActionResult actionResult, string message)
+            : base(message)
         {
-            ActionResult = statusCodeResult;
+            ActionResult = actionResult;
+        }
+        
+        public ApiFunctionException(ActionResult actionResult, string message, Exception innerException)
+        : base(message, innerException)
+        {
+            ActionResult = actionResult;
         }
 
-        public ApiFunctionException(ObjectResult objectResult, string logMessage)
-        : base(logMessage)
+        public static ApiFunctionException BadRequest(string message, Exception innerException = null)
         {
-            ActionResult = objectResult;
+            return new ApiFunctionException(new BadRequestObjectResult(message), message, innerException);
         }
 
-        public static ApiFunctionException BadRequest(string message)
+        public static ApiFunctionException InternalServerError(string message, Exception innerException = null)
         {
-            return new ApiFunctionException(new BadRequestObjectResult(message), message);
+            return new ApiFunctionException(new InternalServerErrorResult(), message, innerException);
         }
     }
 }
