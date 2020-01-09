@@ -6,13 +6,12 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
@@ -34,7 +33,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                                  throw new ArgumentNullException(nameof(httpRequestHelper));
 
             _jsonHelper = jsonHelper ??
-                  throw new ArgumentNullException(nameof(jsonHelper));
+                          throw new ArgumentNullException(nameof(jsonHelper));
 
             _neo4JHelper = neo4JHelper ?? 
                            throw new ArgumentNullException(nameof(neo4JHelper));
@@ -60,13 +59,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("Attempting to read body from http request");
 
-            string requestBody = null;
+            string requestBodyString;
 
             try
             {
-                requestBody = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
+                requestBodyString = await _httpRequestHelper.GetBodyFromHttpRequestAsync(req);
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
                 log.LogError("Unable to read body from req", ex);
                 return new BadRequestObjectResult("Unable to read body from req");
@@ -74,13 +73,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("Attempting to Deserialize request body");
 
-            dynamic jsonBody;
+            JObject requestBody;
 
             try
             {
-                jsonBody = JsonConvert.DeserializeObject(requestBody);
+                requestBody = JObject.Parse(requestBodyString);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
                 log.LogError("Unable to retrieve body from req", ex);
                 return new UnprocessableEntityObjectResult("Unable to deserialize request body");
@@ -88,9 +87,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             log.LogInformation("generating file name and dir to read json config");
 
+            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionToProcess}.json";
             var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionToProcess}.json";
 
-            string cypherQueryJsonConfig = null;
+            string cypherQueryJsonConfig;
 
             log.LogInformation("Attempting to read json config");
 
@@ -112,7 +112,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
                 log.LogError($"Unable to Deserialize json from {queryFileNameAndDir}", ex);
                 return new InternalServerErrorResult();
@@ -121,31 +121,39 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (cypherModel == null)
                 return new InternalServerErrorResult();
 
-            var cypherQuery = cypherModel.Query;
-
             var cypherQueryStatementParameters = new Dictionary<string, object>();
 
             log.LogInformation("Attempting to read json body object");
 
-            if (jsonBody != null && cypherModel.QueryParam != null)
-            {
-                foreach (var json in jsonBody)
-                {
-                    var queryParam = cypherModel.QueryParam?.FirstOrDefault(x => x.Name.Contains(json.Name));
+            var queryParams = req.Query.ToDictionary(p => p.Key, p => p.Value.Last());
 
-                    if (queryParam != null)
-                        cypherQueryStatementParameters.Add(json.Name, json.Value.ToString());
+            if (cypherModel.QueryParam != null)
+            {
+                //todo: rename everything to be descriptive
+                foreach (var cypherParam in cypherModel.QueryParam)
+                {
+                    // let query param override param in message body
+                    string foundParamValue = queryParams.GetValueOrDefault(cypherParam.Name)
+                                             ?? requestBody[cypherParam.Name]?.ToString()
+                                             ?? cypherParam.Default;
+
+                    if (foundParamValue == null)
+                    {
+                        //todo: don't have dupe logs and returns
+                        string error = $"Required parameter {cypherParam.Name} not found in request body or query params";
+                        log.LogInformation(error);
+                        return new BadRequestObjectResult(error);
+                    }
+                    
+                    cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
                 }
             }
-
-            if (cypherModel.QueryParam != null && cypherModel.QueryParam.Count != cypherQueryStatementParameters.Count)
-                return new BadRequestObjectResult($"Expected {cypherModel.QueryParam.Count} query parameters, only {cypherQueryStatementParameters.Count} have been provided in the request body");
-
-            log.LogInformation($"Attempting to query neo4j with the following query: {cypherQuery}");
+ 
+            log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
             
             try
             {
-                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherQuery, cypherQueryStatementParameters);
+                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryStatementParameters);
             }
             catch (Exception ex)
             {
@@ -167,7 +175,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             log.LogInformation("request has successfully been completed with results");
 
             return new OkObjectResult(recordsResult);
-
         }
     }
 }
+
+//todo:
+// case insensitive
+// better handle bool
+// api docs
+// tests
+// refactor
+// non-nullable
+// sonar?
