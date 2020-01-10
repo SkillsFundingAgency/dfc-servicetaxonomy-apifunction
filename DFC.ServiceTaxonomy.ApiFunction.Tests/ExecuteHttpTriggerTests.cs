@@ -74,9 +74,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
         {
-            //todo: isn't this done in ctor?
-            _config.CurrentValue.Function = "GetAllSkills";
-             
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
             
             var result = await RunFunction();
@@ -96,8 +93,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
-            _config.CurrentValue.Function = "GetAllSkills";
-
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("}bad json");
 
             var result = await RunFunction();
@@ -113,8 +108,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenJsonConfigQueryFileHasInvalidJson_ReturnsInternalServerErrorResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
-
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("bad json");
@@ -134,8 +127,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [InlineData("{}")]    // deserializes to CypherModel containing nulls
         public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult(string cypherConfig)
         {
-             _config.CurrentValue.Function = "GetAllSkills";
-
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(cypherConfig);
@@ -153,7 +144,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
             var query = "{\"query\": \"QUERY HERE\", \"queryParams\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
@@ -260,7 +250,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
             var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
             
             var query = "{\"query\": \"QUERY HERE\"}";
