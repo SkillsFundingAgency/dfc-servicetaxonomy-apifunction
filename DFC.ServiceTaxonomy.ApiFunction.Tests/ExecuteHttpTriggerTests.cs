@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Neo4j.Driver;
 using Newtonsoft.Json;
 using Xunit;
@@ -30,7 +32,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
-        private readonly Cypher _cypherModel;
+        private Cypher _cypherModel;
 
         public ExecuteHttpTriggerTests()
         {
@@ -169,6 +171,102 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is BadRequestObjectResult);
             Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
+
+        [Theory]
+        [InlineData("body", null, "default", "body")]
+        [InlineData(null, "param", "default", "param")]
+        [InlineData("body", "param", "default", "param")]
+        [InlineData(null, null, "default", "default")]
+        [InlineData("body", null, null, "body")]
+        [InlineData(null, "param", null, "param")]
+        [InlineData("body", "param", null, "param")]
+        //todo: need separate test for this
+        //[InlineData(null, null, null, "default")]
+        public async Task Execute_ParamMatrix_CorrectParamValuePassedToQuery(
+            string requestBodyParam, string queryParamParam, string defaultParam, string expectedCypherParam)
+        {
+            const string paramName = "matchaltlabels";
+
+            string requestBody = requestBodyParam != null
+                ? $@"{{""{paramName}"": ""{requestBodyParam}"" }}"
+                : "{}";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request))
+                .Returns(requestBody);
+            
+            if (queryParamParam != null)
+            {
+                _request.Query = new QueryCollection(new Dictionary<string, StringValues>
+                {
+                    {paramName, new StringValues(queryParamParam)}
+                });
+            }
+
+            _config.CurrentValue.Function = "GetOccupationsForLabel";
+
+            string cypherConfig = $@"{{
+                ""query"": """",
+                ""queryParams"": [
+                    {{
+                        ""name"": ""{paramName}""
+                        {(defaultParam != null ? $", \"default\": \"{defaultParam}\"" : "")}
+                    }}
+                ]}}";
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
+
+            //todo: no need to have this in a helper!
+            _cypherModel = new Cypher {Query = "query", QueryParams = new List<QueryParam>
+            {
+                new QueryParam {Name=paramName, Default = defaultParam}
+            } };
+
+            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(cypherConfig)).Returns(_cypherModel);
+
+            var resultSummary = A.Fake<IResultSummary>();
+            var record = new Dictionary<string, object>
+            {
+                {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
+                {"occupation", "hazardous waste technician"},
+                {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
+                {"lastModified", "03-12-2019T00:00:00Z"},
+                {
+                    "matches", new Dictionary<string, object>
+                    {
+                        {"occupation", new string[0]},
+                        {"alternativeLabels", new[] {"toxic waste removal technician"}}
+                    }
+                }
+            };
+
+            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
+            object records = dictionaryOfRecords;
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
+
+            var result = await RunFunction();
+
+            // Assert
+            Assert.True(result is OkObjectResult);
+            
+            // could use the Capture from here.. https://thorarin.net/blog/post/2014/09/18/capturing-method-arguments-on-your-fakes-using-fakeiteasy.aspx
+            var neo4JHelperCalls = Fake.GetCalls(_neo4JHelper).ToList();
+
+            var executeCalls = neo4JHelperCalls.Where(c => c.Method.Name == nameof(INeo4JHelper.ExecuteCypherQueryInNeo4JAsync));
+            Assert.Single(executeCalls);
+
+            var executeCall = executeCalls.First();
+            //todo: refactor unfriendly
+            var actualParams = executeCall.Arguments[1].As<IDictionary<string, object>>();
+            Assert.Equal(expectedCypherParam, actualParams[paramName]);
+        }
+
+        //todo:
+        // [Fact]
+        // public async Task Execute_MandatoryParamNotSupplied_ReturnsBadRequest()
+        // {
+        // }
         
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse()
@@ -182,8 +280,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
-
-            var dict = new Dictionary<string, object>();
 
             var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
