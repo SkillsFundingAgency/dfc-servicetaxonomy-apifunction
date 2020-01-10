@@ -29,10 +29,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly ExecutionContext _executionContext;
         private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _config;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
-        private Cypher _cypherModel;
 
         public ExecuteHttpTriggerTests()
         {
@@ -49,12 +47,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             _log = A.Fake<ILogger>();
             _httpRequestHelper = A.Fake<IHttpRequestHelper>();
-            _jsonHelper = A.Fake<IJsonHelper>();
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
-            _cypherModel = new Cypher {Query = "query", QueryParams = new List<QueryParam>() };
 
-            _executeFunction = new Execute(_config, _httpRequestHelper, _jsonHelper, _neo4JHelper, _fileHelper);
+            _executeFunction = new Execute(_config, _httpRequestHelper, _neo4JHelper, _fileHelper);
         }
 
         [Fact]
@@ -77,6 +73,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
              _config.CurrentValue.Function = "GetAllSkills";
 
+             const string  query = "{\"query\": \"QUERY HERE\"}";
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+             
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
             
             var result = await RunFunction();
@@ -89,15 +89,21 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.Equal((int?) HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
 
+        //todo: tests for when GetCypherQuery throws and GetRequestBody throws, now that they run concurrently
+        //todo: tests for results when missing params
+        // [InlineData("bad json")]    // deserializes to null
+        
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
              _config.CurrentValue.Function = "GetAllSkills";
-            
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"test: test1");
 
+             //todo: single 1 of these called ValidQuery - default to readalltext returning it
+             const string  query = "{\"query\": \"QUERY HERE\"}";
 
-            A.CallTo(() => _jsonHelper.DeserializeObject(A.Dummy<string>())).Throws<JsonException>();
+             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("}bad json");
 
             var result = await RunFunction();
 
@@ -116,8 +122,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-             A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(A.Dummy<string>())).Throws<JsonException>();
-
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("bad json");
+            
             var result = await RunFunction();
 
             var internalServerErrorResult = result as InternalServerErrorResult;
@@ -128,17 +134,17 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.Equal((int?)HttpStatusCode.InternalServerError, internalServerErrorResult.StatusCode);
         }
         
-        [Fact]
-        public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult()
+        [Theory]
+        [InlineData("")]      // deserialize returns null
+        [InlineData("{}")]    // deserializes to CypherModel containing nulls
+        public async Task Execute_WhenCypherQueryIsEmpty_ReturnsInternalServerErrorResult(string cypherConfig)
         {
              _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("{}");
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(cypherConfig);
            
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>("{}")).Returns(null);
-
             var result = await RunFunction();
 
             var internalServerErrorResult = result as InternalServerErrorResult;
@@ -153,14 +159,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
              _config.CurrentValue.Function = "GetAllSkills";
-            var query = "{\"query\": \"QUERY HERE\", \"queryParam\": [{\"name\": \"occupation\"}]}";
+            var query = "{\"query\": \"QUERY HERE\", \"queryParams\": [{\"name\": \"occupation\"}]}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
-            
-            _cypherModel.QueryParams.Add(new QueryParam { Name = "occupation" });
-
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
             var result = await RunFunction();
 
@@ -214,14 +216,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 ]}}";
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
-
-            //todo: no need to have this in a helper!
-            _cypherModel = new Cypher {Query = "query", QueryParams = new List<QueryParam>
-            {
-                new QueryParam {Name=paramName, Default = defaultParam}
-            } };
-
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(cypherConfig)).Returns(_cypherModel);
 
             var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
@@ -279,8 +273,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
-
             var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
@@ -312,20 +304,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
              _config.CurrentValue.Function = "GetAllOccupations";
             var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
-            var query = @"{""query"": ""QUERY HERE""}]}";
+            var query = @"{""query"": ""QUERY HERE""}";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
-
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
             var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
                 {"occupation", "renewable energy consultant"},
-                {"alternativeLabels", new string[3] {"alt 1", "alt 2", "alt 3"}},
+                {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
                 {"lastModified", "05-12-2019T00:00:00Z"}
             };
 
@@ -347,15 +337,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenCodeIsValidForGetOccupationsByLabel_ReturnsCorrectJsonResponse()
         {
-            _config.CurrentValue.Function = "GetOccupationsForLabel";
+            _config.CurrentValue.Function = "GetOccupationsByLabel";
             var expectedJson = "{\"occupations\":[{\"uri\":\"http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2\",\"occupation\":\"hazardous waste technician\",\"alternativeLabels\":[\"waste disposal site compliance technician\",\"toxic waste removal technician\"],\"lastModified\":\"03-12-2019T00:00:00Z\",\"matches\":{\"occupation\":[],\"alternativeLabels\":[\"toxic waste removal technician\"]}}]}";
-            var query = @"{""query"": ""QUERY HERE""}]}";
+            var query = @"{""query"": ""QUERY HERE""}";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsByLabel.json")).Returns(query);
-
-            A.CallTo(() => _jsonHelper.DeserializeObject<Cypher>(query)).Returns(_cypherModel);
 
             var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>

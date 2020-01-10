@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -21,15 +22,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
     {
         private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly IJsonHelper _jsonHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
 
-        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, IJsonHelper jsonHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
+        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
             _httpRequestHelper = httpRequestHelper ?? throw new ArgumentNullException(nameof(httpRequestHelper));
-            _jsonHelper = jsonHelper ?? throw new ArgumentNullException(nameof(jsonHelper));
             _neo4JHelper = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
             _fileHelper = fileHelper ?? throw new ArgumentNullException(nameof(fileHelper));
         }
@@ -126,14 +125,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                cypherModel = _jsonHelper.DeserializeObject<Cypher>(cypherQueryJsonConfig);
+                cypherModel = JsonConvert.DeserializeObject<Cypher>(cypherQueryJsonConfig);
             }
             catch (Exception ex)
             {
                 throw ApiFunctionException.InternalServerError("Unable to deserialize query file", ex);
             }
 
-            if (cypherModel == null)
+            if (cypherModel?.Query == null)
                 throw ApiFunctionException.InternalServerError("Null deserialized cypher model");
             
             return cypherModel;
@@ -165,7 +164,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 throw ApiFunctionException.UnprocessableEntityObjectResult("Unable to deserialize request body", ex);
             }
-
+            
             return requestBody;
         }
 
