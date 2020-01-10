@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Neo4j.Driver.V1;
+using Neo4j.Driver;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
@@ -14,7 +14,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
     {
         private readonly IAuthToken _authToken = AuthTokens.None;
         private readonly IDriver _neo4JDriver;
-        private IStatementResultCursor _statementResultCursor;
+        private IResultCursor _resultCursor;
 
         public Neo4JHelper(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, ILogger log)
         {
@@ -37,26 +37,27 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             _neo4JDriver = GraphDatabase.Driver(taxonomyApiSettings.Neo4jUrl, _authToken);
         }
         
-        public async Task ExecuteCypherQueryInNeo4JAsync(string query, Dictionary<string, object> statementParameters)
+        //todo: create package for DFC.ServiceTaxonomy.Neo4j??
+        public async Task<object> ExecuteCypherQueryInNeo4JAsync(string query, IDictionary<string, object> statementParameters)
         {
-           
-            using (var session = _neo4JDriver.Session())
+            IAsyncSession session = _neo4JDriver.AsyncSession();
+            try
             {
-                try
+                return await session.ReadTransactionAsync(async tx =>
                 {
-                    _statementResultCursor =
-                        await session.ReadTransactionAsync(async tx => await tx.RunAsync(query, statementParameters));
-                }
-                finally
-                {
-                    await session.CloseAsync();
-                }
+                    _resultCursor = await tx.RunAsync(query, statementParameters);
+                    return await GetListOfRecordsAsync();
+                });
+            }
+            finally
+            {
+                await session.CloseAsync();
             }
         }
 
-        public async Task<object> GetListOfRecordsAsync()
+        private async Task<object> GetListOfRecordsAsync()
         {
-            var records =  await _statementResultCursor.ToListAsync();
+            var records =  await _resultCursor.ToListAsync();
 
             if (records == null || !records.Any())
                 return null;
@@ -66,9 +67,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             return neoRecords.FirstOrDefault();
         }
 
+        /// <summary>
+        /// Calling this method will discard all remaining records to yield the summary
+        /// </summary>
         public async Task<IResultSummary> GetResultSummaryAsync()
         {
-            return await _statementResultCursor.SummaryAsync();
+            return await _resultCursor.ConsumeAsync();
         }
 
         public void Dispose()

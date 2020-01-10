@@ -49,18 +49,17 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 Cypher cypherModel = await cypherModelTask; 
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
 
-                await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
-
-                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
-                if (statementResult != null)
-                    log.LogInformation($"Query: {statementResult.Statement.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
+                object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
                 
-                object recordsResult = await _neo4JHelper.GetListOfRecordsAsync();
                 if (recordsResult == null)
                     return new NoContentResult();
 
                 log.LogInformation("request has successfully been completed with results");
 
+                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
+                if (statementResult != null)
+                    log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
+                
                 return new OkObjectResult(recordsResult);
             }
             catch (ApiFunctionException e)
@@ -85,15 +84,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             return functionToProcess;
         }
 
-        private async Task ExecuteCypherQuery(Cypher cypherModel,
+        private async Task<object> ExecuteCypherQuery(Cypher cypherModel,
             Dictionary<string, object> cypherQueryParameters, ILogger log)
         {
-            //todo: return the cursor?
             log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
 
             try
             {
-                await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters);
+                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters);
             }
             catch (Exception ex)
             {
@@ -105,6 +103,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             log.LogInformation("Generating file name and dir to read json config");
 
+            //todo: fix so that auto works locally
             //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionName}.json";
             var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionName}.json";
 
@@ -207,3 +206,4 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 // update to v3 func 3.1 core
 // sonar?
 // update packages
+// update confluence page

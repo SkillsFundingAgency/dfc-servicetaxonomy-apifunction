@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Neo4j.Driver.V1;
+using Neo4j.Driver;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
     public interface INeo4JHelper
     {
-        Task ExecuteCypherQueryInNeo4JAsync(string query,
-            Dictionary<string, object> statementParameters);
-
-        Task<object> GetListOfRecordsAsync();
+        Task<object> ExecuteCypherQueryInNeo4JAsync(string query,
+            IDictionary<string, object> statementParameters);
 
         Task<IResultSummary> GetResultSummaryAsync();
     }

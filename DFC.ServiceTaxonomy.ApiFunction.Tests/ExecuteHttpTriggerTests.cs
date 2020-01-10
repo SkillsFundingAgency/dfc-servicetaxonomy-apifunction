@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Options;
-using Neo4j.Driver.V1;
+using Neo4j.Driver;
 using Newtonsoft.Json;
 using Xunit;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -53,7 +53,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _cypherModel = new Cypher {Query = "query", QueryParams = new List<QueryParam>() };
 
             _executeFunction = new Execute(_config, _httpRequestHelper, _jsonHelper, _neo4JHelper, _fileHelper);
-
         }
 
         [Fact]
@@ -196,10 +195,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"jobProfile", "http://tbc"}
             };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[1] { record } } };
+            var dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
             object records = dictionaryOfRecords;
 
-            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            //todo: don't ignore
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -236,7 +236,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
             object records = dictionaryOfRecords;
 
-            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -280,7 +280,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
             object records = dictionaryOfRecords;
 
-            A.CallTo(() => _neo4JHelper.GetListOfRecordsAsync()).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
