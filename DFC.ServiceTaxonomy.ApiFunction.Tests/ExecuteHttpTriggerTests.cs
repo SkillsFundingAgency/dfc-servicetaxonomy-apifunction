@@ -50,13 +50,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
 
+            const string  query = "{\"query\": \"QUERY HERE\"}";
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            
             _executeFunction = new Execute(_config, _httpRequestHelper, _neo4JHelper, _fileHelper);
         }
 
         [Fact]
         public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsBadRequestObjectResult()
         {
-             _config.CurrentValue.Function = null;
+            _config.CurrentValue.Function = null;
 
             var result = await RunFunction();
 
@@ -71,11 +74,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToReadRequestBody_ReturnsBadRequestObjectResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
-
-             const string  query = "{\"query\": \"QUERY HERE\"}";
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            //todo: isn't this done in ctor?
+            _config.CurrentValue.Function = "GetAllSkills";
              
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Throws<IOException>();
             
@@ -96,12 +96,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
         {
-             _config.CurrentValue.Function = "GetAllSkills";
-
-             //todo: single 1 of these called ValidQuery - default to readalltext returning it
-             const string  query = "{\"query\": \"QUERY HERE\"}";
-
-             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            _config.CurrentValue.Function = "GetAllSkills";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("}bad json");
 
