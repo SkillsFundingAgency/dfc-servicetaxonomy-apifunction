@@ -81,19 +81,6 @@ components:
                 type: array
                 items: 
                   type: string
-                  example:
-                      - "waste disposal site compliance technician"
-                      - "toxic waste removal technician"
-                      - "hazardous waste removal technician"
-                      - "waste treatment technician"
-                      - "landfill site technician"
-                      - "hazardous waste disposal technician"
-                      - "hazardous waste treatment technician"
-                      - "toxic waste disposal technician"
-                      - "waste sortation technician"
-                      - "waste disposal compliance technician"
-                      - "toxic waste treatment technician"
-                      - "toxic waste technician"
               lastModified: 
                 type: string
                 example: 03-12-2019T00:00:00Z
@@ -103,16 +90,10 @@ components:
                     type: "array"
                     items: 
                       type: "string"
-                    example: []
                   alternativeLabels: 
                     type: "array"
                     items: 
                       type: "string"
-                    example: 
-                      - "toxic waste removal technician"
-                      - "toxic waste disposal technician"
-                      - "toxic waste treatment technician"
-                      - "toxic waste technician"
                 type: "object"
             xml:
               name: Occupation
