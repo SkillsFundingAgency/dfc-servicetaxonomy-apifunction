@@ -59,7 +59,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             const string  query = "{\"query\": \"QUERY HERE\"}";
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
-            
+
             _executeFunction = new Execute(_config, _httpRequestHelper, _neo4JHelper, _fileHelper);
         }
 
@@ -148,7 +148,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_WhenRequestBodyDoesntContainFieldsForCypherQuery_ReturnsBadRequestErrorMessageResult()
         {
             var query = "{\"query\": \"QUERY HERE\", \"queryParams\": [{\"name\": \"occupation\"}]}";
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
@@ -168,9 +167,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             const string expectedQueryText = "query text";
 
             var query = $"{{\"query\": \"{expectedQueryText}\"}}";
-
-            //todo: default
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(query);
 
@@ -257,9 +253,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             const string paramName = "paramName";
 
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request))
-                .Returns("");
-            
+            //todo: default?
             _request.Query = new QueryCollection(new Dictionary<string, StringValues>());
 
             string cypherConfig = $@"{{
@@ -320,8 +314,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
              _config.CurrentValue.Function = "GetAllOccupations";
             var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
             var query = @"{""query"": ""QUERY HERE""}";
-
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
 
