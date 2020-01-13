@@ -31,6 +31,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
+        private readonly IResultSummary _resultSummary;
 
         public ExecuteHttpTriggerTests()
         {
@@ -49,6 +50,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _httpRequestHelper = A.Fake<IHttpRequestHelper>();
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
+            _resultSummary = A.Fake<IResultSummary>();
+
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(_resultSummary);
 
             const string  query = "{\"query\": \"QUERY HERE\"}";
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
@@ -202,7 +206,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
 
-            var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
@@ -221,7 +224,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
 
@@ -263,13 +265,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             // remove: use default GetAllSkills
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
 
-            //todo: generic
-            var resultSummary = A.Fake<IResultSummary>();
-
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[0] } };
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
 
@@ -290,7 +288,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
-            var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
@@ -304,7 +301,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             //todo: don't ignore
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
 
@@ -326,7 +322,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
 
-            var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
@@ -338,7 +333,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
 
@@ -360,7 +354,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsByLabel.json")).Returns(query);
 
-            var resultSummary = A.Fake<IResultSummary>();
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
@@ -379,7 +372,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
-            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
 
