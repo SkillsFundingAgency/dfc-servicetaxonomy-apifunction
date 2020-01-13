@@ -233,24 +233,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
-                {"occupation", "hazardous waste technician"},
-                {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
-                {"lastModified", "03-12-2019T00:00:00Z"},
-                {
-                    "matches", new Dictionary<string, object>
-                    {
-                        {"occupation", new string[0]},
-                        {"alternativeLabels", new[] {"toxic waste removal technician"}}
-                    }
-                }
-            };
-
-            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
-
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
 
             var result = await RunFunction();
 
