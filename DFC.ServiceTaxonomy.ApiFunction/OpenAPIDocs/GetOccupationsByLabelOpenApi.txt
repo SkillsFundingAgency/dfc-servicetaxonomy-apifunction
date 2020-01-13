@@ -1,20 +1,20 @@
 openapi: 3.0.1
 info:
   title: Get Occupations By Label
-  description: 'Get occupations whose labels match a search term'
+  description: Get occupations whose name (aka preferred label) or alternative label matches a search term
   version: 1.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
 - name: Get Occupations By Label
-  description: Get occupations whose labels match a search term
+  description: Get occupations whose name (aka preferred label) or alternative label matches a search term
 paths:
   /Execute/:
     post:
       tags:
       - Occupation
       summary: Get Occupations By Label
-      description: Get occupations whose labels match a search term
+      description: Get occupations whose name (aka preferred label) or alternative label matches a search term
       operationId: GetOccupationsByLabel
       parameters:
         - in: query
@@ -22,7 +22,7 @@ paths:
           schema:
             type: boolean
             default: false
-          description: Find occupations where the search term is part of an alt label
+          description: Find occupations where the search term is part of an alternative label
           required: false
           allowEmptyValue: false
       requestBody:
