@@ -16,6 +16,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
+//todo: update to func v3, core 3.1, c# 8
+//todo: nullable reference types
+//todo: sonar
+
 namespace DFC.ServiceTaxonomy.ApiFunction.Function
 {
     public class Execute
@@ -182,7 +186,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             var queryParams = queryCollection.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
             
-            //todo: rename everything to be descriptive
             foreach (var cypherParam in cypherModel.QueryParams)
             {
                 // let query param override param in message body
@@ -200,11 +203,3 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         }
     }
 }
-
-//todo:
-// tests
-// non-nullable
-// update to v3 func 3.1 core
-// sonar
-
-

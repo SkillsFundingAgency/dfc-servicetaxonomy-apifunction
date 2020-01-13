@@ -91,10 +91,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is BadRequestObjectResult);
             Assert.Equal((int?) HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
-
-        //todo: tests for when GetCypherQuery throws and GetRequestBody throws, now that they run concurrently
-        //todo: tests for results when missing params
-        // [InlineData("bad json")]    // deserializes to null
         
         [Fact]
         public async Task Execute_WhenUnableToDeserializeRequestBody_ReturnsUnprocessableEntityObjectResult()
