@@ -57,7 +57,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsBadRequestObjectResult()
+        public async Task Execute_WhenFunctionAppSettingIsNullOrEmpty_ReturnsInternalServerErrorResult()
         {
             _config.CurrentValue.Function = null;
 
@@ -167,8 +167,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [InlineData("body", null, null, "body")]
         [InlineData(null, "param", null, "param")]
         [InlineData("body", "param", null, "param")]
-        //todo: need separate test for this
-        //[InlineData(null, null, null, "default")]
+        // see Execute_NoParamSuppliedForMandatoryParam_ReturnsBadRequest() for this scenario..
+        //[InlineData(null, null, null, <return BadRequest>)]
         public async Task Execute_ParamMatrix_CorrectParamValuePassedToQuery(
             string requestBodyParam, string queryParamParam, string defaultParam, string expectedCypherParam)
         {
@@ -239,6 +239,57 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             //todo: refactor unfriendly
             var actualParams = executeCall.Arguments[1].As<IDictionary<string, object>>();
             Assert.Equal(expectedCypherParam, actualParams[paramName]);
+        }
+
+        [Fact]
+        public async Task Execute_NoParamSuppliedForMandatoryParam_ReturnsBadRequest()
+        {
+            const string paramName = "matchaltlabels";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request))
+                .Returns("");
+            
+            _request.Query = new QueryCollection(new Dictionary<string, StringValues>());
+
+            _config.CurrentValue.Function = "GetOccupationsForLabel";
+
+            string cypherConfig = $@"{{
+                ""query"": """",
+                ""queryParams"": [
+                    {{
+                        ""name"": ""{paramName}""
+                    }}
+                ]}}";
+
+            // remove: use default GetAllSkills
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
+
+            var resultSummary = A.Fake<IResultSummary>();
+            var record = new Dictionary<string, object>
+            {
+                {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
+                {"occupation", "hazardous waste technician"},
+                {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
+                {"lastModified", "03-12-2019T00:00:00Z"},
+                {
+                    "matches", new Dictionary<string, object>
+                    {
+                        {"occupation", new string[0]},
+                        {"alternativeLabels", new[] {"toxic waste removal technician"}}
+                    }
+                }
+            };
+
+            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
+            object records = dictionaryOfRecords;
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
+
+            var result = await RunFunction();
+
+            // Assert
+            Assert.True(result is BadRequestObjectResult);
         }
 
         //todo:
