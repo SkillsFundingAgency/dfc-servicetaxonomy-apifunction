@@ -156,6 +156,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             JObject requestBody;
 
+            if (string.IsNullOrWhiteSpace(requestBodyString))
+                requestBodyString = "{}";
+            
             try
             {
                 requestBody = JObject.Parse(requestBodyString);
@@ -200,7 +203,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
 //todo:
 // tests
-// refactor
 // non-nullable
 // update to v3 func 3.1 core
 // sonar?
