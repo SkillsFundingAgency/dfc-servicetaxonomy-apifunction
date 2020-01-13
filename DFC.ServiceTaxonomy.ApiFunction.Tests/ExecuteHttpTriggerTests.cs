@@ -218,10 +218,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 }
             };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
-            object records = dictionaryOfRecords;
+            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -264,26 +263,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             // remove: use default GetAllSkills
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
 
+            //todo: generic
             var resultSummary = A.Fake<IResultSummary>();
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
-                {"occupation", "hazardous waste technician"},
-                {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
-                {"lastModified", "03-12-2019T00:00:00Z"},
-                {
-                    "matches", new Dictionary<string, object>
-                    {
-                        {"occupation", new string[0]},
-                        {"alternativeLabels", new[] {"toxic waste removal technician"}}
-                    }
-                }
-            };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
-            object records = dictionaryOfRecords;
+            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[0] } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -292,12 +277,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is BadRequestObjectResult);
         }
 
-        //todo:
-        // [Fact]
-        // public async Task Execute_MandatoryParamNotSupplied_ReturnsBadRequest()
-        // {
-        // }
-        
         [Theory]
         [InlineData("")]
         [InlineData("  \n")]
@@ -321,11 +300,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"jobProfile", "http://tbc"}
             };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
-            object records = dictionaryOfRecords;
+            object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
             //todo: don't ignore
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -357,10 +335,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"lastModified", "05-12-2019T00:00:00Z"}
             };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
-            object records = dictionaryOfRecords;
+            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
@@ -399,10 +376,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 }
             };
 
-            var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
-            object records = dictionaryOfRecords;
+            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(records);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(resultSummary);
 
             var result = await RunFunction();
