@@ -253,9 +253,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             const string paramName = "paramName";
 
-            //todo: default?
-            _request.Query = new QueryCollection(new Dictionary<string, StringValues>());
-
             string cypherConfig = $@"{{
                 ""query"": """",
                 ""queryParams"": [
@@ -272,7 +269,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var result = await RunFunction();
 
-            // Assert
             Assert.True(result is BadRequestObjectResult);
         }
 
