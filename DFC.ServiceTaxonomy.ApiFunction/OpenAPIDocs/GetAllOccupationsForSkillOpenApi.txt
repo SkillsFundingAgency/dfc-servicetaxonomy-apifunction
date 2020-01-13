@@ -29,7 +29,7 @@ paths:
         200:
           description: successful operation
           content:
-            application/json:
+            application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/Skill'
         204:
@@ -110,10 +110,3 @@ components:
               lastModified: 
                 type: string
                 example: 03-12-2019T00:00:00Z
-            xml:
-              name: Skill
-  securitySchemes:
-    apikeyQuery:
-      type: apiKey
-      name: code
-      in: query

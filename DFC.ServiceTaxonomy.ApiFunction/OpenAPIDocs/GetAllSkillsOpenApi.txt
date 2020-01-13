@@ -20,7 +20,7 @@ paths:
         200:
           description: successful operation
           content:
-            application/json:
+            application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/Skill'
         204:
@@ -62,10 +62,3 @@ components:
                 items: 
                   type: string
                   example: "alt 1"
-            xml:
-              name: Occupation
-  securitySchemes:
-    apikeyQuery:
-      type: apiKey
-      name: code
-      in: query
