@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
-    <PackageReference Include="Neo4j.Driver" Version="1.7.2" />
+    <PackageReference Include="Neo4j.Driver" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +22,6 @@
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +30,6 @@
 
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
-    <Copy
-      SourceFiles="@(CypherQueryFiles)"
-      DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
+    <Copy SourceFiles="@(CypherQueryFiles)" DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
   </Target>
 </Project>

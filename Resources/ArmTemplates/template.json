@@ -118,6 +118,11 @@
         "functionType": "GetSkillsGapForOccupations",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsgap-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsgap-ai')]"
+      },
+      {
+        "functionType": "GetOccupationsByLabel",
+        "functionName": "[concat(parameters('projectPrefix'), '-occbylabel-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-ai')]"
       }
     ]
   },

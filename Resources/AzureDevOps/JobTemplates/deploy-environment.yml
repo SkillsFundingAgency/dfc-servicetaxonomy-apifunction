@@ -228,3 +228,33 @@ jobs:
             FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
             PackageFile: '${{ parameters.PackageFile }}'
             ResourceGroup: '${{ parameters.ResourceGroup }}'
+
+- deployment: GetOccupationsByLabel
+  pool: 'NCS - CI and CD'
+  displayName: "Deploy GetOccupationsByLabel function"
+  environment: DEV_SERVICETAXONOMY
+  dependsOn:
+  - DeployTemplate
+  - SetupConditions
+  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetOccupationsByLabel'))
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - task: DownloadBuildArtifacts@0
+          displayName: "Download build artifacts"
+          inputs:
+            buildType: 'current'
+            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
+        - template: ../StepTemplates/deploy-azure-function.yml
+          parameters:
+            FunctionType: 'GetOccupationsByLabel'
+            WebAppName: '${{ parameters.WebAppPrefix }}-stax-occbylabel-fa'
+            AzureSubscription: '${{ parameters.AzureSubscription }}'
+            SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
+            ApimServiceName: '${{ parameters.ApimServiceName }}'
+            ApimImportScript: '${{ parameters.ApimImportScript }}'
+            SpecificationPath:  '${{ parameters.SpecificationPath }}'
+            FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
+            PackageFile: '${{ parameters.PackageFile }}'
+            ResourceGroup: '${{ parameters.ResourceGroup }}'
