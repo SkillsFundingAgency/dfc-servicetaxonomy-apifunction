@@ -6,7 +6,7 @@
 Here's the current query, formatted and with params replaced by literals...
 
 ```
-match (o:esco__Occupation)
+match (o:esco__Occupation)--(:ncs__JobProfile)
 where head(o.skos__prefLabel) contains 'toxic' or 
 case toLower('true')
   when 'true' then
