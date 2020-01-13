@@ -23,6 +23,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 {
     public class ExecuteHttpTriggerTests
     {
+        private const string DefaultFunctionName = "GetAllSkills";
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
@@ -39,12 +40,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             _executionContext =  new ExecutionContext();
 
             _config = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
-            var serviceTaxonomyApiSettings = A.Fake<ServiceTaxonomyApiSettings>();
-            serviceTaxonomyApiSettings.Function = "GetAllSkills";
-            serviceTaxonomyApiSettings.Neo4jUrl = "bolt://localhost:11002";
-            serviceTaxonomyApiSettings.Neo4jUser = "NeoUser";
-            serviceTaxonomyApiSettings.Neo4jPassword = "NeoPass";
-            A.CallTo(() => _config.CurrentValue).Returns(serviceTaxonomyApiSettings);
+            A.CallTo(() => _config.CurrentValue).Returns(new ServiceTaxonomyApiSettings
+            {
+                Function = DefaultFunctionName,
+                Neo4jUrl = "bolt://localhost:11002",
+                Neo4jUser = "NeoUser",
+                Neo4jPassword = "NeoPass"
+            });
 
             _log = A.Fake<ILogger>();
             _httpRequestHelper = A.Fake<IHttpRequestHelper>();
@@ -176,7 +178,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public async Task Execute_ParamMatrix_CorrectParamValuePassedToQuery(
             string requestBodyParam, string queryParamParam, string defaultParam, string expectedCypherParam)
         {
-            const string paramName = "matchaltlabels";
+            const string paramName = "paramName";
 
             string requestBody = requestBodyParam != null
                 ? $@"{{""{paramName}"": ""{requestBodyParam}"" }}"
@@ -193,8 +195,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 });
             }
 
-            _config.CurrentValue.Function = "GetOccupationsForLabel";
-
             string cypherConfig = $@"{{
                 ""query"": """",
                 ""queryParams"": [
@@ -204,7 +204,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                     }}
                 ]}}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
             var record = new Dictionary<string, object>
             {
@@ -245,14 +245,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [Fact]
         public async Task Execute_NoParamSuppliedForMandatoryParam_ReturnsBadRequest()
         {
-            const string paramName = "matchaltlabels";
+            const string paramName = "paramName";
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request))
                 .Returns("");
             
             _request.Query = new QueryCollection(new Dictionary<string, StringValues>());
-
-            _config.CurrentValue.Function = "GetOccupationsForLabel";
 
             string cypherConfig = $@"{{
                 ""query"": """",
@@ -262,8 +260,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                     }}
                 ]}}";
 
-            // remove: use default GetAllSkills
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsForLabel.json")).Returns(cypherConfig);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[0] } };
 
