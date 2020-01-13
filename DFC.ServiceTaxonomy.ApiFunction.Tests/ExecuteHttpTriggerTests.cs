@@ -276,17 +276,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
             
-            var query = "{\"query\": \"QUERY HERE\"}";
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(requestBody);
-
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
 
             var record = new Dictionary<string, object>
             {
                 {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
                 {"skill", "identify customer's needs"},
                 {"skillType", "knowledge"},
-                {"alternativeLabels", new string[3] {"alt 1", "alt 2", "alt 3"}},
+                {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
                 {"jobProfile", "http://tbc"}
             };
 
