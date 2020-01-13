@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Xml.Linq;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Helpers;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
@@ -161,6 +162,36 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.Equal((int?)HttpStatusCode.BadRequest, badRequestObjectResult.StatusCode);
         }
 
+        [Fact]
+        public async Task Execute_CypherConfigFound_CorrectQueryTextPassedToQuery()
+        {
+            const string expectedQueryText = "query text";
+
+            var query = $"{{\"query\": \"{expectedQueryText}\"}}";
+
+            //todo: default
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(query);
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
+
+            await RunFunction();
+
+            // Assert
+            
+            // could use the Capture from here.. https://thorarin.net/blog/post/2014/09/18/capturing-method-arguments-on-your-fakes-using-fakeiteasy.aspx
+            var neo4JHelperCalls = Fake.GetCalls(_neo4JHelper).ToList();
+
+            var executeCalls = neo4JHelperCalls.Where(c => c.Method.Name == nameof(INeo4JHelper.ExecuteCypherQueryInNeo4JAsync));
+            Assert.Single(executeCalls);
+
+            var executeCall = executeCalls.First();
+            //todo: refactor unfriendly
+            var actualQueryText = executeCall.Arguments[0].As<string>();
+            Assert.Equal(expectedQueryText, actualQueryText);
+        }
+        
         [Theory]
         [InlineData("body", null, "default", "body")]
         [InlineData(null, "param", "default", "param")]
@@ -272,7 +303,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         [InlineData("")]
         [InlineData("  \n")]
         [InlineData("{}")]
-        public async Task Execute_WhenCodeIsValidForGetAllSkills_ReturnsCorrectJsonResponse(string requestBody)
+        public async Task Execute_GetAllSkills_ReturnsCorrectJsonResponse(string requestBody)
         {
             var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
             
@@ -289,7 +320,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
-            //todo: don't ignore
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
@@ -302,7 +332,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
         
         [Fact]
-        public async Task Execute_WhenCodeIsValidForGetAllOccupations_ReturnsCorrectJsonResponse()
+        public async Task Execute_GetAllOccupations_ReturnsCorrectJsonResponse()
         {
              _config.CurrentValue.Function = "GetAllOccupations";
             var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
@@ -320,7 +350,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 {"lastModified", "05-12-2019T00:00:00Z"}
             };
 
-            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[1] { record } } };
+            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
 
@@ -334,7 +364,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
-        public async Task Execute_WhenCodeIsValidForGetOccupationsByLabel_ReturnsCorrectJsonResponse()
+        public async Task Execute_GetOccupationsByLabel_ReturnsCorrectJsonResponse()
         {
             _config.CurrentValue.Function = "GetOccupationsByLabel";
             var expectedJson = "{\"occupations\":[{\"uri\":\"http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2\",\"occupation\":\"hazardous waste technician\",\"alternativeLabels\":[\"waste disposal site compliance technician\",\"toxic waste removal technician\"],\"lastModified\":\"03-12-2019T00:00:00Z\",\"matches\":{\"occupation\":[],\"alternativeLabels\":[\"toxic waste removal technician\"]}}]}";
