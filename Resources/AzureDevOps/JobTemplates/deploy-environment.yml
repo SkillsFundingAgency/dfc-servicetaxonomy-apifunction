@@ -11,10 +11,11 @@ parameters:
   ParentBusiness: ''
   ServiceOffering: ''
   ResourceGroup: ''
-  WebAppPrefix: ''
   SharedResourceGroup: ''
   ApimServiceName: ''
   FunctionAppDomain: ''
+  EnvironmentName: ''
+  Apis: []
 
 jobs:
 - job: SetupConditions
@@ -22,7 +23,7 @@ jobs:
   - powershell: |
       Write-Host "##vso[task.setvariable variable=projectsToDeploy;isOutput=true]$(projects)"
       Write-Host "Setting projectsToDeploy to '$(projects)'" 
-    name: setupConditionStep      
+    name: setupConditionStep
     
 - deployment: DeployTemplate
   pool: 'NCS - CI and CD'
@@ -36,7 +37,7 @@ jobs:
           displayName: "Download build artifacts"
           inputs:
             buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'          
+            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'
         - template: ../StepTemplates/deploy-arm-template.yml
           parameters: 
             AzureSubscription: '${{ parameters.AzureSubscription }}'
@@ -49,47 +50,21 @@ jobs:
             ArmOutputVariableName: '${{ parameters.ArmOutputVariableName }}'
             ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
 
-- deployment: DeployGetAllSkills
-  pool: 'NCS - CI and CD'
-  displayName: "Deploy GetAllSkills function"
-  environment: DEV_SERVICETAXONOMY
-  dependsOn: 
-  - DeployTemplate
-  - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllSkills'))
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: "Download build artifacts"
-          inputs:
-            buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'            
-        - template: ../StepTemplates/deploy-azure-function.yml
-          parameters:
-            FunctionType: 'GetAllSkills'
-            WebAppName: '${{ parameters.WebAppPrefix }}-stax-skills-fa'
-            AzureSubscription: '${{ parameters.AzureSubscription }}'
-            SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
-            ApimServiceName: '${{ parameters.ApimServiceName }}'
-            ApimImportScript: '${{ parameters.ApimImportScript }}'
-            SpecificationPath:  '${{ parameters.SpecificationPath }}'
-            FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
-            PackageFile: '${{ parameters.PackageFile }}'
-            ResourceGroup: '${{ parameters.ResourceGroup }}'
-
-- deployment: DeployGetAllOccupations
-  pool: 'NCS - CI and CD'
-  displayName: "Deploy GetAllOccupations function"
-  environment: DEV_SERVICETAXONOMY
-  dependsOn: 
-  - DeployTemplate
-  - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllOccupations'))
-  strategy:
-    runOnce:
-      deploy:
+- ${{ each apiPartition in parameters.Apis }}:
+  - ${{ each api in apiPartition }}:
+    - deployment: Deploy${{ api.name }}
+      displayName: "Deploy ${{ api.name }}"
+      environment: ${{ parameters.EnvironmentName }}
+      dependsOn: 
+      - DeployTemplate
+      - SetupConditions
+      - ${{ if api.dependsOn }}:
+        - Deploy${{ api.dependsOn }}
+      condition: and(succeeded(), or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '${{ api.name }}')))
+      strategy:
+        runOnce:
+          deploy:
+            steps:
         steps:
         - task: DownloadBuildArtifacts@0
           displayName: "Download build artifacts"
@@ -98,68 +73,8 @@ jobs:
             artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
         - template: ../StepTemplates/deploy-azure-function.yml
           parameters:
-            FunctionType: 'GetAllOccupations'
-            WebAppName: '${{ parameters.WebAppPrefix }}-stax-occ-fa'
-            AzureSubscription: '${{ parameters.AzureSubscription }}'
-            SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
-            ApimServiceName: '${{ parameters.ApimServiceName }}'
-            ApimImportScript: '${{ parameters.ApimImportScript }}'
-            SpecificationPath:  '${{ parameters.SpecificationPath }}'
-            FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
-            PackageFile: '${{ parameters.PackageFile }}'
-            ResourceGroup: '${{ parameters.ResourceGroup }}'
-
-- deployment: GetAllSkillsForOccupation
-  pool: 'NCS - CI and CD'
-  displayName: "Deploy GetAllSkillsForOccupation function"
-  environment: DEV_SERVICETAXONOMY
-  dependsOn: 
-  - DeployTemplate
-  - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetAllSkillsForOccupation'))
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: "Download build artifacts"
-          inputs:
-            buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
-        - template: ../StepTemplates/deploy-azure-function.yml
-          parameters:
-            FunctionType: 'GetAllSkillsForOccupation'
-            WebAppName: '${{ parameters.WebAppPrefix }}-stax-skillsocc-fa'
-            AzureSubscription: '${{ parameters.AzureSubscription }}'
-            SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
-            ApimServiceName: '${{ parameters.ApimServiceName }}'
-            ApimImportScript: '${{ parameters.ApimImportScript }}'
-            SpecificationPath:  '${{ parameters.SpecificationPath }}'
-            FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
-            PackageFile: '${{ parameters.PackageFile }}'
-            ResourceGroup: '${{ parameters.ResourceGroup }}'
-
-- deployment: GetOccupationsByLabel
-  pool: 'NCS - CI and CD'
-  displayName: "Deploy GetOccupationsByLabel function"
-  environment: DEV_SERVICETAXONOMY
-  dependsOn:
-  - DeployTemplate
-  - SetupConditions
-  condition: or(eq(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], '*'), contains(dependencies.SetupConditions.outputs['setupConditionStep.projectsToDeploy'], 'GetOccupationsByLabel'))
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: "Download build artifacts"
-          inputs:
-            buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
-        - template: ../StepTemplates/deploy-azure-function.yml
-          parameters:
-            FunctionType: 'GetOccupationsByLabel'
-            WebAppName: '${{ parameters.WebAppPrefix }}-stax-occbylabel-fa'
+            FunctionType: '${{ api.name }}'
+            WebAppName: '${{ api.webhost }}'
             AzureSubscription: '${{ parameters.AzureSubscription }}'
             SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
             ApimServiceName: '${{ parameters.ApimServiceName }}'

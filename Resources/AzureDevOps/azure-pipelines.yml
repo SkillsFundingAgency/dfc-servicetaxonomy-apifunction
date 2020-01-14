@@ -43,6 +43,8 @@ stages:
   - group: dfc-shared-dev
   - group: dfc-stax-shared-dev
   - group: dfc-stax-apifunctions-dev
+  - name: WebAppPrefix
+    value: dfc-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -51,7 +53,6 @@ stages:
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: 'dfc-dev-stax-api-rg'
-      WebAppPrefix: 'dfc-dev'
       ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
       PackageFile:  "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
       ArmTemplateFolder: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
@@ -60,3 +61,16 @@ stages:
       SharedResourceGroup: 'dfc-dev-shared-rg'
       ApimServiceName: 'dfc-dev-shared-apim'
       FunctionAppDomain: '$(FunctionAppDomain)'
+      EnvironmentName: DEV_SERVICETAXONOMY
+      Apis: 
+        -
+          - name: GetAllSkills
+            functionApp: "${{ variables.WebAppPrefix }}-stax-skills-fa"
+          - name: GetAllOccupations
+            functionApp: '${{ variables.WebAppPrefix }}-stax-occ-fa'
+          - name: GetAllSkillsForOccupation
+            functionApp: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
+        -
+          - name: GetOccupationsByLabel
+            functionApp: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
+            dependsOn: GetAllSkills
