@@ -15,6 +15,14 @@ parameters:
   ApimServiceName: ''
   FunctionAppDomain: ''
   EnvironmentName: ''
+  # The 'Apis' parameter is a bit special here - it requires a structured, comples parameter:  an array of arrays of objects
+  # Below is a simple example of what it expects:
+  # - 
+  #   - name: anItem
+  #     value: someValue
+  # -
+  #   - name: anotherItem
+  #     value: aDiffernetvalue
   Apis: []
 
 jobs:

@@ -67,6 +67,9 @@ stages:
       ApimServiceName: 'dfc-dev-shared-apim'
       FunctionAppDomain: '$(FunctionAppDomain)'
       EnvironmentName: DEV_SERVICETAXONOMY
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
       Apis: 
         -
           - name: GetAllSkills
