@@ -22,7 +22,7 @@ parameters:
   #     value: someValue
   # -
   #   - name: anotherItem
-  #     value: aDiffernetvalue
+  #     value: aDifferentValue
   Apis: []
 
 jobs:
