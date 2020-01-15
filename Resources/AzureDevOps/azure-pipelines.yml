@@ -65,12 +65,12 @@ stages:
       Apis: 
         -
           - name: GetAllSkills
-            functionApp: "${{ variables.WebAppPrefix }}-stax-skills-fa"
+            azureFunctionName: "${{ variables.WebAppPrefix }}-stax-skills-fa"
           - name: GetAllOccupations
-            functionApp: '${{ variables.WebAppPrefix }}-stax-occ-fa'
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occ-fa'
           - name: GetAllSkillsForOccupation
-            functionApp: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
         -
           - name: GetOccupationsByLabel
             functionApp: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
-            dependsOn: GetAllSkills
+            azureFunctionName: GetAllSkills

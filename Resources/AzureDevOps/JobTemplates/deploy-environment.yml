@@ -74,7 +74,7 @@ jobs:
         - template: ../StepTemplates/deploy-azure-function.yml
           parameters:
             FunctionType: '${{ api.name }}'
-            WebAppName: '${{ api.webhost }}'
+            WebAppName: '${{ api.azureFunctionName }}'
             AzureSubscription: '${{ parameters.AzureSubscription }}'
             SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
             ApimServiceName: '${{ parameters.ApimServiceName }}'
