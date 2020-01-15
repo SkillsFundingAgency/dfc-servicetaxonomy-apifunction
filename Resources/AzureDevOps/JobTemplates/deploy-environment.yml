@@ -49,6 +49,7 @@ jobs:
             ArmOutputVariableName: '${{ parameters.ArmOutputVariableName }}'
             ArmTemplateFolder: '${{ parameters.ArmTemplateFolder }}'
 
+# Please see https://github.com/microsoft/azure-pipelines-yaml/blob/master/design/each-expression.md for more information on the each expression.
 - ${{ each apiPartition in parameters.Apis }}:
   - ${{ each api in apiPartition }}:
     - deployment: Deploy${{ api.name }}
