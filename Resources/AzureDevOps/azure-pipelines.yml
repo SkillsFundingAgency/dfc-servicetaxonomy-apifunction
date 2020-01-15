@@ -7,6 +7,12 @@ resources:
     ref: refs/tags/v1.6.11
     endpoint: 'GitHub (ESFA)'
 
+pool:
+  name: NCS - CI and CD
+  demands:
+  - msbuild
+  - visualstudio
+
 stages:
 - stage: Build
   jobs:
@@ -16,7 +22,6 @@ stages:
 
   - job:
     displayName: "Build DotNetCore app"
-    pool: 'NCS - CI and CD'
     steps:
     - task: CopyFiles@2
       displayName: "Copy OpenAPI specification docs to artifacts"

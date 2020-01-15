@@ -26,7 +26,6 @@ jobs:
     name: setupConditionStep
     
 - deployment: DeployTemplate
-  pool: 'NCS - CI and CD'
   displayName: "Deploy arm templates"
   environment: DEV_SERVICETAXONOMY
   strategy:
