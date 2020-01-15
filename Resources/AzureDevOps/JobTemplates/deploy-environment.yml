@@ -65,21 +65,20 @@ jobs:
         runOnce:
           deploy:
             steps:
-        steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: "Download build artifacts"
-          inputs:
-            buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
-        - template: ../StepTemplates/deploy-azure-function.yml
-          parameters:
-            FunctionType: '${{ api.name }}'
-            WebAppName: '${{ api.azureFunctionName }}'
-            AzureSubscription: '${{ parameters.AzureSubscription }}'
-            SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
-            ApimServiceName: '${{ parameters.ApimServiceName }}'
-            ApimImportScript: '${{ parameters.ApimImportScript }}'
-            SpecificationPath:  '${{ parameters.SpecificationPath }}'
-            FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
-            PackageFile: '${{ parameters.PackageFile }}'
-            ResourceGroup: '${{ parameters.ResourceGroup }}'
+            - task: DownloadBuildArtifacts@0
+              displayName: "Download build artifacts"
+              inputs:
+                buildType: 'current'
+                artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
+            - template: ../StepTemplates/deploy-azure-function.yml
+              parameters:
+                FunctionType: '${{ api.name }}'
+                WebAppName: '${{ api.azureFunctionName }}'
+                AzureSubscription: '${{ parameters.AzureSubscription }}'
+                SharedResourceGroup: '${{ parameters.SharedResourceGroup }}'
+                ApimServiceName: '${{ parameters.ApimServiceName }}'
+                ApimImportScript: '${{ parameters.ApimImportScript }}'
+                SpecificationPath:  '${{ parameters.SpecificationPath }}'
+                FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
+                PackageFile: '${{ parameters.PackageFile }}'
+                ResourceGroup: '${{ parameters.ResourceGroup }}'
