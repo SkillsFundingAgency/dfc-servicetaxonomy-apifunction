@@ -72,5 +72,5 @@ stages:
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
         -
           - name: GetOccupationsByLabel
-            functionApp: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
-            azureFunctionName: GetAllSkills
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
+            dependsOn: GetAllSkills
