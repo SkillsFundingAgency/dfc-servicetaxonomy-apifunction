@@ -4,7 +4,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.10.0
+    ref: refs/tags/v1.10.1
     endpoint: 'GitHub (ESFA)'
 
 pool:
@@ -41,7 +41,7 @@ stages:
         displayName: Publish API import script to Pipeline Artifact
         inputs:
           targetPath: "$(System.DefaultWorkingDirectory)/Resources/Scripts"
-          artifactName: $DFC.ServiceTaxonomy.Resources.Scripts
+          artifactName: DFC.ServiceTaxonomy.Resources.Scripts
 
 - stage: DeployToDevServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
