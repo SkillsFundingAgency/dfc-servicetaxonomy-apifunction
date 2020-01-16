@@ -24,7 +24,6 @@ stages:
           ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
           SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
 
-
       - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build.yml@dfc-devops
         parameters:
           SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'

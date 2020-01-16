@@ -10,15 +10,12 @@ parameters:
   ArmOutputVariableName: 'ARMOutputs'
 
 steps:
-- powershell: |
-    Invoke-WebRequest -Uri "${{ parameters.SetEsfaResourceGroupTagsScript }}" -OutFile "${{ variables['System.DefaultWorkingDirectory']}}/Set-EsfaResourceGroupTags.ps1"
-  displayName: "Download scripts from dfc-devops repo"
-
+- checkout: dfc-devops
 - task: AzurePowerShell@3
   displayName:  "Create resource groups with tags"
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
-    ScriptPath: "${{ variables['System.DefaultWorkingDirectory'] }}/Set-EsfaResourceGroupTags.ps1"
+    ScriptPath: "${{ variables['System.DefaultWorkingDirectory'] }}/PSScripts/Set-EsfaResourceGroupTags.ps1"
     ScriptArguments: '-ResourceGroupName "${{ parameters.ResourceGroup }}" -Environment "${{ parameters.EnvironmentTag }}" -ParentBusiness "${{ parameters.ParentBusiness }}" -ServiceOffering "${{ parameters.ServiceOffering }}" -Verbose'
     azurePowerShellVersion: LatestVersion
 
