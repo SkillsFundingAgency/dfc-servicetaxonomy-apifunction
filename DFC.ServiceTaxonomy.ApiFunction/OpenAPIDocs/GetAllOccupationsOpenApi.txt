@@ -1,6 +1,6 @@
 ﻿openapi: 3.0.1
 info:
-  title: Get All Occupations
+  title: Service Taxonomy Get All Occupations
   description: 'Sample Description for Query'
   version: 1.0.0
 servers:

@@ -4,35 +4,45 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.6.11
+    ref: refs/tags/v1.10.1
     endpoint: 'GitHub (ESFA)'
+
+pool:
+  name: NCS - CI and CD
+  demands:
+  - msbuild
+  - visualstudio
 
 stages:
 - stage: Build
   jobs:
-  - template: /AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
-    parameters:
-      ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
+    - job:
+      displayName: "Build and test application and templates"
+      steps:
+      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
+        parameters:
+          ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
+          SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
 
-  - job:
-    displayName: "Build DotNetCore app"
-    pool: 'NCS - CI and CD'
-    steps:
-    - task: CopyFiles@2
-      displayName: "Copy OpenAPI specification docs to artifacts"
-      inputs:
-        sourceFolder: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
-        contents: |
-          *.txt
-        targetFolder: '$(build.artifactstagingdirectory)\Artifact\DFC.ServiceTaxonomy.ApiFunction\OpenApiDocs'
+      - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build.yml@dfc-devops
+        parameters:
+          SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
+          BuildPlatform: 'any cpu'
+          BuildConfiguration: 'release'
+          PublishWebApp: true
+          TestSuffix: 'Tests'
 
-    - template: /AzureDevOpsTemplates/Build/dfc-dotnetcore-build.yml@dfc-devops
-      parameters:
-        SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
-        BuildPlatform: 'any cpu'
-        BuildConfiguration: 'release'
-        PublishWebApp: true
-        TestSuffix: 'Tests'
+      - task: PublishPipelineArtifact@1
+        displayName: Publish OpenAPI docs to Pipeline Artifact
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
+          artifactName: DFC.ServiceTaxonomy.ApiFunction.Resources.OpenAPIDocs
+
+      - task: PublishPipelineArtifact@1
+        displayName: Publish API import script to Pipeline Artifact
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/Resources/Scripts"
+          artifactName: DFC.ServiceTaxonomy.ApiFunction.Resources.Scripts
 
 - stage: DeployToDevServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -43,6 +53,8 @@ stages:
   - group: dfc-shared-dev
   - group: dfc-stax-shared-dev
   - group: dfc-stax-apifunctions-dev
+  - name: WebAppPrefix
+    value: dfc-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -51,12 +63,30 @@ stages:
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: 'dfc-dev-stax-api-rg'
-      WebAppPrefix: 'dfc-dev'
-      ArtifactRootDirectory: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction'"
-      PackageFile:  "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
-      ArmTemplateFolder: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/ArmTemplates/"
-      ApimImportScript: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/Azure/Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
-      SpecificationPath: "$(System.ArtifactsDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenApiDocs"
+      PackageFile:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+      ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ArmTemplates/"
+      ApimImportScript: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
+      SpecificationPath: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.OpenApiDocs"
       SharedResourceGroup: 'dfc-dev-shared-rg'
       ApimServiceName: 'dfc-dev-shared-apim'
       FunctionAppDomain: '$(FunctionAppDomain)'
+      EnvironmentName: DEV_SERVICETAXONOMY
+      # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
+      # The top level -`s here defines an array of "something"
+      # The inner level -'s defines an array of mappings.
+      Apis:
+        -
+          - name: GetAllSkills
+            azureFunctionName: "${{ variables.WebAppPrefix }}-stax-skills-fa"
+          - name: GetAllOccupations
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occ-fa'
+          - name: GetAllSkillsForOccupation
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
+        -
+          - name: GetOccupationsByLabel
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
+            # This property makes the generated deployment job for this function depend on the 'GetAllSkills' deployment job generated by it's entry in previous array element
+            # This causes the generated deployment job to delay execution until the 'GetAllSkills' deployment job has finished.
+            # As you add items to this array, please reference them back to the task in the same place in the previous
+            # array element, so it gives us a partitioned deployment window!
+            dependsOn: GetAllSkills
