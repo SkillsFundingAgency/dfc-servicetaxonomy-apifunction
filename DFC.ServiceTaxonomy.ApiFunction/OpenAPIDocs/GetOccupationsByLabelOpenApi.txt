@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Get Occupations By Label
+  title: Service Taxonomy Get Occupations By Label
   description: Get occupations whose name (aka preferred label) or alternative label matches a search term
   version: 1.0.0
 servers:

@@ -187,6 +187,9 @@
           },
           "apimLoggerName": {
             "value": "[reference('servicetaxonomy-apim-logger').outputs.ApimLoggerName.value]"
+          },
+          "apiSuffix": {
+            "value": "[toLower(concat('servicetaxonomy/', variables('allFunctions')[copyIndex()].functionType))]"
           }
         }
       },
