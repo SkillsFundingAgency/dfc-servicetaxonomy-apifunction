@@ -67,6 +67,7 @@ jobs:
       strategy:
         runOnce:
           deploy:
+            steps:
             - template: ../StepTemplates/deploy-azure-function.yml
               parameters:
                 FunctionType: '${{ api.name }}'
