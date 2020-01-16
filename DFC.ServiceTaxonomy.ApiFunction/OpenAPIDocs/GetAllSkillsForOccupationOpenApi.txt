@@ -1,6 +1,6 @@
 ﻿openapi: 3.0.1
 info:
-  title: Get Skills For Occupation
+  title: Service Taxonomy Get Skills For Occupation
   description: 'Sample Description for Query'
   version: 1.0.0
 servers:

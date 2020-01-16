@@ -1,6 +1,6 @@
 ﻿openapi: 3.0.1
 info:
-  title: Skills Gap Open Api Specification
+  title: Service Taxonomy Skills Gap Open Api Specification
   description: 'Sample Description for Query'
   version: 1.0.0
 servers:
