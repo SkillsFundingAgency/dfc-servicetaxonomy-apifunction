@@ -35,13 +35,13 @@ stages:
         displayName: Publish OpenAPI docs to Pipeline Artifact
         inputs:
           targetPath: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
-          artifactName: ${{ parameters.SolutionBaseName }}.Resources.OpenAPIDocs
+          artifactName: DFC.ServiceTaxonomy.Resources.OpenAPIDocs
 
       - task: PublishPipelineArtifact@1
         displayName: Publish API import script to Pipeline Artifact
         inputs:
-          targetPath: "$(System.DefaultWorkingDirectory)/Resourcs/Scripts"
-          artifactName: ${{ parameters.SolutionBaseName }}.Resources.Scripts
+          targetPath: "$(System.DefaultWorkingDirectory)/Resources/Scripts"
+          artifactName: $DFC.ServiceTaxonomy.Resources.Scripts
 
 - stage: DeployToDevServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
