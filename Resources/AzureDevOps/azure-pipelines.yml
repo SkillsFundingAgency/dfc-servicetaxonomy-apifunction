@@ -22,6 +22,8 @@ stages:
       - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
         parameters:
           ArmTemplateRoot: "$(System.DefaultWorkingDirectory)/Resources/ArmTemplates"
+          SolutionBaseName: 'DFC.ServiceTaxonomy'
+
 
       - template: /AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build.yml@dfc-devops
         parameters:
