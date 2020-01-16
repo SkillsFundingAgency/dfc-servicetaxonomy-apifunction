@@ -40,11 +40,6 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - task: DownloadBuildArtifacts@0
-          displayName: "Download build artifacts"
-          inputs:
-            buildType: 'current'
-            artifactName: 'DFC.ServiceTaxonomy.ApiFunction'
         - template: ../StepTemplates/deploy-arm-template.yml
           parameters: 
             AzureSubscription: '${{ parameters.AzureSubscription }}'
@@ -73,11 +68,6 @@ jobs:
         runOnce:
           deploy:
             steps:
-            - task: DownloadBuildArtifacts@0
-              displayName: "Download build artifacts"
-              inputs:
-                buildType: 'current'
-                artifactName: 'DFC.ServiceTaxonomy.ApiFunction'  
             - template: ../StepTemplates/deploy-azure-function.yml
               parameters:
                 FunctionType: '${{ api.name }}'
