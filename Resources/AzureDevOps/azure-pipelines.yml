@@ -37,7 +37,7 @@ stages:
         displayName: Publish OpenAPI docs to Pipeline Artifact
         inputs:
           targetPath: "$(System.DefaultWorkingDirectory)/DFC.ServiceTaxonomy.ApiFunction/OpenAPIDocs"
-          artifactName: DFC.ServiceTaxonomy.Resources.OpenAPIDocs
+          artifactName: DFC.ServiceTaxonomy.ApiFunction.Resources.OpenAPIDocs
 
       - task: PublishPipelineArtifact@1
         displayName: Publish API import script to Pipeline Artifact
