@@ -53,6 +53,7 @@ stages:
   - group: dfc-shared-dev
   - group: dfc-stax-shared-dev
   - group: dfc-stax-apifunctions-dev
+  - group: 'KeyVault - dfc-dev-shared-kv'
   - name: WebAppPrefix
     value: dfc-dev
   jobs:
@@ -100,6 +101,7 @@ stages:
   - group: dfc-shared-sit
   - group: dfc-stax-shared-sit
   - group: dfc-stax-apifunctions-sit
+  - group: 'KeyVault - dfc-sit-shared-kv'
   - name: WebAppPrefix
     value: dfc-sit
   jobs:
