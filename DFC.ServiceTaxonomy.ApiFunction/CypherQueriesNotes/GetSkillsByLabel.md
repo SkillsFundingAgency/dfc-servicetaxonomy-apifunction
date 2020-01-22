@@ -31,7 +31,7 @@ with { skills:collect(
   lastModified:head(s.dct__modified),
   matches:
   {
-    occupation:[preflab in s.skos__prefLabel where preflab contains 'toxic'],
+    skill:[preflab in s.skos__prefLabel where preflab contains 'toxic'],
     alternativeLabels:coalesce([altlab in s.skos__altLabel where altlab contains 'toxic'],[]),
     hiddenLabels:coalesce([hidlab in s.skos__hiddenLabel where hidlab contains 'toxic'],[])
   }

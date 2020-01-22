@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Xml.Linq;
 using DFC.ServiceTaxonomy.ApiFunction.Function;
 using DFC.ServiceTaxonomy.ApiFunction.Helpers;
 using DFC.ServiceTaxonomy.ApiFunction.Models;
@@ -373,6 +372,49 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
         }
 
+        [Fact]
+        public async Task Execute_GetSkillsByLabel_ReturnsCorrectJsonResponse()
+        {
+            _config.CurrentValue.Function = "GetSkillsByLabel";
+            var expectedJson = "{\"skills\":[{\"uri\":\"http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f\",\"skill\":\"toxicology\",\"skillType\":\"knowledge\",\"skillReusability\":\"cross-sectoral\",\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"study of adverse effects of chemicals\",\"studies of toxicity\"],\"lastModified\":\"2016-12-20T19:32:45Z\",\"matches\":{\"skill\":[\"toxicology\"],\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"studies of toxicity\"],\"hiddenLabels\":[]}}]}";
+            var query = @"{""query"": ""QUERY HERE""}";
+
+            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetSkillsByLabel.json")).Returns(query);
+
+            var record = new Dictionary<string, object>
+            {
+                {"uri", "http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f"},
+                {"skill", "toxicology"},
+                {"skillType", "knowledge"},
+                {"skillReusability", "cross-sectoral"},
+                {"alternativeLabels", new [] {"study of toxicity","chemical toxicity","study of adverse effects of chemicals","studies of toxicity"}},
+                {"lastModified", "2016-12-20T19:32:45Z"},
+                {
+                    "matches", new Dictionary<string, object>
+                    {
+                        {"skill", new[] {"toxicology"}},
+                        {"alternativeLabels", new[] {"study of toxicity","chemical toxicity","studies of toxicity"}},
+                        {"hiddenLabels", new string[0]},
+                    }
+                }
+            };
+
+            object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+
+            var result = await RunFunction();
+
+            var okObjectResult = result as OkObjectResult;
+
+            // Assert
+            Assert.True(result is OkObjectResult);
+            var balzak = JsonConvert.SerializeObject(okObjectResult.Value);
+            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        }
+        
         private async Task<IActionResult> RunFunction()
         {
             return await _executeFunction.Run(_request, _log, _executionContext).ConfigureAwait(false);
