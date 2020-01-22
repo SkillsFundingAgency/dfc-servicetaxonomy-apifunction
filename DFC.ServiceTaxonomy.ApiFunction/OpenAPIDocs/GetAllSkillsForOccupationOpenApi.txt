@@ -57,27 +57,20 @@ components:
     Occupation:
       type: "object"
       properties:
-        uri: 
-          uri:
+        uri:
+          type: string
+          example: http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c
+        occupation:
+          type: string
+          example: microbiologist
+        alternativeLabels:
+          type: array
+          items:
             type: string
-            example: http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c
-          jobProfileUri:
-            type: string
-            example: http://nationalcareers.service.gov.uk/jobprofile/20ef1426-f85d-4c03-b14d-89d1ad273e28
-          occupation:
-            type: string
-            example: microbiologist
-          jobProfileTitle:
-            type: string
-            example: microbiologist
-          alternativeLabels:
-            type: array
-            items:
-              type: string
-              example: microbiology studies research scientist
-          lastModified:
-            type: string
-            example: 2017-01-17T14:18:17Z
+            example: microbiology studies research scientist
+        lastModified:
+          type: string
+          example: 2017-01-17T14:18:17Z
         skills: 
           type: array
           items: 
