@@ -41,6 +41,3 @@ return skills
 ```
 
 ##Questions
-
-All skills, or skills with a relationship to an ESCO occupation that has a mapping to a job profile?
-return hidden labels?
