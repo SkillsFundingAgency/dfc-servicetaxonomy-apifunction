@@ -1,8 +1,8 @@
 ﻿{
-  "query": "QUERY",
+  "query": "MATCH (o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]- (s:esco__Skill ) -[rst:esco__skillType]-(st:skos__Concept), (s:esco__Skill )-[rrl:esco__skillReuseLevel]-(srl:skos__Concept) where o.uri = $uri WITH o, collect({uri:s.uri, skill:head(s.skos__prefLabel), alternativeLabels:coalesce(s.skos__altLabel,[]), type:case head(st.skos__prefLabel) when 'skill' then 'competency' when 'knowledge' then 'knowledge' end, skillReusability:case head(srl.skos__prefLabel) when 'cross-sector skills and competences' then 'cross-sectoral' when 'sector specific skills and competences' then 'sector-specific' when 'occupation specific skills and competences' then 'occupation-specific' when 'transversal skills and competences' then 'transversal' end, relationshipType:case type(r) when 'esco__isEssentialSkillFor' then 'essential' when 'esco__isOptionalSkillFor' then 'optional' end, lastModified:head(s.dct__modified) }) as skills OPTIONAL MATCH (o:esco__Occupation) -- (jp:ncs__JobProfile) WITH o, jp.skos__prefLabel as jobProfileTitle, jp.uri as jobProfileUri, skills RETURN { uri:o.uri, occupation:head(o.skos__prefLabel), jobProfileTitle:jobProfileTitle, jobProfileUri:jobProfileUri, alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:head(o.dct__modified), skills:skills }",
   "queryParams": [
     {
-      "name": "occupation"
+      "name": "uri"
     }
   ]
 }
