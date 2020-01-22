@@ -28,7 +28,6 @@ with { skills:collect(
     when 'occupation specific skills and competences' then 'occupation-specific'
     when 'transversal skills and competences' then 'transversal' end,
   alternativeLabels:coalesce(s.skos__altLabel,[]),
-  hiddenLabels:coalesce(s.skos__hiddenLabel,[]),
   lastModified:head(s.dct__modified),
   matches:
   {
