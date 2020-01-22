@@ -29,6 +29,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
 
+        private const string typeString = "System.String";
+        private const string typeInt = "System.Int32";
+        private const string typeStringArray = "System.String[]";
+
+
         public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
@@ -181,17 +186,17 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 return null;
             }
-            switch (paramType)
+            switch (paramType??typeString)
             {
-                case "System.String":
+                case typeString:
                     return paramString;
-                case "System.Int32":
+                case typeInt:
                     if (!Int32.TryParse(paramString, out int returnValue))
                     {
                         throw ApiFunctionException.BadRequest($"Unable to convert supplied Parameter to integer");
                     }
                     return returnValue;
-                case "System.Array`1[System.String]":
+                case typeStringArray:
                     return paramString.Split(",");
                 default:
                     throw ApiFunctionException.InternalServerError($"Parameter type {paramType} not recognised");
@@ -217,7 +222,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 try
                 {
                     object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
-                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? "System.String"))
+                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? typeString))
                                              ?? cypherParam.Default;
                     if (foundParamValue == null)
                         throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
@@ -226,7 +231,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 }
                 catch (Exception ex)
                 {
-                    throw ApiFunctionException.InternalServerError("Unable to process supplied parameters", ex);
+                    throw ApiFunctionException.BadRequest("Unable to process supplied parameters", ex);
                 }
             }
 
