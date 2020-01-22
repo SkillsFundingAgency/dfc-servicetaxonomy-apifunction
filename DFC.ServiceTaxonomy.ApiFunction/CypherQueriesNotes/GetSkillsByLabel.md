@@ -6,7 +6,7 @@
 Here's the current query, formatted and with params replaced by literals...
 
 ```
-match (skillreuselevel)<-[esco__skillReuseLevel]-(s:esco__Skill)-[:esco__skillType]->(skilltype)
+match (skillreuselevel)<-[:esco__skillReuseLevel]-(s:esco__Skill)-[:esco__skillType]->(skilltype)
 where head(s.skos__prefLabel) contains 'toxic' or 
 case toLower('true')
   when 'true' then
