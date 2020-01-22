@@ -213,14 +213,21 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             foreach (var cypherParam in cypherModel.QueryParams)
             {
                 // let query param override param in message body
-                object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
-                                         ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? "System.String"))
-                                         ?? cypherParam.Default;
 
-                if (foundParamValue == null)
-                    throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
+                try
+                {
+                    object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
+                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? "System.String"))
+                                             ?? cypherParam.Default;
+                    if (foundParamValue == null)
+                        throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
 
-                cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
+                    cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
+                }
+                catch (Exception ex)
+                {
+                    throw ApiFunctionException.InternalServerError("Unable to process supplied parameters", ex);
+                }
             }
 
             return cypherQueryStatementParameters;

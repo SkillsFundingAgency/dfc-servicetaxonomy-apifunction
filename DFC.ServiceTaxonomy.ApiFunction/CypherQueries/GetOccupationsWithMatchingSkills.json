@@ -1,0 +1,13 @@
+{
+  "query": "MATCH (j:ncs__JobProfile) -- (o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]- (s:esco__Skill ) where s.uri in $skillList OPTIONAL MATCH (o)<-[:esco__isEssentialSkillFor]-(sx) where sx.uri in $skillList WITH o, COUNT(distinct sx) as MatchingEssentialSkills OPTIONAL MATCH (o)<-[:esco__isOptionalSkillFor]-(sx) where sx.uri in $skillList WITH o, COUNT(distinct sx) as MatchingOptionalSkills,MatchingEssentialSkills MATCH (j:ncs__JobProfile) -- (o)<-[:esco__isEssentialSkillFor]-(sa) where MatchingOptionalSkills + MatchingEssentialSkills >= $minimumMatchingSkills WITH o, COUNT(distinct sa) as AllEssentialSkills,MatchingOptionalSkills,MatchingEssentialSkills, j.skos__prefLabel as JobProfile OPTIONAL MATCH (j:ncs__JobProfile) -- (o)<-[:esco__isOptionalSkillFor]-(sa) WITH o, COUNT(distinct sa) as AllOptionalSkills, AllEssentialSkills,MatchingOptionalSkills,MatchingEssentialSkills, JobProfile return { MatchingOccupations: collect({uri:o.uri,  occupation:head(o.skos__prefLabel),  jobProfileTitle:JobProfile,  matchingEssentialSkills:MatchingEssentialSkills,  matchingOptionalSkills:MatchingOptionalSkills,  totalOccupationEssentialSkills:AllEssentialSkills,  totalOccupationOptionalSkills:AllOptionalSkills,lastModified:head(o.dct__modified)})} as results",
+  "queryParams": [
+    {
+      "name": "skillList",
+      "type": "System.String[]"
+    },
+    {
+      "name": "minimumMatchingSkills",
+      "type": "System.Int32"
+    }
+  ]
+}

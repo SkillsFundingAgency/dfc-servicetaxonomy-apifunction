@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SkillRequestBody'
+              $ref: '#/components/schemas/requestBody'
             example:   # Sample object
                 "skill": "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
         required: true
@@ -31,7 +31,7 @@ paths:
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: '#/components/schemas/Skill'
+                $ref: '#/components/schemas/responseBody'
         204:
           description: No content can be found.
           content: {}
@@ -46,7 +46,7 @@ paths:
           content: {}
 components:
   schemas:
-    SkillRequestBody: 
+    requestBody: 
       required:
       - skill
       type: "object"
@@ -54,53 +54,63 @@ components:
         skill: 
           type: string
           example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
-    Skill: 
-      type: "object"
+    responseBody:
+      type: object
       properties:
-        uri: 
+        uri:
           type: string
-          example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
-        skill: 
+          example: http://data.europa.eu/esco/occupation/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
+        occupation:
           type: string
-          example: identify customer's needs
-        skilltype: 
-          type: string
-          example: knowledge
-          enum:
-               - knowledge
-               - competency
-        skillReusability: 
-          type: string
-          example: Occupation-specific
-          enum:
-            - transversal
-            - cross-sectoral
-            - sector-specific
-            - occupation-specific
-        alternativeLabels: 
-                type: array
-                items: 
-                  type: string
-                  example: "alt 1"
-        lastModified: 
-          type: string
-          example: 03-12-2019T00:00:00Z
-        occupations: 
+          example: News Reader
+        alternativeLabels:
           type: array
           items: 
+            type: string
+            example: anchorman          
+        lastModified:
+          type: string
+          example: 2017-01-17T14:18:17Z 
+        skills:
+          type: array
+          items:
             type: object
-            properties: 
-              uri: 
+            properties:
+              uri:
                 type: string
-                example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
-              occupation: 
+                example: http://data.europa.eu/esco/skill/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
+              skill:
                 type: string
-                example: renewable energy consultant
-              alternativeLabels: 
+                example: gather experimental data
+              type:
+                type: string
+                enum: [knowledge, competency]
+                example: knowledge
+              alternativeLabels:
                 type: array
                 items: 
                   type: string
-                  example: "alt 1"
-              lastModified: 
+                  example: accumulate experimental data
+              skillReusability:
                 type: string
-                example: 03-12-2019T00:00:00Z
+                enum: [transversal, cross-sectoral, sector-specific, occupation-specific]
+                example: transveral
+              lastModified:
+                type: string
+                example: 2017-01-17T14:18:17Z
+              relationshipType:
+                type: string
+                enum: [essential, optional]
+                example: essential
+            required:
+              - uri
+              - skill
+              - type
+              - alternativeLabels
+              - skillReusability
+              - lastModified
+              - relationshipType  
+      required:
+        - uri
+        - occupation
+        - lastModified
