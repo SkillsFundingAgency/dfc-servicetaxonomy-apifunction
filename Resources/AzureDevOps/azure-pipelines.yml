@@ -146,7 +146,7 @@ stages:
             # array element, so it gives us a partitioned deployment window!
             dependsOn: GetAllSkills
           - name: GetOccupationsWithMatchingSkills
-            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-ai-fa'
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-fa'
             dependsOn: GetAllOccupations
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
