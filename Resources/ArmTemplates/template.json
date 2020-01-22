@@ -111,8 +111,8 @@
       },
       {
         "functionType": "GetOccupationsWithMatchingSkills",
-        "functionName": "[concat(parameters('projectPrefix'), '-occsmatchskills-ai-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-occsmatchskills-ai-fa')]"
+        "functionName": "[concat(parameters('projectPrefix'), '-occsmatchskills-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occsmatchskills-ai')]"
       },
       {
         "functionType": "GetSkillsGapForOccupationAndGivenSkills",
