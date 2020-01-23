@@ -49,9 +49,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                log.LogInformation("HTTP trigger function is processing a request");
+                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
+                log.LogInformation($"Function has been triggered in {environment} environment.");
 
-                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, log);
+                bool development = environment == "Development";
+                
+                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log);
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
 
                 Cypher cypherModel = await cypherModelTask;
@@ -107,13 +110,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, ILogger log)
+        private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, bool development, ILogger log)
         {
             log.LogInformation("Generating file name and dir to read json config");
 
-            //todo: fix so that auto works locally
-            //var queryFileNameAndDir = $@"{context.FunctionAppDirectory}\CypherQueries\{functionName}.json";
-            var queryFileNameAndDir = $@"{context.FunctionDirectory}\CypherQueries\{functionName}.json";
+            var queryFileNameAndDir = $@"{(development?context.FunctionAppDirectory:context.FunctionDirectory)}\CypherQueries\{functionName}.json";
 
             string cypherQueryJsonConfig;
 

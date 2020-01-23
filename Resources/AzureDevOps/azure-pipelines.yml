@@ -97,7 +97,9 @@ stages:
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
             dependsOn: GetAllSkillsForOccupation
-
+          - name: GetSkillsByLabel
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
+            dependsOn: GetAllOccupations
 - stage: DeployToSitServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_SERVICETAXONOMY
@@ -151,3 +153,6 @@ stages:
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
             dependsOn: GetAllSkillsForOccupation
+          - name: GetSkillsByLabel
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
+            dependsOn: GetAllOccupations
