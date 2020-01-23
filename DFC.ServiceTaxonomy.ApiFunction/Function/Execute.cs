@@ -29,6 +29,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
 
+        private const string typeString = "System.String";
+        private const string typeInt = "System.Int32";
+        private const string typeStringArray = "System.String[]";
+
+
         public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
@@ -48,12 +53,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, log);
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
-                
-                Cypher cypherModel = await cypherModelTask; 
+
+                Cypher cypherModel = await cypherModelTask;
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
-                
+
                 if (recordsResult == null)
                     return new NoContentResult();
 
@@ -62,7 +67,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var statementResult = await _neo4JHelper.GetResultSummaryAsync();
                 if (statementResult != null)
                     log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
-                
+
                 return new OkObjectResult(recordsResult);
             }
             catch (ApiFunctionException e)
@@ -138,7 +143,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (cypherModel?.Query == null)
                 throw ApiFunctionException.InternalServerError("Null deserialized cypher model");
-            
+
             return cypherModel;
         }
 
@@ -162,7 +167,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (string.IsNullOrWhiteSpace(requestBodyString))
                 requestBodyString = "{}";
-            
+
             try
             {
                 requestBody = JObject.Parse(requestBodyString);
@@ -171,32 +176,63 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 throw ApiFunctionException.UnprocessableEntityObjectResult("Unable to deserialize request body", ex);
             }
-            
+
             return requestBody;
         }
+
+        private static object GetParamValue(string paramString, string paramType)
+        {
+            if (paramString == null)
+            {
+                return null;
+            }
+            switch (paramType??typeString)
+            {
+                case typeString:
+                    return paramString;
+                case typeInt:
+                    if (!Int32.TryParse(paramString, out int returnValue))
+                    {
+                        throw ApiFunctionException.BadRequest($"Unable to convert supplied Parameter to integer");
+                    }
+                    return returnValue;
+                case typeStringArray:
+                    return paramString.Split(",");
+                default:
+                    throw ApiFunctionException.InternalServerError($"Parameter type {paramType} not recognised");
+            }
+        }
+
 
         private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody, ILogger log)
         {
             log.LogInformation("Attempting to read json body object");
 
             var cypherQueryStatementParameters = new Dictionary<string, object>();
-            
+
             if (cypherModel.QueryParams == null)
                 return cypherQueryStatementParameters;
 
             var queryParams = queryCollection.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
-            
+
             foreach (var cypherParam in cypherModel.QueryParams)
             {
                 // let query param override param in message body
-                string foundParamValue = queryParams.GetValueOrDefault(cypherParam.Name)
-                                         ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToString()
-                                         ?? cypherParam.Default;
 
-                if (foundParamValue == null)
-                    throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
+                try
+                {
+                    object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
+                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? typeString))
+                                             ?? cypherParam.Default;
+                    if (foundParamValue == null)
+                        throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
 
-                cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
+                    cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
+                }
+                catch (Exception ex)
+                {
+                    throw ApiFunctionException.BadRequest("Unable to process supplied parameters", ex);
+                }
             }
 
             return cypherQueryStatementParameters;

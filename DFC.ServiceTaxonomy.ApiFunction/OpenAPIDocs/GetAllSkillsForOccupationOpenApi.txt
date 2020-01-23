@@ -29,7 +29,7 @@ paths:
         200:
           description: successful operation
           content:
-            application/json; charset=utf-8:
+            application/json:
               schema:
                 $ref: '#/components/schemas/Occupation'
         204:
@@ -51,26 +51,26 @@ components:
       - occupation
       type: "object"
       properties:
-        occupation: 
+        uri: 
           type: string
           example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
     Occupation:
       type: "object"
       properties:
-        uri: 
+        uri:
           type: string
-          example: "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
-        occupation: 
+          example: http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c
+        occupation:
           type: string
-          example: renewable energy consultant
-        lastModified: 
-          type: string
-          example: 03-12-2019T00:00:00Z
-        alternativeLabels: 
+          example: microbiologist
+        alternativeLabels:
           type: array
-          items: 
+          items:
             type: string
-            example: alt 1
+            example: microbiology studies research scientist
+        lastModified:
+          type: string
+          example: 2017-01-17T14:18:17Z
         skills: 
           type: array
           items: 
@@ -82,13 +82,13 @@ components:
               skill: 
                 type: string
                 example: "identify customer's needs"
-              relationshipWithOccupation: 
+              relationshipType: 
                 type: string
                 example: essential
                 enum:
                     - essential
                     - optional
-              skillType: 
+              type: 
                 type: string
                 example: knowledge
                 enum:
@@ -101,9 +101,9 @@ components:
                   example: "alt 1"
               skillReusability: 
                 type: string
-                example: Transversal
+                example: transversal
                 enum:
-                    - Transversal
-                    - Cross-sectoral
-                    - Sector-specific
-                    - Occupation-specific
+                    - transversal
+                    - cross-sectoral
+                    - sector-specific
+                    - occupation-specific
