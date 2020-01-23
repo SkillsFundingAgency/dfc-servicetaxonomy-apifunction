@@ -110,6 +110,16 @@
         "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-ai')]"
       },
       {
+        "functionType": "GetOccupationsWithMatchingSkills",
+        "functionName": "[concat(parameters('projectPrefix'), '-occsmatchskills-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occsmatchskills-ai')]"
+      },
+      {
+        "functionType": "GetSkillsGapForOccupationAndGivenSkills",
+        "functionName": "[concat(parameters('projectPrefix'), '-sgoccsgskills-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-sgoccsgskills-ai')]"
+      },
+      {
         "functionType": "GetSkillsByLabel",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsbylabel-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-ai')]"

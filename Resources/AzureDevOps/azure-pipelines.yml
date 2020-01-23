@@ -91,6 +91,12 @@ stages:
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
             dependsOn: GetAllSkills
+          - name: GetOccupationsWithMatchingSkills
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-fa'
+            dependsOn: GetAllOccupations
+          - name: GetSkillsGapForOccupationAndGivenSkills
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
+            dependsOn: GetAllSkillsForOccupation
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetAllOccupations
@@ -141,6 +147,12 @@ stages:
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
             dependsOn: GetAllSkills
+          - name: GetOccupationsWithMatchingSkills
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-fa'
+            dependsOn: GetAllOccupations
+          - name: GetSkillsGapForOccupationAndGivenSkills
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
+            dependsOn: GetAllSkillsForOccupation
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetAllOccupations
