@@ -69,6 +69,9 @@ components:
               occupation: 
                 type: string
                 example: renewable energy consultant
+              jobProfileTitle: 
+                type: string
+                example: renewable energy consultant
               jobProfileUri: 
                 type: string
                 example: http://nationalcareers.service.gov.uk/jobprofile/20ef1426-f85d-4c03-b14d-89d1ad273e28
@@ -90,6 +93,7 @@ components:
             required:
               - uri
               - occupation
+              - jobProfileTitle
               - jobProfileUri
               - totalOccupationEssentialSkills
               - totalOccupationOptionalSkills
