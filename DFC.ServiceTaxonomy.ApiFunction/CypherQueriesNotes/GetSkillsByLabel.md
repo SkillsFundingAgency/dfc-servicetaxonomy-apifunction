@@ -6,12 +6,13 @@
 Here's the current query, formatted and with params replaced by literals...
 
 ```
+with toLower('toxic') as lowerlabel
 match (skillreuselevel)<-[:esco__skillReuseLevel]-(s:esco__Skill)-[:esco__skillType]->(skilltype)
-where head(s.skos__prefLabel) contains 'toxic' or 
+where toLower(head(s.skos__prefLabel)) contains lowerlabel or 
 case toLower('true')
   when 'true' then
-    any(alt in s.skos__altLabel where alt contains 'toxic')
-    or any(hidden in s.skos__hiddenLabel where hidden contains 'toxic')
+    any(alt in s.skos__altLabel where toLower(alt) contains lowerlabel)
+    or any(hidden in s.skos__hiddenLabel where toLower(hidden) contains lowerlabel)
   else
     false
   end
@@ -31,9 +32,9 @@ with { skills:collect(
   lastModified:head(s.dct__modified),
   matches:
   {
-    skill:[preflab in s.skos__prefLabel where preflab contains 'toxic'],
-    alternativeLabels:coalesce([altlab in s.skos__altLabel where altlab contains 'toxic'],[]),
-    hiddenLabels:coalesce([hidlab in s.skos__hiddenLabel where hidlab contains 'toxic'],[])
+    skill:[preflab in s.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:coalesce([altlab in s.skos__altLabel where toLower(altlab) contains lowerlabel],[]),
+    hiddenLabels:coalesce([hidlab in s.skos__hiddenLabel where toLower(hidlab) contains lowerlabel],[])
   }
 }
 )} as skills 
