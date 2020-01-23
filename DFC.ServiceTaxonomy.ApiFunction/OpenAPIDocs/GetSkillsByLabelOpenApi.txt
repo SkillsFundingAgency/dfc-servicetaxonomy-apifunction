@@ -9,7 +9,7 @@ tags:
 - name: Get Skills By Label
   description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
 paths:
-  /servicetaxonomy/GetSkillsByLabel/Execute/:
+  /Execute/:
     post:
       tags:
       - Skill
