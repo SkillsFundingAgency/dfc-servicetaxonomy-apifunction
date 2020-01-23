@@ -108,6 +108,12 @@
         "functionType": "GetOccupationsByLabel",
         "functionName": "[concat(parameters('projectPrefix'), '-occbylabel-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-ai')]"
+      },
+      {
+        "functionType": "GetSkillsByLabel",
+        "functionName": "[concat(parameters('projectPrefix'), '-skillsbylabel-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-ai')]"
+
       }
     ]
   },
