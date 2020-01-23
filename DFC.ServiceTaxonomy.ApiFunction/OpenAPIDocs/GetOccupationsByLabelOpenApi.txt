@@ -83,7 +83,7 @@ components:
                   type: string
               lastModified: 
                 type: string
-                example: 03-12-2019T00:00:00Z
+                example: 2016-12-20T19:32:45Z
               matches: 
                 properties: 
                   occupation: 
