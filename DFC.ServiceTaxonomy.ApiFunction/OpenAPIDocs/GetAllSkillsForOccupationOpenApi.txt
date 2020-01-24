@@ -1,7 +1,7 @@
 ﻿openapi: 3.0.1
 info:
   title: Service Taxonomy Get Skills For Occupation
-  description: 'Sample Description for Query'
+  description: 'Returns all skills for an occupation'
   version: 1.0.0
 servers:
 - url: __FunctionAppUrl__
@@ -48,7 +48,7 @@ components:
   schemas:
     OccupationRequestBody: 
       required:
-      - occupation
+      - uri
       type: "object"
       properties:
         uri: 
