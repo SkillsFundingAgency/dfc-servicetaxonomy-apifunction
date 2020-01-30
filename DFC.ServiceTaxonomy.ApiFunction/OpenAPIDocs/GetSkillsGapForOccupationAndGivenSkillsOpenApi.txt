@@ -114,3 +114,4 @@ components:
         - uri
         - occupation
         - lastModified
+        - skills

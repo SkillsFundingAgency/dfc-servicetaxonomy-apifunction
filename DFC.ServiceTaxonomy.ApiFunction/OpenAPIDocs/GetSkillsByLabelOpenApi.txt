@@ -65,11 +65,21 @@ components:
           example: "toxic"
     Skill: 
       type: "object"
+      required:
+      - skills
       properties:
         skills: 
           type: array
           items: 
             type: object
+            required:
+            - uri
+            - skill
+            - alternativeLabels
+            - lastModified
+            - skillType
+            - skillReusability
+            - matches
             properties: 
               uri: 
                 type: string
@@ -91,6 +101,10 @@ components:
                 type: string
                 example: cross-sectoral
               matches: 
+                required:
+                - skill
+                - alternativeLabels
+                - hiddenLabels
                 properties: 
                   skill: 
                     type: "array"

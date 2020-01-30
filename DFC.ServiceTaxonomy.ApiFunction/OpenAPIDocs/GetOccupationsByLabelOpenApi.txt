@@ -65,11 +65,19 @@ components:
           example: "toxic"
     Occupation: 
       type: "object"
+      required:
+      - occupations
       properties:
         occupations: 
           type: array
           items: 
             type: object
+            required:
+            - uri
+            - occupation
+            - alternativeLabels
+            - lastModified
+            - matches
             properties: 
               uri: 
                 type: string
@@ -85,6 +93,9 @@ components:
                 type: string
                 example: 2016-12-20T19:32:45Z
               matches: 
+                required:
+                 - occupation
+                 - alternativeLabels
                 properties: 
                   occupation: 
                     type: "array"

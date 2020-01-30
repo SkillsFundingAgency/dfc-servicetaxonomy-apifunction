@@ -55,6 +55,12 @@ components:
           type: string
           example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
     Occupation:
+      required:
+      - uri
+      - occupation
+      - alternativeLabels
+      - lastModified
+      - skills
       type: "object"
       properties:
         uri:
@@ -74,6 +80,13 @@ components:
         skills: 
           type: array
           items: 
+            required:
+            - uri
+            - skill
+            - relationshipType
+            - type
+            - alternativeLabels
+            - skillReusability
             type: object
             properties: 
               uri: 
