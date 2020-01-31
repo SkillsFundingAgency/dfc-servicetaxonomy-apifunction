@@ -23,7 +23,7 @@ paths:
             schema:
               $ref: '#/components/schemas/OccupationRequestBody'
             example:   # Sample object
-                "occupation": "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
+                uri: "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"
         required: true
       responses:
         200:
