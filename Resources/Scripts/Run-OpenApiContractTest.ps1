@@ -8,6 +8,9 @@ param
     [string[]] $httpStatusCodeExclusions = ( '204','400','422','500')
 )
 
+Function iIf($If, $Right, $Wrong) {If ($If) {$Right} Else {$Wrong}}
+Function getIndent ( $Text ) { return iIF([string]::IsNullOrEmpty($Text)){ 0, $Text.Length - $Text.TrimStart().Length } }
+
 #clear
 Write-Output "baseDir:" + $baseDir;
 Write-Output "ApiBaseUri:" + $ApiBaseUri;
@@ -22,51 +25,31 @@ if ( Test-Path -path convertedfile.yaml )
 $converted = $( api-spec-converter -f openapi_3 -t swagger_2 -s yaml $SourceFile)
 
 $outputLine = $true
-$excludeThisLine = $false
-$lastLineTagged = $false
-$checkForExtraLines = $false
 $suppressText = $false
 
+# deal with status codes we don't want to process
 ForEach ($line in $($converted -split "`r`n"))
 {
-    foreach ( $item in $httpStatusCodeExclusions )
-    {
-        If ( $Line.contains($item) -And $Line.trim().EndsWith(":") ) 
-        {
-            # current line is start of session we want to skip
-            $excludeThisLine = $true
-            $suppressText = $true
-        }
-    } 
-    If ( $excludeThisLine  )
-    {
-        # reset flags for skip section
-        $lastLineTagged = $true
-        $excludeThisLine = $false
-    }
-    ElseIf ( $lastLineTagged  )
-    {
-        # processing line after start of skip section, prep for checking for additional lines
-        $suppressText =$true
-        $lastLineTagged = $false
-        $checkForExtraLines = $true
-    }
-    ElseIf ( $checkForExtraLines )
-    {
-        #keep skipping until hit next section
-        if ( $Line.trim().EndsWith(":") )
-        {
-            $checkForExtraLines = $false
-            $suppressText = $false
-        }
-        else
-        {
-            $suppressText = $true
-        }
-    }
-    Else
+    $startOfSkipSection = $false
+    $indent = getIndent -Text $Line
+    
+
+    if ( $suppressText -And -Not $startOfSkipSection -And $Line.trim().EndsWith(":") -And  $startIndent -ge $indent )
     {
         $suppressText = $false
+    }
+    if ( -not $suppressText )
+    {
+        foreach ( $item in $httpStatusCodeExclusions )
+        {
+            If ( $Line.contains($item) -And $Line.trim().EndsWith(":") ) 
+            {
+                $startIndent = getIndent -Text $Line
+                # current line is start of session we want to skip
+                $suppressText = $true
+                $startOfSkipSection = $true
+            }
+        } 
     }
     
     if ( -not($suppressText ) )
@@ -89,10 +72,10 @@ if ( ! $baseUrl.Contains("http") )
    #add http protocol
    $baseUrl = $httpProtocol + "://" + $baseUrl.Trim()
 }
-#$baseUrl="http://localhost:7071"
+
 $header="Ocp-Apim-Subscription-Key:" + $SubscriptionKey
 
 Write-Host "Run dredd against converted file: "$baseUrl 
 dredd convertedfile.yaml --header $header $baseUrl
 
-#Remove-Item convertedfile.yaml
+Remove-Item convertedfile.yaml
