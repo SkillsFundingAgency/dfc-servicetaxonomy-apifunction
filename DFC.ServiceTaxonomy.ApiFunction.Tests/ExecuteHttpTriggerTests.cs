@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Neo4j.Driver;
@@ -169,7 +171,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(query);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
+            var serviceProvider = new ServiceCollection()
+                                        .AddLogging()
+                                        .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(new object());
 
             await RunFunction();
 
@@ -228,7 +236,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
+            var serviceProvider = new ServiceCollection()
+                            .AddLogging()
+                            .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored,logger)).Returns(new object());
 
             var result = await RunFunction();
 
@@ -264,7 +278,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[0] } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            var serviceProvider = new ServiceCollection()
+                            .AddLogging()
+                            .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
 
@@ -292,7 +312,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            var serviceProvider = new ServiceCollection()
+                                        .AddLogging()
+                                        .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
 
@@ -322,7 +348,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            var serviceProvider = new ServiceCollection()
+                    .AddLogging()
+                    .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
 
@@ -361,7 +393,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            var serviceProvider = new ServiceCollection()
+                                        .AddLogging()
+                                        .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
 
@@ -403,7 +441,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(dictionaryOfRecords);
+            var serviceProvider = new ServiceCollection()
+                            .AddLogging()
+                            .BuildServiceProvider();
+            var factory = serviceProvider.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Test");
+
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
             var result = await RunFunction();
 
