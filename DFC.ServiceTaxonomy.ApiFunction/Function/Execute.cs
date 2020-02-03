@@ -102,7 +102,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             try
             {
-                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters);
+                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters, log);
             }
             catch (Exception ex)
             {
