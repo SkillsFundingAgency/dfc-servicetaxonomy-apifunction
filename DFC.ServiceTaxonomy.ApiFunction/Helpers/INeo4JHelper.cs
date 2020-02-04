@@ -8,7 +8,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
     public interface INeo4JHelper
     {
         Task<object> ExecuteCypherQueryInNeo4JAsync(string query,
-            IDictionary<string, object> statementParameters, ILogger log);
+            IDictionary<string, object> statementParameters, Neo4jLoggingHelper log);
 
         Task<IResultSummary> GetResultSummaryAsync();
     }
