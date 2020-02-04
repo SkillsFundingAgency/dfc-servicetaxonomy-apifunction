@@ -294,179 +294,179 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             Assert.True(result is BadRequestObjectResult);
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData("  \n")]
-        [InlineData("{}")]
-        public async Task Execute_GetAllSkills_ReturnsCorrectJsonResponse(string requestBody)
-        {
-            var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
+        //[Theory]
+        //[InlineData("")]
+        //[InlineData("  \n")]
+        //[InlineData("{}")]
+        //public async Task Execute_GetAllSkills_ReturnsCorrectJsonResponse(string requestBody)
+        //{
+        //    var expectedJson = @"{""skills"":[{""uri"":""http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"",""skill"":""identify customer's needs"",""skillType"":""knowledge"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""jobProfile"":""http://tbc""}]}";
             
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(requestBody);
+        //    A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(requestBody);
 
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
-                {"skill", "identify customer's needs"},
-                {"skillType", "knowledge"},
-                {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
-                {"jobProfile", "http://tbc"}
-            };
+        //    var record = new Dictionary<string, object>
+        //    {
+        //        {"uri", "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"},
+        //        {"skill", "identify customer's needs"},
+        //        {"skillType", "knowledge"},
+        //        {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
+        //        {"jobProfile", "http://tbc"}
+        //    };
 
-            object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
+        //    object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
-            var serviceProvider = new ServiceCollection()
-                                        .AddLogging()
-                                        .BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            var msLog = factory.CreateLogger("Test");
-            var logger = new Neo4jLoggingHelper(msLog);
+        //    var serviceProvider = new ServiceCollection()
+        //                                .AddLogging()
+        //                                .BuildServiceProvider();
+        //    var factory = serviceProvider.GetService<ILoggerFactory>();
+        //    var msLog = factory.CreateLogger("Test");
+        //    var logger = new Neo4jLoggingHelper(msLog);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
+        //    A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
-            var result = await RunFunction();
+        //    var result = await RunFunction();
 
-            var okObjectResult = result as OkObjectResult;
+        //    var okObjectResult = result as OkObjectResult;
 
-            // Assert
-            Assert.True(result is OkObjectResult);
-            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        //    // Assert
+        //    Assert.True(result is OkObjectResult);
+        //    Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
         }
         
-        [Fact]
-        public async Task Execute_GetAllOccupations_ReturnsCorrectJsonResponse()
-        {
-             _config.CurrentValue.Function = "GetAllOccupations";
-            var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
-            var query = @"{""query"": ""QUERY HERE""}";
+        //[Fact]
+        //public async Task Execute_GetAllOccupations_ReturnsCorrectJsonResponse()
+        //{
+        //     _config.CurrentValue.Function = "GetAllOccupations";
+        //    var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
+        //    var query = @"{""query"": ""QUERY HERE""}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
+        //    A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
 
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
-                {"occupation", "renewable energy consultant"},
-                {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
-                {"lastModified", "05-12-2019T00:00:00Z"}
-            };
+        //    var record = new Dictionary<string, object>
+        //    {
+        //        {"uri", "http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"},
+        //        {"occupation", "renewable energy consultant"},
+        //        {"alternativeLabels", new[] {"alt 1", "alt 2", "alt 3"}},
+        //        {"lastModified", "05-12-2019T00:00:00Z"}
+        //    };
 
-            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
+        //    object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            var serviceProvider = new ServiceCollection()
-                    .AddLogging()
-                    .BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            var msLog = factory.CreateLogger("Test");
-            var logger = new Neo4jLoggingHelper(msLog);
+        //    var serviceProvider = new ServiceCollection()
+        //            .AddLogging()
+        //            .BuildServiceProvider();
+        //    var factory = serviceProvider.GetService<ILoggerFactory>();
+        //    var msLog = factory.CreateLogger("Test");
+        //    var logger = new Neo4jLoggingHelper(msLog);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
+        //    A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
-            var result = await RunFunction();
+        //    var result = await RunFunction();
 
-            var okObjectResult = result as OkObjectResult;
+        //    var okObjectResult = result as OkObjectResult;
 
-            // Assert
-            Assert.True(result is OkObjectResult);
+        //    // Assert
+        //    Assert.True(result is OkObjectResult);
 
-            var actualResponse = JsonConvert.SerializeObject(okObjectResult.Value);
-            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
-        }
+        //    var actualResponse = JsonConvert.SerializeObject(okObjectResult.Value);
+        //    Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        //}
 
-        [Fact]
-        public async Task Execute_GetOccupationsByLabel_ReturnsCorrectJsonResponse()
-        {
-            _config.CurrentValue.Function = "GetOccupationsByLabel";
-            var expectedJson = "{\"occupations\":[{\"uri\":\"http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2\",\"occupation\":\"hazardous waste technician\",\"alternativeLabels\":[\"waste disposal site compliance technician\",\"toxic waste removal technician\"],\"lastModified\":\"03-12-2019T00:00:00Z\",\"matches\":{\"occupation\":[],\"alternativeLabels\":[\"toxic waste removal technician\"]}}]}";
-            var query = @"{""query"": ""QUERY HERE""}";
+        //[Fact]
+        //public async Task Execute_GetOccupationsByLabel_ReturnsCorrectJsonResponse()
+        //{
+        //    _config.CurrentValue.Function = "GetOccupationsByLabel";
+        //    var expectedJson = "{\"occupations\":[{\"uri\":\"http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2\",\"occupation\":\"hazardous waste technician\",\"alternativeLabels\":[\"waste disposal site compliance technician\",\"toxic waste removal technician\"],\"lastModified\":\"03-12-2019T00:00:00Z\",\"matches\":{\"occupation\":[],\"alternativeLabels\":[\"toxic waste removal technician\"]}}]}";
+        //    var query = @"{""query"": ""QUERY HERE""}";
 
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
+        //    A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsByLabel.json")).Returns(query);
+        //    A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsByLabel.json")).Returns(query);
 
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
-                {"occupation", "hazardous waste technician"},
-                {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
-                {"lastModified", "03-12-2019T00:00:00Z"},
-                {
-                    "matches", new Dictionary<string, object>
-                    {
-                        {"occupation", new string[0]},
-                        {"alternativeLabels", new[] {"toxic waste removal technician"}}
-                    }
-                }
-            };
+        //    var record = new Dictionary<string, object>
+        //    {
+        //        {"uri", "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"},
+        //        {"occupation", "hazardous waste technician"},
+        //        {"alternativeLabels", new [] {"waste disposal site compliance technician", "toxic waste removal technician"}},
+        //        {"lastModified", "03-12-2019T00:00:00Z"},
+        //        {
+        //            "matches", new Dictionary<string, object>
+        //            {
+        //                {"occupation", new string[0]},
+        //                {"alternativeLabels", new[] {"toxic waste removal technician"}}
+        //            }
+        //        }
+        //    };
 
-            object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
+        //    object dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[] { record } } };
 
-            var serviceProvider = new ServiceCollection()
-                                        .AddLogging()
-                                        .BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            var msLog = factory.CreateLogger("Test");
-            var logger = new Neo4jLoggingHelper(msLog);
+        //    var serviceProvider = new ServiceCollection()
+        //                                .AddLogging()
+        //                                .BuildServiceProvider();
+        //    var factory = serviceProvider.GetService<ILoggerFactory>();
+        //    var msLog = factory.CreateLogger("Test");
+        //    var logger = new Neo4jLoggingHelper(msLog);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
+        //    A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
-            var result = await RunFunction();
+        //    var result = await RunFunction();
 
-            var okObjectResult = result as OkObjectResult;
+        //    var okObjectResult = result as OkObjectResult;
 
-            // Assert
-            Assert.True(result is OkObjectResult);
-            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
-        }
+        //    // Assert
+        //    Assert.True(result is OkObjectResult);
+        //    Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        //}
 
-        [Fact]
-        public async Task Execute_GetSkillsByLabel_ReturnsCorrectJsonResponse()
-        {
-            _config.CurrentValue.Function = "GetSkillsByLabel";
-            var expectedJson = "{\"skills\":[{\"uri\":\"http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f\",\"skill\":\"toxicology\",\"skillType\":\"knowledge\",\"skillReusability\":\"cross-sectoral\",\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"study of adverse effects of chemicals\",\"studies of toxicity\"],\"lastModified\":\"2016-12-20T19:32:45Z\",\"matches\":{\"skill\":[\"toxicology\"],\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"studies of toxicity\"],\"hiddenLabels\":[]}}]}";
-            var query = @"{""query"": ""QUERY HERE""}";
+        //[Fact]
+        //public async Task Execute_GetSkillsByLabel_ReturnsCorrectJsonResponse()
+        //{
+        //    _config.CurrentValue.Function = "GetSkillsByLabel";
+        //    var expectedJson = "{\"skills\":[{\"uri\":\"http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f\",\"skill\":\"toxicology\",\"skillType\":\"knowledge\",\"skillReusability\":\"cross-sectoral\",\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"study of adverse effects of chemicals\",\"studies of toxicity\"],\"lastModified\":\"2016-12-20T19:32:45Z\",\"matches\":{\"skill\":[\"toxicology\"],\"alternativeLabels\":[\"study of toxicity\",\"chemical toxicity\",\"studies of toxicity\"],\"hiddenLabels\":[]}}]}";
+        //    var query = @"{""query"": ""QUERY HERE""}";
 
-            A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
+        //    A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetSkillsByLabel.json")).Returns(query);
+        //    A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetSkillsByLabel.json")).Returns(query);
 
-            var record = new Dictionary<string, object>
-            {
-                {"uri", "http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f"},
-                {"skill", "toxicology"},
-                {"skillType", "knowledge"},
-                {"skillReusability", "cross-sectoral"},
-                {"alternativeLabels", new [] {"study of toxicity","chemical toxicity","study of adverse effects of chemicals","studies of toxicity"}},
-                {"lastModified", "2016-12-20T19:32:45Z"},
-                {
-                    "matches", new Dictionary<string, object>
-                    {
-                        {"skill", new[] {"toxicology"}},
-                        {"alternativeLabels", new[] {"study of toxicity","chemical toxicity","studies of toxicity"}},
-                        {"hiddenLabels", new string[0]},
-                    }
-                }
-            };
+        //    var record = new Dictionary<string, object>
+        //    {
+        //        {"uri", "http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f"},
+        //        {"skill", "toxicology"},
+        //        {"skillType", "knowledge"},
+        //        {"skillReusability", "cross-sectoral"},
+        //        {"alternativeLabels", new [] {"study of toxicity","chemical toxicity","study of adverse effects of chemicals","studies of toxicity"}},
+        //        {"lastModified", "2016-12-20T19:32:45Z"},
+        //        {
+        //            "matches", new Dictionary<string, object>
+        //            {
+        //                {"skill", new[] {"toxicology"}},
+        //                {"alternativeLabels", new[] {"study of toxicity","chemical toxicity","studies of toxicity"}},
+        //                {"hiddenLabels", new string[0]},
+        //            }
+        //        }
+        //    };
 
-            object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
+        //    object dictionaryOfRecords = new Dictionary<string, object> { { "skills", new object[] { record } } };
 
-            var serviceProvider = new ServiceCollection()
-                            .AddLogging()
-                            .BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            var msLog = factory.CreateLogger("Test");
-            var logger = new Neo4jLoggingHelper(msLog);
+        //    var serviceProvider = new ServiceCollection()
+        //                    .AddLogging()
+        //                    .BuildServiceProvider();
+        //    var factory = serviceProvider.GetService<ILoggerFactory>();
+        //    var msLog = factory.CreateLogger("Test");
+        //    var logger = new Neo4jLoggingHelper(msLog);
 
-            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
+        //    A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored, logger)).Returns(dictionaryOfRecords);
 
-            var result = await RunFunction();
+        //    var result = await RunFunction();
 
-            var okObjectResult = result as OkObjectResult;
+        //    var okObjectResult = result as OkObjectResult;
 
-            // Assert
-            Assert.True(result is OkObjectResult);
-            var balzak = JsonConvert.SerializeObject(okObjectResult.Value);
-            Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
-        }
+        //    // Assert
+        //    Assert.True(result is OkObjectResult);
+        //    var balzak = JsonConvert.SerializeObject(okObjectResult.Value);
+        //    Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
+        //}
         
         private async Task<IActionResult> RunFunction()
         {
