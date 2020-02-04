@@ -1,37 +1,35 @@
 ﻿openapi: 3.0.1
 info:
-  title: Service Taxonomy Get Occupations For Given Skill
-  description: 'Sample Description for Query'
+  title: Service Taxonomy Get skills gap analysis between an occupation and a supplied set of skills
+  description: 'Returns a skills gap analysis on based user declared skills'
   version: 1.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get Occupations For Given Skill
-  description: Returns all occupation for a given skill
+- name: Get Skills Gap For An Occupation And Given Skills
+  description: Returns a skills gap analysis based on user declared skills
 paths:
   /Execute/:
     post:
       tags:
-      - Skill
-      summary: Get occupations for a given skill.
-      description: Returns occupation for a given skill
-      operationId: GetOccupationsForSkill
+      - Skills Gap
+      summary: Get Skills Gap For Occupation And Given Skills.
+      description: Returns a skills gap analysis on user declared skills
+      operationId: GetSkillsGapForOccupationAndGivenSkills
       requestBody:
-        description: enter esco skill uri to retrieve all Occupations for the Skill
+        description: enter esco ocupation uri and a list of current skills to retrieve skill gap analysis
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestBody'
-            example:   # Sample object
-                "skill": "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
-        required: true
+              $ref: '#/components/schemas/RequestBody'
+
       responses:
         200:
           description: successful operation
           content:
             application/json; charset=utf-8:
               schema:
-                $ref: '#/components/schemas/responseBody'
+                $ref: '#/components/schemas/Response'
         204:
           description: No content can be found.
           content: {}
@@ -46,71 +44,163 @@ paths:
           content: {}
 components:
   schemas:
-    requestBody: 
-      required:
-      - skill
-      type: "object"
+    RequestBody:
+      type: object
       properties:
-        skill: 
+        skillList:
+          type: array
+          items:
+            type: string
+            example: http://data.europa.eu/esco/skill/9436db78-4331-495b-a97d-223fd246de2f
+        occupation:
           type: string
-          example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
-    responseBody:
+          example: http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c
+          
+    SkillDetails:
       type: object
       properties:
         uri:
           type: string
-          example: http://data.europa.eu/esco/occupation/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
-        occupation:
+          example: http://data.europa.eu/esco/skill/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
+        skill:
           type: string
-          example: News Reader
+          example: gather experimental data
+        type:
+          type: string
+          enum: [knowledge, competency]
+          example: knowledge
         alternativeLabels:
           type: array
           items: 
             type: string
-            example: anchorman          
+            example: accumulate experimental data
+        skillReusability:
+          type: string
+          enum: [transversal, cross-sectoral, sector-specific, occupation-specific]
+          example: transveral
         lastModified:
           type: string
-          example: 2017-01-17T14:18:17Z 
-        skills:
-          type: array
-          items:
-            type: object
-            properties:
-              uri:
-                type: string
-                example: http://data.europa.eu/esco/skill/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
-              skill:
-                type: string
-                example: gather experimental data
-              type:
-                type: string
-                enum: [knowledge, competency]
-                example: knowledge
-              alternativeLabels:
-                type: array
-                items: 
-                  type: string
-                  example: accumulate experimental data
-              skillReusability:
-                type: string
-                enum: [transversal, cross-sectoral, sector-specific, occupation-specific]
-                example: transveral
-              lastModified:
-                type: string
-                example: 2017-01-17T14:18:17Z
-              relationshipType:
-                type: string
-                enum: [essential, optional]
-                example: essential
-            required:
-              - uri
-              - skill
-              - type
-              - alternativeLabels
-              - skillReusability
-              - lastModified
-              - relationshipType  
+          example: 2017-01-17T14:18:17Z
+        relationshipType:
+          type: string
+          enum: [essential, optional]
+          example: essential
       required:
         - uri
-        - occupation
+        - skill
+        - type
+        - alternativeLabels
+        - skillReusability
         - lastModified
+        - relationshipType
+    Response: 
+      type: "object"
+      properties:
+          uri:
+            type: string
+            example: http://data.europa.eu/esco/occupation/a7a74a05-3dd0-46c6-99af-92df8042520c
+          jobProfileUri:
+            type: string
+            example: http://nationalcareers.service.gov.uk/jobprofile/20ef1426-f85d-4c03-b14d-89d1ad273e28
+          occupation:
+            type: string
+            example: microbiologist
+          jobProfileTitle:
+            type: string
+            example: microbiologist
+          alternativeLabels:
+            type: array
+            items:
+              type: string
+              example: microbiology studies research scientist
+          lastModified:
+            type: string
+            example: 2017-01-17T14:18:17Z
+          matchingSkills:
+            type: array
+            items:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  example: http://data.europa.eu/esco/skill/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
+                skill:
+                  type: string
+                  example: gather experimental data
+                type:
+                  type: string
+                  enum: [knowledge, competency]
+                  example: knowledge
+                alternativeLabels:
+                  type: array
+                  items: 
+                    type: string
+                    example: accumulate experimental data
+                skillReusability:
+                  type: string
+                  enum: [transversal, cross-sectoral, sector-specific, occupation-specific]
+                  example: transveral
+                lastModified:
+                  type: string
+                  example: 2017-01-17T14:18:17Z
+                relationshipType:
+                  type: string
+                  enum: [essential, optional]
+                  example: essential
+              required:
+                - uri
+                - skill
+                - type
+                - alternativeLabels
+                - skillReusability
+                - lastModified
+                - relationshipType
+          missingSkills:
+            type: array
+            items:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  example: http://data.europa.eu/esco/skill/89db623e-e1fc-4ec2-9a0f-7b72b4c35303
+                skill:
+                  type: string
+                  example: gather experimental data
+                type:
+                  type: string
+                  enum: [knowledge, competency]
+                  example: knowledge
+                alternativeLabels:
+                  type: array
+                  items: 
+                    type: string
+                    example: accumulate experimental data
+                skillReusability:
+                  type: string
+                  enum: [transversal, cross-sectoral, sector-specific, occupation-specific]
+                  example: transveral
+                lastModified:
+                  type: string
+                  example: 2017-01-17T14:18:17Z
+                relationshipType:
+                  type: string
+                  enum: [essential, optional]
+                  example: essential
+              required:
+                - uri
+                - skill
+                - type
+                - alternativeLabels
+                - skillReusability
+                - lastModified
+                - relationshipType                
+      required:
+        - uri
+        - jobProfileUri
+        - occupation
+        - jobProfileTitle
+        - alternativeLabels
+        - lastModified
+        - matchingSkills
+        - missingSkills
+
