@@ -33,6 +33,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         private const string typeInt = "System.Int32";
         private const string typeStringArray = "System.String[]";
 
+        private Neo4jLoggingHelper _neoLog;
 
         public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
         {
@@ -51,6 +52,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
+                _neoLog = new Neo4jLoggingHelper(log);
 
                 bool development = environment == "Development";
                 
@@ -60,7 +62,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 Cypher cypherModel = await cypherModelTask;
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
 
-                object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
+                object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log, req.HttpContext.Response.Headers);
 
                 if (recordsResult == null)
                     return new NoContentResult();
@@ -71,7 +73,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 if (statementResult != null)
                     log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
 
-                return new OkObjectResult(recordsResult);
+                var result =  new OkObjectResult(recordsResult);
+                string txt = _neoLog.handshakeTimeElapsed.ToString();
+                req.HttpContext.Response.Headers.Add("ncsMetrics",txt);
+
+
+                return result;
             }
             catch (ApiFunctionException e)
             {
@@ -96,13 +103,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         }
 
         private async Task<object> ExecuteCypherQuery(Cypher cypherModel,
-            Dictionary<string, object> cypherQueryParameters, ILogger log)
+            Dictionary<string, object> cypherQueryParameters, ILogger log, IHeaderDictionary responseHeaders)
         {
             log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
 
             try
             {
-                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters, log);
+                // return tuple, add to header, return otherbit
+                // or type (avoid "out" ... but might work)
+                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters, _neoLog );
             }
             catch (Exception ex)
             {
