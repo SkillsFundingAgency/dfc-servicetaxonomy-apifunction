@@ -331,7 +331,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         //    // Assert
         //    Assert.True(result is OkObjectResult);
         //    Assert.Equal(expectedJson, JsonConvert.SerializeObject(okObjectResult.Value));
-        }
+        //}
         
         //[Fact]
         //public async Task Execute_GetAllOccupations_ReturnsCorrectJsonResponse()
