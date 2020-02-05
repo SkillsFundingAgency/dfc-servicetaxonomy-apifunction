@@ -75,9 +75,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var result =  new OkObjectResult(recordsResult);
                 string txt = _neoLog.handshakeTimeElapsed.ToString();
-                req.HttpContext.Response.Headers.Add("ncsMetrics-handshake",txt);
-
-
+                req.HttpContext.Response.Headers.Add("ncsMetrics-handshake", _neoLog.handshakeTimeElapsed.ToString());
+                req.HttpContext.Response.Headers.Add("ncsMetrics-resultReady", _neoLog.resultsReadyAfter.ToString());
+                req.HttpContext.Response.Headers.Add("ncsMetrics-resultConsumed", _neoLog.resultsConsumedAfter.ToString());
                 return result;
             }
             catch (ApiFunctionException e)

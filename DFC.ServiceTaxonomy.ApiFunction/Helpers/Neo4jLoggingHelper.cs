@@ -15,7 +15,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         private Stopwatch _timer = new Stopwatch();
         private Boolean _timerRunning = false;
         public long handshakeTimeElapsed { get; set; }
-
+        public long resultsReadyAfter { get; set; }
+        public long resultsConsumedAfter { get; set; }
 
         public Neo4jLoggingHelper(Microsoft.Extensions.Logging.ILogger delegator)
         {
