@@ -10,44 +10,6 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 {
-    public class DriverLogger : Neo4j.Driver.ILogger
-    {
-        private readonly Microsoft.Extensions.Logging.ILogger _delegator;
-        public DriverLogger(Microsoft.Extensions.Logging.ILogger delegator)
-        {
-            _delegator = delegator;
-        }
-        public void Error(Exception cause, string format, params object[] args)
-        {
-            _delegator.LogError(default(EventId), cause, format, args);
-        }
-        public void Warn(Exception cause, string format, params object[] args)
-        {
-            _delegator.LogWarning(default(EventId), cause, format, args);
-        }
-        public void Info(string format, params object[] args)
-        {
-            _delegator.LogInformation(default(EventId), format, args);
-        }
-        public void Debug(string format, params object[] args)
-        {
-            _delegator.LogDebug(default(EventId), format, args);
-        }
-        public void Trace(string format, params object[] args)
-        {
-            _delegator.LogTrace(default(EventId), format, args);
-        }
-        public bool IsTraceEnabled()
-        {
-            return _delegator.IsEnabled(LogLevel.Trace);
-        }
-        public bool IsDebugEnabled()
-        {
-            return _delegator.IsEnabled(LogLevel.Debug);
-        }
-
-    }
-
     public class Neo4JHelper : INeo4JHelper, IDisposable
     {
         private readonly IAuthToken _authToken = AuthTokens.None;
@@ -86,20 +48,30 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
                 log.Info("Making initial bolt connection");
                 _neo4JDriver = GraphDatabase.Driver(_neo4JUrl, _authToken, o => o.WithLogger(log));
             }
-            
+
+            IResultSummary summary = null;
+            object results = null;
             IAsyncSession session = _neo4JDriver.AsyncSession();
             try
             {
-                return await session.ReadTransactionAsync(async tx =>
+                results = await session.ReadTransactionAsync(async tx =>
                 {
                     _resultCursor = await tx.RunAsync(query, statementParameters);
-                    return await GetListOfRecordsAsync();
+                    var records = await GetListOfRecordsAsync();
+                    summary = await _resultCursor.ConsumeAsync();
+                    return records;
                 });
             }
             finally
             {
                 await session.CloseAsync();
             }
+            if (summary != null)
+            {
+                log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
+            }
+            return results;
         }
 
         private async Task<object> GetListOfRecordsAsync()
