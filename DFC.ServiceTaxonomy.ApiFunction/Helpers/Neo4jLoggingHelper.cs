@@ -17,7 +17,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         public long handshakeTimeElapsed { get; set; }
         public long resultsReadyAfter { get; set; }
         public long resultsConsumedAfter { get; set; }
-
+        public bool resultsRollbackDetected { get; set; } = false;
         public Neo4jLoggingHelper(Microsoft.Extensions.Logging.ILogger delegator)
         {
             _delegator = delegator;
@@ -50,6 +50,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
                 _timer.Stop();
                 handshakeTimeElapsed = _timer.ElapsedMilliseconds;
                 _timerRunning = false;
+            }
+            if (format.Contains("S:") && args[0].ToString().Contains("ROLLBACK") )
+            {
+                resultsRollbackDetected = true;
             }
         }
         public void Trace(string format, params object[] args)
