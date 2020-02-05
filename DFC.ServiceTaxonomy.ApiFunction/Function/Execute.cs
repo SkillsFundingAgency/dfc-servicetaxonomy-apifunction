@@ -69,13 +69,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 log.LogInformation("request has successfully been completed with results");
 
-                var statementResult = await _neo4JHelper.GetResultSummaryAsync();
-                if (statementResult != null)
-                    log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
+                //var statementResult = await _neo4JHelper.GetResultSummaryAsync();
+                //if (statementResult != null)
+                //    log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
 
                 var result =  new OkObjectResult(recordsResult);
                 string txt = _neoLog.handshakeTimeElapsed.ToString();
-                req.HttpContext.Response.Headers.Add("ncsMetrics",txt);
+                req.HttpContext.Response.Headers.Add("ncsMetrics-handshake",txt);
 
 
                 return result;
