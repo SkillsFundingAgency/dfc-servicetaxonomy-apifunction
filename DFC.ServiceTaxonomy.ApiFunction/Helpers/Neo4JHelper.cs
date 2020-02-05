@@ -49,29 +49,24 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
                 _neo4JDriver = GraphDatabase.Driver(_neo4JUrl, _authToken, o => o.WithLogger(log));
             }
 
-            IResultSummary summary = null;
-            object results = null;
             IAsyncSession session = _neo4JDriver.AsyncSession();
             try
             {
-                results = await session.ReadTransactionAsync(async tx =>
+                return await session.ReadTransactionAsync(async tx =>
                 {
                     _resultCursor = await tx.RunAsync(query, statementParameters);
                     var records = await GetListOfRecordsAsync();
-                    summary = await _resultCursor.ConsumeAsync();
-                    return records;
+                   var summary = await _resultCursor.ConsumeAsync();
+                   log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                   log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
+                   return records;
                 });
             }
             finally
             {
                 await session.CloseAsync();
             }
-            if (summary != null)
-            {
-                log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
-                log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
-            }
-            return results;
+    
         }
 
         private async Task<object> GetListOfRecordsAsync()
