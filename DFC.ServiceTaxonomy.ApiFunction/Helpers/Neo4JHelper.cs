@@ -38,7 +38,16 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             }
             _neo4JUrl = taxonomyApiSettings.Neo4jUrl;
         }
-        
+
+        public IDriver CreateDriver(string uri, IAuthToken authToken )
+        {
+            return GraphDatabase.Driver(uri, authToken,
+                o => o.WithMaxConnectionLifetime(TimeSpan.FromMinutes(30))
+                    .WithMaxConnectionPoolSize(50)
+                    .WithConnectionAcquisitionTimeout(TimeSpan.FromMinutes(2)));
+        }
+
+
         //todo: create package for DFC.ServiceTaxonomy.Neo4j??
         public async Task<object> ExecuteCypherQueryInNeo4JAsync(string query, IDictionary<string, object> statementParameters, Neo4jLoggingHelper log)
         {
@@ -46,19 +55,20 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             {
                // _log4j = new DriverLogger(log);
                 log.Info("Making initial bolt connection");
-                _neo4JDriver = GraphDatabase.Driver(_neo4JUrl, _authToken, o => o.WithLogger(log));
+                _neo4JDriver = CreateDriver(_neo4JUrl, _authToken);
             }
 
             IAsyncSession session = _neo4JDriver.AsyncSession();
+            Object result;
             try
             {
-                return await session.ReadTransactionAsync(async tx =>
+                result = await session.ReadTransactionAsync(async tx =>
                 {
                     _resultCursor = await tx.RunAsync(query, statementParameters);
                     var records = await GetListOfRecordsAsync();
-                    // var summary = await _resultCursor.ConsumeAsync();
-                    log.resultsReadyAfter = 0;// (long)summary.ResultAvailableAfter.TotalMilliseconds;
-                    log.resultsConsumedAfter = 0;// (long)summary.ResultConsumedAfter.TotalMilliseconds;
+                    var summary = await _resultCursor.ConsumeAsync();
+                    log.resultsReadyAfter =  (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                    log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
                    return records;
                 });
             }
@@ -66,6 +76,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             {
                 await session.CloseAsync();
             }
+
+            return result;
     
         }
 
