@@ -56,9 +56,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
                 {
                     _resultCursor = await tx.RunAsync(query, statementParameters);
                     var records = await GetListOfRecordsAsync();
-                   var summary = await _resultCursor.ConsumeAsync();
-                   log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
-                   log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
+                    // var summary = await _resultCursor.ConsumeAsync();
+                    log.resultsReadyAfter = 0;// (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                    log.resultsConsumedAfter = 0;// (long)summary.ResultConsumedAfter.TotalMilliseconds;
                    return records;
                 });
             }
