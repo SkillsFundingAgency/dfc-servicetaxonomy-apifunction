@@ -65,10 +65,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
            
             for (int i = 0; i < 5; i++)
             {
-                IAsyncSession session = _neo4JDriver.AsyncSession(o => o.WithDefaultAccessMode(AccessMode.Read)
-                                                                        .WithFetchSize(Config.Infinite));
-                //Neo4j.Driver.QueryType.ReadOnly
-
+                IAsyncSession session = _neo4JDriver.AsyncSession();// o => o.WithDefaultAccessMode(AccessMode.Read)
+                                                                    //    .WithFetchSize(Config.Infinite));
                 bool fail = false;
                 try
                 {
