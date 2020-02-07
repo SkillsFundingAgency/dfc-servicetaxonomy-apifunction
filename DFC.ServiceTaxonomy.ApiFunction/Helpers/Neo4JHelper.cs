@@ -39,12 +39,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             _neo4JUrl = taxonomyApiSettings.Neo4jUrl;
         }
 
-        public IDriver CreateDriver(string uri, IAuthToken authToken )
+        public IDriver CreateDriver(string uri, IAuthToken authToken, Neo4jLoggingHelper log)
         {
             return GraphDatabase.Driver(uri, authToken,
                 o => o.WithMaxConnectionLifetime(TimeSpan.FromMinutes(30))
                     .WithMaxConnectionPoolSize(50)
-                    .WithConnectionAcquisitionTimeout(TimeSpan.FromMinutes(2)));
+                    .WithConnectionAcquisitionTimeout(TimeSpan.FromMinutes(2))
+                    .WithLogger(log)
+                    .WithFetchSize(Config.Infinite));
         }
 
 
@@ -55,30 +57,47 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
             {
                // _log4j = new DriverLogger(log);
                 log.Info("Making initial bolt connection");
-                _neo4JDriver = CreateDriver(_neo4JUrl, _authToken);
+                _neo4JDriver = CreateDriver(_neo4JUrl, _authToken, log);
             }
 
-            IAsyncSession session = _neo4JDriver.AsyncSession();
-            Object result;
-            try
+            
+            Object result = null;
+           
+            for (int i = 0; i < 5; i++)
             {
-                result = await session.ReadTransactionAsync(async tx =>
+                IAsyncSession session = _neo4JDriver.AsyncSession(o => o.WithDefaultAccessMode(AccessMode.Read)
+                                                                        .WithFetchSize(Config.Infinite));
+                //Neo4j.Driver.QueryType.ReadOnly
+
+                bool fail = false;
+                try
                 {
-                    _resultCursor = await tx.RunAsync(query, statementParameters);
-                    var records = await GetListOfRecordsAsync();
-                    var summary = await _resultCursor.ConsumeAsync();
-                    log.resultsReadyAfter =  (long)summary.ResultAvailableAfter.TotalMilliseconds;
-                    log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
-                   return records;
-                });
+                    result = await session.ReadTransactionAsync(async tx =>
+                    {
+                        _resultCursor = await tx.RunAsync(query, statementParameters);
+                        var records = await GetListOfRecordsAsync();
+                        var summary = await _resultCursor.ConsumeAsync();
+                        log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                        log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
+                        log.resultsRetries = i;
+                        return records;
+                    });
+                }
+                catch (Exception e)
+                {
+                    log.Warn(e,"Failed at attempt {i} of 5: ");
+                    fail = true;
+                }
+                finally
+                {
+                    await session.CloseAsync();
+                }
+                if (!fail)
+                {
+                    break;
+                }
             }
-            finally
-            {
-                await session.CloseAsync();
-            }
-
             return result;
-    
         }
 
         private async Task<object> GetListOfRecordsAsync()

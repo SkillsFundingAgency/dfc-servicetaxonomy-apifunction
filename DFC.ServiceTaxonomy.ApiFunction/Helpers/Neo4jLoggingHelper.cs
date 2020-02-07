@@ -17,6 +17,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         public long handshakeTimeElapsed { get; set; }
         public long resultsReadyAfter { get; set; }
         public long resultsConsumedAfter { get; set; }
+        public int  resultsRetries { get; set; } = 0;
         public bool resultsRollbackDetected { get; set; } = false;
         public Neo4jLoggingHelper(Microsoft.Extensions.Logging.ILogger delegator)
         {
@@ -27,29 +28,18 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         public void Error(Exception cause, string format, params object[] args)
         {
             _delegator.LogError(default(EventId), cause, format, args);
-            if (format.Contains("ROLLBACK"))
-            {
-                resultsRollbackDetected = true;
-
-            }
-            foreach (var a in args)
-            {
-                if (a.ToString().Contains("ROLLBACK"))
-                {
-                    resultsRollbackDetected = true;
-
-                }
-
-            }
         }
+        
         public void Warn(Exception cause, string format, params object[] args)
         {
             _delegator.LogWarning(default(EventId), cause, format, args);
-          }
+        }
+
         public void Info(string format, params object[] args)
         {
             _delegator.LogInformation(default(EventId), format, args);
-         }
+        }
+
         public void Debug(string format, params object[] args)
         {
             _delegator.LogDebug(default(EventId), format, args);
