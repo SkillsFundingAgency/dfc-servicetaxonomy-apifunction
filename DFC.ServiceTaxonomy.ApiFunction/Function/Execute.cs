@@ -48,6 +48,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
+            if (req.QueryString.ToString().Contains("passthrough=yes"))
+                return new OkResult();
             try
             {
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
