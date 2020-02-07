@@ -79,6 +79,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 req.HttpContext.Response.Headers.Add("ncsMetrics-resultReady", _neoLog.resultsReadyAfter.ToString());
                 req.HttpContext.Response.Headers.Add("ncsMetrics-resultConsumed", _neoLog.resultsConsumedAfter.ToString());
                 req.HttpContext.Response.Headers.Add("ncsMetrics-rollbackEncountered", _neoLog.resultsRollbackDetected.ToString());
+                req.HttpContext.Response.Headers.Add("ncsMetrics-retries", _neoLog.resultsRetries.ToString());
                 return result;
             }
             catch (ApiFunctionException e)
