@@ -43,6 +43,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
         {
             return GraphDatabase.Driver(uri, authToken,
                 o => o.WithMaxConnectionLifetime(TimeSpan.FromMinutes(30))
+                    //.WithMaxIdleConnectionPoolSize(5)
                     .WithMaxConnectionPoolSize(50)
                     .WithConnectionAcquisitionTimeout(TimeSpan.FromMinutes(2))
                     .WithLogger(log)
@@ -62,38 +63,32 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Helpers
 
             
             Object result = null;
-           
-            for (int i = 0; i < 5; i++)
             {
                 IAsyncSession session = _neo4JDriver.AsyncSession();// o => o.WithDefaultAccessMode(AccessMode.Read)
                                                                     //    .WithFetchSize(Config.Infinite));
-                bool fail = false;
                 try
                 {
                     result = await session.ReadTransactionAsync(async tx =>
                     {
                         _resultCursor = await tx.RunAsync(query, statementParameters);
                         var records = await GetListOfRecordsAsync();
-                        var summary = await _resultCursor.ConsumeAsync();
-                        log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
-                        log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
-                        log.resultsRetries = i;
+                        //var summary = await _resultCursor.ConsumeAsync();
+                        //log.resultsReadyAfter = (long)summary.ResultAvailableAfter.TotalMilliseconds;
+                        //log.resultsConsumedAfter = (long)summary.ResultConsumedAfter.TotalMilliseconds;
+                        //log.resultsRetries = i;
                         return records;
                     });
                 }
-                catch (Exception e)
-                {
-                    log.Warn(e,"Failed at attempt {i} of 5: ");
-                    fail = true;
-                }
+            //    catch (Exception e)
+            //    {
+            //        log.Warn(e,"Failed at attempt {i} of 5: ");
+             //       fail = true;
+            //    }
                 finally
                 {
                     await session.CloseAsync();
                 }
-                if (!fail)
-                {
-                    break;
-                }
+
             }
             return result;
         }
