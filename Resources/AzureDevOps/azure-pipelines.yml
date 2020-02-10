@@ -101,7 +101,7 @@ stages:
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetOccupationsByLabel
-          - name: GetSkillsById
+          - name: GetSkillById
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
 - stage: DeployToSitServiceTaxonomy
