@@ -97,10 +97,13 @@ stages:
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
             dependsOn: GetAllSkillsForOccupation
+        -
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
-            dependsOn: GetAllOccupations
-
+            dependsOn: GetOccupationsByLabel
+          - name: GetSkillsById
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+            dependsOn: GetOccupationsWithMatchingSkills
 - stage: DeployToSitServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_SERVICETAXONOMY
@@ -154,9 +157,13 @@ stages:
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
             dependsOn: GetAllSkillsForOccupation
+        -
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
-            dependsOn: GetAllOccupations
+            dependsOn: GetOccupationsByLabel
+          - name: GetSkillsById
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+            dependsOn: GetOccupationsWithMatchingSkills
 
 - stage: DeployToPPServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -211,6 +218,10 @@ stages:
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
             dependsOn: GetAllSkillsForOccupation
+        -
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
-            dependsOn: GetAllOccupations
+            dependsOn: GetOccupationsByLabel
+          - name: GetSkillsById
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+            dependsOn: GetOccupationsWithMatchingSkills
