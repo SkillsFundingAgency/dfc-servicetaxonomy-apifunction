@@ -78,10 +78,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var result =  new OkObjectResult(recordsResult);
                 string txt = _neoLog.handshakeTimeElapsed.ToString();
                 req.HttpContext.Response.Headers.Add("ncsMetrics-handshake", _neoLog.handshakeTimeElapsed.ToString());
-                req.HttpContext.Response.Headers.Add("ncsMetrics-resultReady", _neoLog.resultsReadyAfter.ToString());
-                req.HttpContext.Response.Headers.Add("ncsMetrics-resultConsumed", _neoLog.resultsConsumedAfter.ToString());
-                req.HttpContext.Response.Headers.Add("ncsMetrics-rollbackEncountered", _neoLog.resultsRollbackDetected.ToString());
-                req.HttpContext.Response.Headers.Add("ncsMetrics-retries", _neoLog.resultsRetries.ToString());
+                //req.HttpContext.Response.Headers.Add("ncsMetrics-resultReady", _neoLog.resultsReadyAfter.ToString());
+                //req.HttpContext.Response.Headers.Add("ncsMetrics-resultConsumed", _neoLog.resultsConsumedAfter.ToString());
+                //req.HttpContext.Response.Headers.Add("ncsMetrics-rollbackEncountered", _neoLog.resultsRollbackDetected.ToString());
+                //req.HttpContext.Response.Headers.Add("ncsMetrics-retries", _neoLog.resultsRetries.ToString());
                 return result;
             }
             catch (ApiFunctionException e)
