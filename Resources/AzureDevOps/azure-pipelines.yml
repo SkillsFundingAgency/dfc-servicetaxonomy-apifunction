@@ -102,7 +102,7 @@ stages:
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetOccupationsByLabel
           - name: GetSkillsById
-            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
 - stage: DeployToSitServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -162,7 +162,7 @@ stages:
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetOccupationsByLabel
           - name: GetSkillsById
-            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
 
 - stage: DeployToPPServiceTaxonomy
