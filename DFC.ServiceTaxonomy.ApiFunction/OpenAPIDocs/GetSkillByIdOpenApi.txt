@@ -56,6 +56,13 @@ components:
           example: "http://data.europa.eu/esco/skill/15d76317-c71a-4fa2-aadc-2ecc34e627b7"
     Skill: 
       type: "object"
+      required:
+      - uri
+      - skill
+      - alternativeLabels
+      - lastModified
+      - skillType
+      - skillReusability
       properties:
         uri: 
           type: string
@@ -77,4 +84,3 @@ components:
         skillReusability: 
           type: string
           example: cross-sectoral
-          
