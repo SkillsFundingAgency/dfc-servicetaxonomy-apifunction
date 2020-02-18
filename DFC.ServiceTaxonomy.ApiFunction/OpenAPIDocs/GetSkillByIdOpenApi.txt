@@ -77,7 +77,7 @@ components:
           example: [ "conversation" ]
         lastModified: 
           type: string
-          example: "2016-12-20T19:32:45Z"
+          example: 2016-12-20T19:32:45Z
         skillType: 
           type: string
           example: knowledge
