@@ -1,21 +1,30 @@
 ﻿openapi: 3.0.1
 info:
-  title: Service Taxonomy Get All Job Profiles
-  description: 'Sample Description for Query'
+  title: Service Taxonomy Get Job Profile by Title
+  description: 'Returns a Job Profile for a title'
   version: 1.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get All Job Profiles
-  description: Returns all job profiles
+- name: Get Job Profile by Title
+  description: Returns job profile by title
 paths:
-  /Execute/:
+  /Execute/{canonicalName}:
     get:
       tags:
       - Job Profile
-      summary: Get all job profiles.
-      description: Returns all job profiles
-      operationId: GetAllJobProfiles
+      summary: Get job profile by title.
+      description: Return job title by title
+      operationId: GetJobProfileByTitle
+      parameters:
+      - in: path
+        name: canonicalName
+        schema:
+          type: string
+          default: false
+        description: Find job profiles where the title matches the canonical name
+        required: true
+        allowEmptyValue: false
       responses:
         200:
           description: successful operation
