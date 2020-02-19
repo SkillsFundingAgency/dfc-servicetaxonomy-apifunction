@@ -1,0 +1,3 @@
+{
+  "query": "MATCH (jp:ncs__JobProfile)-[:ncs__relatedOccupation]-(oc:esco__Occupation) WHERE jp.skos__prefLabel CONTAINS 'Care worker' with jp,{ResultItemTitle:jp.skos__prefLabel, ResultItemAlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), ResultItemOverview:jp.ncs__Description, ResultItemSalaryRange:'£' + jp.ncs__SalaryStarter + ' to ' + '£' + jp.ncs__SalaryExperienced, ResultItemUrlName:jp.ncs__JobProfileWebsiteUrl, JobProfileCategories:[]} AS searchResults  RETURN {Count:count(jp), Results: collect(searchResults)}"
+}
