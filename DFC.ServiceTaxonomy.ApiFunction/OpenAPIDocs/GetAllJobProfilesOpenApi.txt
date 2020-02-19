@@ -1,0 +1,304 @@
+﻿openapi: 3.0.1
+info:
+  title: Service Taxonomy Get All Job Profiles
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get All Job Profiles
+  description: Returns all job profiles
+paths:
+  /Execute/:
+    get:
+      tags:
+      - Job Profile
+      summary: Get all job profiles.
+      description: Returns all job profiles
+      operationId: GetAllJobProfiles
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/JobProfile'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    JobProfile: 
+      type: "object"
+      required:
+      - jobprofiles
+      properties:
+        jobprofiles: 
+          type: array
+          items: 
+            type: object
+            required:
+            - uri
+            - occupation
+            - alternativeLabels
+            - lastModified
+            properties: 
+              Title: 
+                type: string
+                example: Actor
+              LastUpdatedDate: 
+                type: string
+                example: 2020-01-21T11:33:48.093Z
+              Url: 
+                type: string
+                example: https&#58;//dev.api.nationalcareersservice.org.uk/job-profiles/actor
+              Soc: 
+                type: string
+                example: 3413
+              ONetOccupationalCode: 
+                type: string
+                example: 27-2011.00
+              AlternativeTitle: 
+                type: string
+                example: 
+              Overview: 
+                type: string
+                example: Actors29 use speech movement and expression to bring characters to life in theatre film television and radio.
+              SalaryStarter: 
+                type: string
+                example: variable
+              SalaryExperienced: 
+                type: string
+                example: 26
+              MinimumHours: 
+                type: integer
+                format: int32
+                example: 45
+              MaximumHours: 
+                type: integer
+                format: int32
+                example: 47
+              WorkingHoursDetails: 
+                type: string
+                example: irregular
+              WorkingPattern: 
+                type: string
+                example: evenings / weekends / bank holidays
+              WorkingPatternDetails: 
+                type: string
+                example: away from home
+              HowToBecome: 
+                type: object
+                properties: 
+                  EntryRouteSummary: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You can get into this job through:a university course; a college course; volunteering; applying directly; a course at drama school
+              EntryRoutes: 
+                type: object
+                properties: 
+                  University: 
+                    type: object
+                    properties: 
+                      RelevantSubjects: 
+                        type: array
+                        items: 
+                          type: string
+                          example: You could do a foundation degree degree or postgraduate diploma in drama or other relevant subject like:performance studies; contemporary theatre and performance; acting; musical theatre1
+                      FurtherInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: university further route info1
+                      EntryRequirementPreface: 
+                        type: string
+                        example: You'll usually need&#58;
+                      EntryRequirements: 
+                        type: array
+                        items: 
+                          type: string
+                          example: gcse english1
+                      AdditionalInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: [equivalent entry requirements | https&#58;//www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels]
+                  College: 
+                    type: object
+                    properties: 
+                      RelevantSubjects: 
+                        type: array
+                        items: 
+                          type: string
+                          example: There is no set entry route to become an actor but it may be useful to do a relevant subject like:Level 2 Technical Certificate in Performing Arts; Level 3 Extended Diploma in Performing Arts - Acting; A level in Drama and Theatre; Level 4 Diploma in Speech and Drama
+                      FurtherInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: further information 1
+                      EntryRequirementPreface: 
+                        type: string
+                        example: You'll usually need&#58;
+                      EntryRequirements: 
+                        type: array
+                        items: 
+                          type: string
+                          example: college1
+                      AdditionalInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: [equivalent entry requirements | https&#58;//www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels]
+                  Apprenticeship: 
+                    type: object
+                    properties: 
+                      RelevantSubjects: 
+                        type: array
+                        items: 
+                          type: string
+                          example: Relevant subjects
+                      FurtherInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: Further information
+                      EntryRequirementPreface: 
+                        type: string
+                        example: IL Test Most people following this route have&#58;
+                      EntryRequirements: 
+                        type: array
+                        items: 
+                          type: string
+                          example: IL Termination Description Test
+                      AdditionalInformation: 
+                        type: array
+                        items: 
+                          type: string
+                          example: Additional information
+                  Work: 
+                    type: array
+                    items: 
+                      type: string
+                  Volunteering: 
+                    type: array
+                    items: 
+                      type: string
+                      example: Acting is very competitive and you'll need to develop your skills by getting as much practical experience of acting as possible. You could do this through:amateur community or youth theatre; college and university drama societies; student drama festivals and competitions
+                  DirectApplication: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You may be able to find work by applying directly for roles if you have a lot of experience and exceptional acting talent.
+                  OtherRoutes: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You can study with a private [drama school | http://www.federationofdramaschools.co.uk/member-schools/4593600509] or conservatoire. Many offer full-time courses as well as short courses and summer schools.
+              MoreInformation: 
+                type: object
+                properties: 
+                  Registrations: 
+                    type: array
+                    items: 
+                      type: string
+                      example: Ismail Test You can register with the Royal Institute of Chartered Surveyors to become a chartered surveyor through the [Assessment of Professional Competence | http://www.rics.org/uk/apc/pathway-guides/] (APC) scheme.
+                  CareerTips: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You'll need to get as much practical experience of acting as you can and create a showreel to demonstrate your acting skills to agents and casting directors.
+                  ProfessionalAndIndustryBodies: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You can join [Equity | https://www.equity.org.uk/getting-involved/] for professional recognition training opportunities and to make industry contacts.
+                  FurtherInformation: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You can find out more about becoming an actor through [Creative Choices | https://ccskills.org.uk/careers/advice/article/actor]. You can also get extra support from organisations like [Shape Arts | https://www.shapearts.org.uk/] if you have a disability or special learning need.
+              WhatItTakes: 
+                type: object
+                properties: 
+                  DigitalSkillsLevel: 
+                    type: string
+                    example: to be able to carry out basic tasks on a computer or hand-held device
+                  Skills: 
+                    type: array
+                    items: 
+                      type: object
+                      properties: 
+                        Description: 
+                          type: string
+                          example: knowledge of the fine arts
+                        ONetAttributeType: 
+                          type: string
+                          example: Knowledge
+                        ONetRank: 
+                          type: string
+                          example: 5.26
+                        ONetElementId: 
+                          type: string
+                          example: 2.C.7.c
+                  RestrictionsAndRequirements: 
+                    type: object
+                    properties: 
+                      RelatedRestrictions: 
+                        type: array
+                        items: 
+                          type: string
+                          example: have good eyesight and hearing
+                      OtherRequirements: 
+                        type: array
+                        items: 
+                          type: string
+                          example: other1
+              WhatYouWillDo: 
+                type: object
+                properties: 
+                  WYDDayToDayTasks: 
+                    type: array
+                    items: 
+                      type: string
+                      example: You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating.
+                  WorkingEnvironment: 
+                    type: object
+                    properties: 
+                      Location: 
+                        type: string
+                        example: You could work You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating. To get some work experience you could:volunteer to commentate on charity events like fun runs; commentate for amateur matches at schools college or for local teams; record commentary for websites or internet radio stations; volunteer for community hospital or student radio or TV You can get a list of radio stations from:[Community Media Association | http://www.commedia.org.uk/]; [Hospital Broadcasting Association | http://www.hbauk.com/]; [RadioCentre> | http://www.radiocentre.org/] Large broadcasters like [BBC Careers | https://www.bbc.co.uk/careers/work-experience/] [ITV | http://www.itvjobs.com/workinghere/entry-careers/] and [Channel 4 | https://careers.channel4.com/4talent] offer work experience placements insight and talent days. or The [Sports Journalists’ Association | https://www.sportsjournalists.co.uk/training/work-experience/] has more ideas about where to look for work experience.
+                      Environment: 
+                        type: string
+                        example: Your working environment may be physically and emotionally demanding and travelling often and spending nights away from home.
+                      Uniform: 
+                        type: string
+                        example: 
+              CareerPathAndProgression: 
+                type: object
+                properties: 
+                  CareerPathAndProgression: 
+                    type: array
+                    items: 
+                      type: string
+                      example: If you can show an agent you have potential they may put you forward for auditions and castings. Agents usually take a fee of about 10% to 25% from your earnings.
+              RelatedCareers: 
+                type: array
+                items: 
+                  type: object
+                  properties: 
+                    Title: 
+                      type: string
+                      example: Entertainment agent
+                    Url: 
+                      type: string
+                      example: https://dev.api.nationalcareersservice.org.uk/job-profiles/entertainment-agent
