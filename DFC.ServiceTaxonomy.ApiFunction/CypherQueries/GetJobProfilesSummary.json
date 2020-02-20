@@ -1,0 +1,3 @@
+{
+  "query": "MATCH (jp:ncs__JobProfile)-[:ncs__relatedOccupation]-(oc:esco__Occupation) WITH {Url:jp.ncs__JobProfileWebsiteUrl, Title:jp.skos__prefLabel, LastUpdated:'ToDo'} as profileUpdates RETURN collect(profileUpdates)"
+}
