@@ -55,11 +55,6 @@ components:
           type: array
           items: 
             type: object
-            required:
-            - uri
-            - occupation
-            - alternativeLabels
-            - lastModified
             properties: 
               Title: 
                 type: string
