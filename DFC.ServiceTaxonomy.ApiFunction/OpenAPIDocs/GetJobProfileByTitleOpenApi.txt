@@ -14,7 +14,7 @@ paths:
       tags:
       - Job Profile
       summary: Get job profile by title.
-      description: Return job title by title
+      description: Return job profile by title
       operationId: GetJobProfileByTitle
       parameters:
       - in: path
