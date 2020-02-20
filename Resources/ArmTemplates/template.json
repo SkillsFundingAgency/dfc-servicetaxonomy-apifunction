@@ -123,7 +123,11 @@
         "functionType": "GetSkillsByLabel",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsbylabel-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-ai')]"
-
+      },
+      {
+        "functionType": "GetSkillById",
+        "functionName": "[concat(parameters('projectPrefix'), '-skillbyid-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillbyid-ai')]"
       }
     ]
   },
