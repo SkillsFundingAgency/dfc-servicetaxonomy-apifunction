@@ -21,7 +21,6 @@ paths:
         name: canonicalName
         schema:
           type: string
-          default: false
         description: Find job profiles where the title matches the canonical name
         required: true
         allowEmptyValue: false
