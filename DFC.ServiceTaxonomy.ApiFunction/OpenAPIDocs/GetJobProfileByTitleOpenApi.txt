@@ -135,11 +135,7 @@ components:
                         type: array
                         items: 
                           type: string
-<<<<<<< HEAD
                           example: equivalent entry requirements
-=======
-                          example: [equivalent entry requirements | https&#58;//www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels]
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
                   College: 
                     type: object
                     properties: 
@@ -165,11 +161,7 @@ components:
                         type: array
                         items: 
                           type: string
-<<<<<<< HEAD
                           example: equivalent entry requirements
-=======
-                          example: [equivalent entry requirements | https&#58;//www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels]
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
                   Apprenticeship: 
                     type: object
                     properties: 
@@ -214,11 +206,7 @@ components:
                     type: array
                     items: 
                       type: string
-<<<<<<< HEAD
                       example: You can study with a private drama school or conservatoire. Many offer full-time courses as well as short courses and summer schools.
-=======
-                      example: You can study with a private [drama school | http://www.federationofdramaschools.co.uk/member-schools/4593600509] or conservatoire. Many offer full-time courses as well as short courses and summer schools.
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
               MoreInformation: 
                 type: object
                 properties: 
@@ -226,11 +214,7 @@ components:
                     type: array
                     items: 
                       type: string
-<<<<<<< HEAD
                       example: Ismail Test You can register with the Royal Institute of Chartered Surveyors to become a chartered surveyor through the [Assessment of Professional Competence (APC) scheme.
-=======
-                      example: Ismail Test You can register with the Royal Institute of Chartered Surveyors to become a chartered surveyor through the [Assessment of Professional Competence | http://www.rics.org/uk/apc/pathway-guides/] (APC) scheme.
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
                   CareerTips: 
                     type: array
                     items: 
@@ -240,20 +224,12 @@ components:
                     type: array
                     items: 
                       type: string
-<<<<<<< HEAD
                       example: You can join Equity for professional recognition training opportunities and to make industry contacts.
-=======
-                      example: You can join [Equity | https://www.equity.org.uk/getting-involved/] for professional recognition training opportunities and to make industry contacts.
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
                   FurtherInformation: 
                     type: array
                     items: 
                       type: string
-<<<<<<< HEAD
                       example: You can find out more about becoming an actor through Creative Choices. You can also get extra support from organisations like Shape Arts if you have a disability or special learning need.
-=======
-                      example: You can find out more about becoming an actor through [Creative Choices | https://ccskills.org.uk/careers/advice/article/actor]. You can also get extra support from organisations like [Shape Arts | https://www.shapearts.org.uk/] if you have a disability or special learning need.
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
               WhatItTakes: 
                 type: object
                 properties: 
@@ -303,11 +279,7 @@ components:
                     properties: 
                       Location: 
                         type: string
-<<<<<<< HEAD
                         example: You could work You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating. To get some work experience you could:volunteer to commentate on charity events like fun runs; commentate for amateur matches at schools college or for local teams; record commentary for websites or internet radio stations; volunteer for community hospital or student radio or TV You can get a list of radio stations from: Community Media Association, Hospital Broadcasting Association, RadioCentre, Large broadcasters like BBC Careers ITV and Channel 4 offer work experience placements insight and talent days. or The Sports Journalists’ Association has more ideas about where to look for work experience.
-=======
-                        example: You could work You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating. To get some work experience you could:volunteer to commentate on charity events like fun runs; commentate for amateur matches at schools college or for local teams; record commentary for websites or internet radio stations; volunteer for community hospital or student radio or TV You can get a list of radio stations from:[Community Media Association | http://www.commedia.org.uk/]; [Hospital Broadcasting Association | http://www.hbauk.com/]; [RadioCentre> | http://www.radiocentre.org/] Large broadcasters like [BBC Careers | https://www.bbc.co.uk/careers/work-experience/] [ITV | http://www.itvjobs.com/workinghere/entry-careers/] and [Channel 4 | https://careers.channel4.com/4talent] offer work experience placements insight and talent days. or The [Sports Journalists’ Association | https://www.sportsjournalists.co.uk/training/work-experience/] has more ideas about where to look for work experience.
->>>>>>> 5665bfe8f8be362ba58a71db3db19afe47159b66
                       Environment: 
                         type: string
                         example: Your working environment may be physically and emotionally demanding and travelling often and spending nights away from home.
