@@ -106,7 +106,7 @@ stages:
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetJobProfileByTitle
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
-            dependsOn: GetOccupationsWithMatchingSkills
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
         -
           - name: GetJobProfilesBySearchTerm
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
@@ -176,7 +176,7 @@ stages:
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetJobProfileByTitle
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
-            dependsOn: GetOccupationsWithMatchingSkills
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
         -
           - name: GetJobProfilesBySearchTerm
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
@@ -247,7 +247,7 @@ stages:
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetJobProfileByTitle
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
-            dependsOn: GetOccupationsWithMatchingSkills
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
         -
           - name: GetJobProfilesBySearchTerm
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
