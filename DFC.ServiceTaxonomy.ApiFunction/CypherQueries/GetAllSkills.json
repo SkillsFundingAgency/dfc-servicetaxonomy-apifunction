@@ -1,3 +1,3 @@
 ﻿{
-  "query": "MATCH (s:esco__Skill)-[:esco__skillType]->(skilltype) WITH  { skills:COLLECT({ uri:s.uri, skill:head(s.skos__prefLabel), skillType:case head(skilltype.skos__prefLabel) when 'skill' then 'competency' when 'knowledge' then 'knowledge' end, alternativeLabels:coalesce(s.skos__altLabel,[]) }) } as skills return skills"
+  "query": "MATCH (s:esco__Skill)-[:esco__skillType]->(skilltype) WITH  { skills:COLLECT({ uri:s.uri, skill:s.skos__prefLabel, skillType:case skilltype.skos__prefLabel when 'skill' then 'competency' when 'knowledge' then 'knowledge' end, alternativeLabels:coalesce(s.skos__altLabel,[]) }) } as skills return skills"
 }
