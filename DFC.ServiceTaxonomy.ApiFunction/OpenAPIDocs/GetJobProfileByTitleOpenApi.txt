@@ -279,7 +279,7 @@ components:
                     properties: 
                       Location: 
                         type: string
-                        example: You could work You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating. To get some work experience you could:volunteer to commentate on charity events like fun runs; commentate for amateur matches at schools college or for local teams; record commentary for websites or internet radio stations; volunteer for community hospital or student radio or TV You can get a list of radio stations from: Community Media Association, Hospital Broadcasting Association, RadioCentre, Large broadcasters like BBC Careers ITV and Channel 4 offer work experience placements insight and talent days. or The Sports Journalists’ Association has more ideas about where to look for work experience.
+                        example: You could work You'll need to have some practical experience and be able to show you have a real enthusiasm for sports commentating.
                       Environment: 
                         type: string
                         example: Your working environment may be physically and emotionally demanding and travelling often and spending nights away from home.
