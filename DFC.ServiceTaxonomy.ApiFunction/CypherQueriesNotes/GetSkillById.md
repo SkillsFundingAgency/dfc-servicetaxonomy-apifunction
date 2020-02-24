@@ -12,21 +12,21 @@ WHERE toLower(s.uri) = loweruri
 WITH  
 { 
 	uri:s.uri, 
-    skill:head(s.skos__prefLabel), 
+    skill:s.skos__prefLabel, 
     skillType:
-      case head(skilltype.skos__prefLabel) 
+      case skilltype.skos__prefLabel 
           when 'skill' then 'competency' 
           when 'knowledge' then 'knowledge' 
       end, 
     alternativeLabels:coalesce(s.skos__altLabel,[]),
     skillReusability: 
-    	case head(skillreuselevel.skos__prefLabel)
+    	case skillreuselevel.skos__prefLabel
         	when 'cross-sector skills and competences' then 'cross-sectoral'
             when 'sector specific skills and competences' then 'sector-specific'
             when 'occupation specific skills and competences' then 'occupation-specific'
             when 'transversal skills and competences' then 'transversal'
 		end,
-	lastModified:head(s.dct__modified)
+	lastModified:s.dct__modified
 } as skill
 return skill
 LIMIT 1
