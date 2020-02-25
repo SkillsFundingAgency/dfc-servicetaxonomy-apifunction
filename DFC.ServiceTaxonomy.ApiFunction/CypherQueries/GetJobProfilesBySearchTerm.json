@@ -1,0 +1,16 @@
+{
+  "query": "MATCH (jp:ncs__JobProfile)-[:ncs__relatedOccupation]-(oc:esco__Occupation) WHERE jp.skos__prefLabel CONTAINS $searchTerm OR oc.ncs__description CONTAINS $searchTerm WITH jp,oc,{ResultItemTitle:jp.skos__prefLabel, ResultItemAlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), ResultItemOverview:jp.ncs__Description, ResultItemSalaryRange:'£' + jp.ncs__SalaryStarter + ' to ' + '£' + jp.ncs__SalaryExperienced, ResultItemUrlName:jp.ncs__JobProfileWebsiteUrl, JobProfileCategories:['ToDo']} as jobProfiles WITH { TotalResults:size(collect(jobProfiles)), Profiles:collect(jobProfiles)} AS aggregatedResults UNWIND aggregatedResults.Profiles AS unwoundProfiles with unwoundProfiles,aggregatedResults SKIP toInteger(($page-1)*$pageSize) LIMIT toInteger($pageSize) WITH aggregatedResults{PageSize:$pageSize, CurrentPage:$page, Count:aggregatedResults.TotalResults,Results:collect(unwoundProfiles)} AS finalResult RETURN finalResult",
+  "queryParams": [
+    {
+      "name": "searchTerm"
+    },
+    {
+      "name": "pageSize",
+      "default": "10"
+    },
+    {
+      "name": "page",
+      "default": "1"
+    }
+  ]
+}

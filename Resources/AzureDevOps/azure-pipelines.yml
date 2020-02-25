@@ -104,6 +104,16 @@ stages:
           - name: GetSkillById
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
+          - name: GetJobProfileByTitle
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
+        -
+          - name: GetJobProfilesBySearchTerm
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
+            dependsOn: GetSkillsByLabel
+          - name: GetJobProfilesSummary
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
+            dependsOn: GetSkillById
 - stage: DeployToSitServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_SERVICETAXONOMY
@@ -161,9 +171,19 @@ stages:
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetOccupationsByLabel
-          - name: GetSkillsById
+          - name: GetSkillById
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
+          - name: GetJobProfileByTitle
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
+        -
+          - name: GetJobProfilesBySearchTerm
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
+            dependsOn: GetSkillsByLabel
+          - name: GetJobProfilesSummary
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
+            dependsOn: GetSkillById
 
 - stage: DeployToPPServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -222,6 +242,16 @@ stages:
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
             dependsOn: GetOccupationsByLabel
-          - name: GetSkillsById
-            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
+          - name: GetSkillById
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
+          - name: GetJobProfileByTitle
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills
+        -
+          - name: GetJobProfilesBySearchTerm
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
+            dependsOn: GetSkillsByLabel
+          - name: GetJobProfilesSummary
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
+            dependsOn: GetSkillById
