@@ -12,7 +12,6 @@ where toLower(o.skos__prefLabel) contains lowerlabel or
 case toLower('true')
   when 'true' then
     any(alt in o.skos__altLabel where toLower(alt) contains lowerlabel)
-    or any(hidden in o.skos__hiddenLabel where toLower(hidden) contains lowerlabel)
   else
     false
   end
@@ -20,13 +19,12 @@ with { occupations:collect(
 {
   uri:o.uri,
   occupation:o.skos__prefLabel,
-  alternativeLabels:coalesce(o.skos__altLabel, o.skos__hiddenLabel),
+  alternativeLabels:o.skos__altLabel,
   lastModified:o.dct__modified,
   matches:
   {
     occupation:[preflab in o.skos__prefLabel where toLower(preflab) contains lowerlabel],
-    alternativeLabels:coalesce([altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel],
-      [hidlab in o.skos__hiddenLabel where toLower(hidlab) contains lowerlabel])
+    alternativeLabels:[altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel]
   }
 }
 )} as occupations 
