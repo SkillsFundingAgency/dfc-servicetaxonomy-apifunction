@@ -1,0 +1,174 @@
+﻿openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Occupations With Matching Skills Detailed
+  description: 'Returns a list of occupations that match a supplied list of skills along with detailed skill information'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Occupations With Matching Skills Detailed
+  description: Returns a list of occupations that match a supplied list of skills along with detailed skill information
+paths:
+  /Execute/:
+    post:
+      tags:
+      - Occupation
+      summary: Get Occupations With Matching Skills Detailed.
+      description: Returns a list of occupations that match a supplied list of skills along with detailed skill information
+      operationId: GetOccupationsWithMatchingSkillsDetailed
+      requestBody:
+        description: enter esco skill uri to retrieve all Occupations for the Skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBody'
+
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Occupation'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    RequestBody:
+      type: object
+      properties:
+        skillList:
+          type: array
+          items:
+            type: string
+            example: http://data.europa.eu/esco/skill/114e1eff-215e-47df-8e10-45a5b72f8197
+        minimumMatchingSkills:
+          type: integer
+          example: 1
+    Occupation: 
+      type: object
+      properties:
+        matchingOccupations:
+          type: array
+          items:
+            type: object
+            properties:
+              occupationOptionalSkills:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relationshipType:
+                      type: string
+                    skill:
+                      type: string
+                    lastModified:
+                      type: string
+                    alternativeLabels:
+                      type: array
+                      items:
+                        type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                    skillReusability:
+                      type: string
+              matchingOptionalSkills:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relationshipType:
+                      type: string
+                    skill:
+                      type: string
+                    lastModified:
+                      type: string
+                    alternativeLabels:
+                      type: array
+                      items:
+                        type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                    skillReusability:
+                      type: string
+              occupation:
+                type: array
+                items:
+                  type: string
+              jobProfileDescription:
+                type: string
+              jobProfileTitle:
+                type: string
+              matchingEssentialSkills:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relationshipType:
+                      type: string
+                    skill:
+                      type: string
+                    lastModified:
+                      type: string
+                    alternativeLabels:
+                      type: array
+                      items:
+                        type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                    skillReusability:
+                      type: string
+                    jobProfileUri:
+                      type: string
+                    socCode:
+                      type: string
+              OccupationEssentialSkills:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relationshipType:
+                      type: string
+                    skill:
+                      type: string
+                    lastModified:
+                      type: string
+                    alternativeLabels:
+                      type: array
+                      items:
+                        type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                    skillReusability:
+                      type: string
+            required:
+              - uri
+              - occupation
+              - jobProfileTitle
+              - jobProfileUri
+              - occupationEssentialSkills
+              - occupationOptionalSkills
+              - matchingEssentialSkills
+              - matchingOptionalSkills
+              - socCode
+              - lastModified
+      required:
+       - matchingOccupations
