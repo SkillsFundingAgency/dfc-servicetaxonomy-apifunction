@@ -87,6 +87,9 @@ components:
               matchingOptionalSkills: 
                 type: integer
                 example: 1
+              socCode:
+                type:   integer
+                example: 2419
               lastModified: 
                 type: string
                 example: 2017-01-17T14:18:17Z
@@ -99,6 +102,7 @@ components:
               - totalOccupationOptionalSkills
               - matchingEssentialSkills
               - matchingOptionalSkills
+              - socCode
               - lastModified
       required:
        - matchingOccupations
