@@ -8,25 +8,23 @@ Here's the current query, formatted and with params replaced by literals...
 ```
 with toLower('toxic') as lowerlabel
 match (o:esco__Occupation)
-where toLower(head(o.skos__prefLabel)) contains lowerlabel or 
+where toLower(o.skos__prefLabel) contains lowerlabel or 
 case toLower('true')
   when 'true' then
     any(alt in o.skos__altLabel where toLower(alt) contains lowerlabel)
-    or any(hidden in o.skos__hiddenLabel where toLower(hidden) contains lowerlabel)
   else
     false
   end
 with { occupations:collect(
 {
   uri:o.uri,
-  occupation:head(o.skos__prefLabel),
-  alternativeLabels:coalesce(o.skos__altLabel, o.skos__hiddenLabel),
-  lastModified:head(o.dct__modified),
+  occupation:o.skos__prefLabel,
+  alternativeLabels:o.skos__altLabel,
+  lastModified:o.dct__modified,
   matches:
   {
     occupation:[preflab in o.skos__prefLabel where toLower(preflab) contains lowerlabel],
-    alternativeLabels:coalesce([altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel],
-      [hidlab in o.skos__hiddenLabel where toLower(hidlab) contains lowerlabel])
+    alternativeLabels:[altlab in o.skos__altLabel where toLower(altlab) contains lowerlabel]
   }
 }
 )} as occupations 
@@ -38,7 +36,7 @@ return occupations
 Here's a previous version of the query that returns just the matches and ids (in case we need to revert)...
 
 ```
-match (o:esco__Occupation) where toLower(head(o.skos__prefLabel)) contains 'toxic' or any(alt in o.skos__altLabel where toLower(alt) contains 'toxic') or any(hidden in o.skos__hiddenLabel where toLower(hidden) contains 'toxic')
+match (o:esco__Occupation) where toLower(o.skos__prefLabel) contains 'toxic' or any(alt in o.skos__altLabel where toLower(alt) contains 'toxic') or any(hidden in o.skos__hiddenLabel where toLower(hidden) contains 'toxic')
 with o.uri as uri, o.skos__prefLabel + coalesce(o.skos__altLabel, []) + coalesce(o.skos__hiddenLabel, []) as labels
 unwind([label in labels where toLower(label) contains 'toxic']) as matchedLabels
 with {Occupations:collect( {Label: matchedLabels, Uri: uri})} as matches
