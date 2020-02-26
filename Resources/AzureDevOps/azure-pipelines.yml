@@ -225,3 +225,6 @@ stages:
           - name: GetSkillsById
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbyid-fa'
             dependsOn: GetOccupationsWithMatchingSkills
+          - name: GetOccupationsWithMatchingSkillsDetailed
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa' 
+            dependsOn: GetSkillsGapForOccupationAndGivenSkills

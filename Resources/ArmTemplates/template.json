@@ -128,7 +128,12 @@
         "functionType": "GetSkillById",
         "functionName": "[concat(parameters('projectPrefix'), '-skillbyid-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-skillbyid-ai')]"
-      }
+      },
+      {
+        "functionType": "GetOccupationsWithMatchingSkillsDetailed",
+        "functionName": "[concat(parameters('projectPrefix'), '-occmsd-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occmsd-ai')]"
+      },
     ]
   },
   "resources": [
