@@ -101,14 +101,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (!pathParams.Any())
                 return cypherPathStatementParameters;
 
-            var pathParameters = pathString.Value.Replace("/Execute/", string.Empty);
+            var pathParameters = pathString.Value.Replace("/Execute/", string.Empty).Split('/');
 
             foreach (var cypherParam in pathParams)
             {
                 try
                 {
-                    var endIndex = pathParameters.IndexOf('/');
-                    var parameterValue = pathParameters.Substring(cypherParam.PathOrdinalPosition.Value, endIndex != -1 ? endIndex : pathParameters.Length);
+                    var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
 
                     if(string.IsNullOrWhiteSpace(parameterValue))
                         throw ApiFunctionException.InternalServerError("Required parameter {cypherParam.Name} has no value in path");
