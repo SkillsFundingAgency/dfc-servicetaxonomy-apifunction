@@ -63,6 +63,48 @@ components:
           items:
             type: object
             properties:
+              matchingOptionalSkills:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    relationshipType:
+                      type: string
+                    skill:
+                      type: string
+                    lastModified:
+                      type: string
+                    alternativeLabels:
+                      type: array
+                      items:
+                        type: string
+                    type:
+                      type: string
+                    uri:
+                      type: string
+                    skillReusability:
+                      type: string
+              matchingEssentialSkills:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      relationshipType:
+                        type: string
+                      skill:
+                        type: string
+                      lastModified:
+                        type: string
+                      alternativeLabels:
+                        type: array
+                        items:
+                          type: string
+                      type:
+                        type: string
+                      uri:
+                        type: string
+                      skillReusability:
+                        type: string
               occupationOptionalSkills:
                 type: array
                 items:
@@ -84,7 +126,7 @@ components:
                       type: string
                     skillReusability:
                       type: string
-              matchingOptionalSkills:
+              occupationEssentialSkills:
                 type: array
                 items:
                   type: object
@@ -113,52 +155,14 @@ components:
                 type: string
               jobProfileTitle:
                 type: string
-              matchingEssentialSkills:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    relationshipType:
-                      type: string
-                    skill:
-                      type: string
-                    lastModified:
-                      type: string
-                    alternativeLabels:
-                      type: array
-                      items:
-                        type: string
-                    type:
-                      type: string
-                    uri:
-                      type: string
-                    skillReusability:
-                      type: string
-                    jobProfileUri:
-                      type: string
-                    socCode:
-                      type: string
-              OccupationEssentialSkills:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    relationshipType:
-                      type: string
-                    skill:
-                      type: string
-                    lastModified:
-                      type: string
-                    alternativeLabels:
-                      type: array
-                      items:
-                        type: string
-                    type:
-                      type: string
-                    uri:
-                      type: string
-                    skillReusability:
-                      type: string
+              jobProfileUri:
+                type: string
+              socCode:
+                type: string
+              uri:
+                type: string
+              lastModified:
+                type: string
             required:
               - uri
               - occupation
