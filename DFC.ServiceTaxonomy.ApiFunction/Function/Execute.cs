@@ -255,7 +255,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             foreach (var cypherParam in cypherModel.QueryParams)
             {
                 // let query param override param in message body
-                if (!queryCollection.ContainsKey(cypherParam.Name) && !existingParameters.ContainsKey(cypherParam.Name))
+                if (!existingParameters.ContainsKey(cypherParam.Name))
                 {
                     try
                     {
