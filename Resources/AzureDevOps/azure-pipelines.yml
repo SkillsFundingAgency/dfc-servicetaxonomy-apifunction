@@ -114,6 +114,10 @@ stages:
           - name: GetJobProfilesSummary
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
             dependsOn: GetSkillById
+          - name: GetOccupationsWithMatchingSkillsDetailed
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa'
+            dependsOn: GetJobProfileByTitle
+
 - stage: DeployToSitServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_SERVICETAXONOMY
@@ -184,6 +188,9 @@ stages:
           - name: GetJobProfilesSummary
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
             dependsOn: GetSkillById
+          - name: GetOccupationsWithMatchingSkillsDetailed
+            azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa'
+            dependsOn: GetJobProfileByTitle
 
 - stage: DeployToPPServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
@@ -260,4 +267,4 @@ stages:
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetOccupationsWithMatchingSkillsDetailed
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa'
-            dependsOn: GetSkillsGapForOccupationAndGivenSkills
+            dependsOn: GetJobProfileByTitle
