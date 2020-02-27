@@ -110,7 +110,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                     var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
 
                     if(string.IsNullOrWhiteSpace(parameterValue))
-                        throw ApiFunctionException.InternalServerError("Required parameter {cypherParam.Name} has no value in path");
+                        throw ApiFunctionException.InternalServerError($"Required parameter {cypherParam.Name} has no value in path");
 
                     cypherPathStatementParameters.Add(cypherParam.Name, parameterValue);
                 }
