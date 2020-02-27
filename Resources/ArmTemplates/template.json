@@ -130,6 +130,21 @@
         "appInsightsName": "[concat(parameters('projectPrefix'), '-skillbyid-ai')]"
       },
       {
+        "functionType": "GetJobProfileByTitle",
+        "functionName": "[concat(parameters('projectPrefix'), '-jpbytitle-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpbytitle-ai')]"
+      },
+      {
+        "functionType": "GetJobProfilesBySearchTerm",
+        "functionName": "[concat(parameters('projectPrefix'), '-jpbyterm-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpbyterm-ai')]"
+      },
+      {
+        "functionType": "GetJobProfilesSummary",
+        "functionName": "[concat(parameters('projectPrefix'), '-jpsummary-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpsummary-ai')]"
+      },
+      {
         "functionType": "GetOccupationsWithMatchingSkillsDetailed",
         "functionName": "[concat(parameters('projectPrefix'), '-occmsd-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-occmsd-ai')]"
