@@ -401,6 +401,36 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         }
 
         [Fact]
+        public async Task Execute_MultiplePathParameters_ReturnsExecutedCallWithQueryParameter()
+        {
+            _config.CurrentValue.Function = "GetJobProfileByTitle";
+            var query = @"{""query"": ""QUERY HERE"",""queryParams"": [{""name"": ""canonicalName"",""pathOrdinalPosition"": 0}, {""name"": ""aTestParameter"",""pathOrdinalPosition"": 1}, {""name"": ""bTestParameter"",""pathOrdinalPosition"": 2}]}";
+            _request.Path = "/Execute/Librarian/TestAParameter/TestBParameter";
+
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetJobProfileByTitle.json")).Returns(query);
+            A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(Task.CompletedTask);
+
+            var result = await RunFunction();
+
+            var okObjectResult = result as OkObjectResult;
+
+            var neo4JHelperCalls = Fake.GetCalls(_neo4JHelper).ToList();
+
+            var executeCalls = neo4JHelperCalls.Where(c => c.Method.Name == nameof(INeo4JHelper.ExecuteCypherQueryInNeo4JAsync));
+
+            var executeCall = executeCalls.First();
+
+            var actualParams = executeCall.Arguments[1].As<IDictionary<string, object>>();
+
+            //Assert
+            Assert.True(result is OkObjectResult);
+            Assert.Single(executeCalls);
+            Assert.Equal("Librarian", actualParams["canonicalName"]);
+            Assert.Equal("TestAParameter", actualParams["aTestParameter"]);
+            Assert.Equal("TestBParameter", actualParams["bTestParameter"]);
+        }
+
+        [Fact]
         public async Task Execute_GetSkillsByLabel_ReturnsCorrectJsonResponse()
         {
             _config.CurrentValue.Function = "GetSkillsByLabel";
