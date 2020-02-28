@@ -76,7 +76,7 @@ components:
         Results:
           required:
           - ResultItemTitle
-          - ResultItemAltenrativeTitle
+          - ResultItemAlternativeTitle
           - ResultItemOverview
           - ResultItemSalaryRange
           - ResultItemUrlName
