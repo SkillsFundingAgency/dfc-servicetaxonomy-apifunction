@@ -50,7 +50,29 @@ components:
       required:
       - jobprofiles
       properties:
-        jobprofiles: 
+        jobprofiles:
+          required:
+          - Title
+          - LastUpdatedDate
+          - Url
+          - Soc
+          - ONetOccupationalCode
+          - AlternativeTitle
+          - Overview
+          - SalaryStarter
+          - SalaryExperienced
+          - MinimumHours
+          - MaximumHours
+          - WorkingHoursDetails
+          - WorkingPattern
+          - WorkingPatternDetails
+          - HowToBecome
+          - EntryRoutes
+          - MoreInformation
+          - WhatItTakes
+          - WhatYouWillDo
+          - CareerPathAndProgression
+          - RelatedCareers
           type: array
           items: 
             type: object
