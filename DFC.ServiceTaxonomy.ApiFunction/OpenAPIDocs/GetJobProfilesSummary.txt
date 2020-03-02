@@ -38,6 +38,10 @@ paths:
 components:
   schemas:
     JobProfileSummary: 
+      required:
+      - Url
+      - Title
+      - LastUpdated
       type: array
       items:
         type: object

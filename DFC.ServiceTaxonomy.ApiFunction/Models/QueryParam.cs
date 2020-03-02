@@ -5,5 +5,6 @@
         public string Name { get; set; }
         public string Default { get; set; }
         public string Type { get; set; }
+        public int? PathOrdinalPosition { get; set; }
     }
 }

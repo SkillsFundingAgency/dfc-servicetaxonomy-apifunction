@@ -44,7 +44,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Execute/{*.}")] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             try
@@ -53,12 +53,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogInformation($"Function has been triggered in {environment} environment.");
 
                 bool development = environment == "Development";
-                
+
                 Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log);
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
 
                 Cypher cypherModel = await cypherModelTask;
-                var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log);
+
+                var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
+                var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
@@ -83,6 +85,42 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+
+        private static Dictionary<string, object> GetCypherPathParameters(Cypher cypherModel, PathString pathString, ILogger log)
+        {
+            log.LogInformation("Attempting to read parameters from path");
+
+            var cypherPathStatementParameters = new Dictionary<string, object>();
+
+            if (cypherModel.QueryParams == null)
+                return cypherPathStatementParameters;
+
+            var pathParams = cypherModel.QueryParams.Where(x => x.PathOrdinalPosition.HasValue);
+
+            if (!pathParams.Any())
+                return cypherPathStatementParameters;
+
+            var pathParameters = pathString.Value.Replace("/Execute/", string.Empty).Split('/');
+
+            foreach (var cypherParam in pathParams)
+            {
+                try
+                {
+                    var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
+
+                    if(string.IsNullOrWhiteSpace(parameterValue))
+                        throw ApiFunctionException.InternalServerError($"Required parameter {cypherParam.Name} has no value in path");
+
+                    cypherPathStatementParameters.Add(cypherParam.Name, parameterValue);
+                }
+                catch (Exception)
+                {
+                    throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in path parameters");
+                }
+            }
+
+            return cypherPathStatementParameters;
         }
 
         private string GetFunctionName()
@@ -114,7 +152,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             log.LogInformation("Generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"{(development?context.FunctionAppDirectory:context.FunctionDirectory)}\CypherQueries\{functionName}.json";
+            var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory)}\CypherQueries\{functionName}.json";
 
             string cypherQueryJsonConfig;
 
@@ -187,7 +225,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             {
                 return null;
             }
-            switch (paramType??typeString)
+            switch (paramType ?? typeString)
             {
                 case typeString:
                     return paramString;
@@ -205,38 +243,38 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         }
 
 
-        private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody, ILogger log)
+        private static Dictionary<string, object> GetCypherQueryParameters(Cypher cypherModel, IQueryCollection queryCollection, JObject requestBody, ILogger log, Dictionary<string, object> existingParameters)
         {
             log.LogInformation("Attempting to read json body object");
 
-            var cypherQueryStatementParameters = new Dictionary<string, object>();
-
             if (cypherModel.QueryParams == null)
-                return cypherQueryStatementParameters;
+                return existingParameters;
 
             var queryParams = queryCollection.ToDictionary(p => p.Key, p => p.Value.Last(), StringComparer.OrdinalIgnoreCase);
 
             foreach (var cypherParam in cypherModel.QueryParams)
             {
                 // let query param override param in message body
-
-                try
+                if (!existingParameters.ContainsKey(cypherParam.Name))
                 {
-                    object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
-                                             ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? typeString))
-                                             ?? cypherParam.Default;
-                    if (foundParamValue == null)
-                        throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
+                    try
+                    {
+                        object foundParamValue = GetParamValue(queryParams.GetValueOrDefault(cypherParam.Name), cypherParam.Type)
+                                                 ?? requestBody.GetValue(cypherParam.Name, StringComparison.OrdinalIgnoreCase)?.ToObject(Type.GetType(cypherParam.Type ?? typeString))
+                                                 ?? cypherParam.Default;
+                        if (foundParamValue == null)
+                            throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in request body or query params");
 
-                    cypherQueryStatementParameters.Add(cypherParam.Name, foundParamValue);
-                }
-                catch (Exception ex)
-                {
-                    throw ApiFunctionException.BadRequest("Unable to process supplied parameters", ex);
+                        existingParameters.Add(cypherParam.Name, foundParamValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ApiFunctionException.BadRequest("Unable to process supplied parameters", ex);
+                    }
                 }
             }
 
-            return cypherQueryStatementParameters;
+            return existingParameters;
         }
     }
 }

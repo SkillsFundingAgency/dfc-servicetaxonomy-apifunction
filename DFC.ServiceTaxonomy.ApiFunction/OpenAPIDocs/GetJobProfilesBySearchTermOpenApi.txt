@@ -60,6 +60,11 @@ paths:
 components:
   schemas:
     JobProfileSearchResult: 
+      required:
+      - Count
+      - CurrentPage
+      - PageSize
+      - Results
       type: object
       properties:
         Count:
@@ -69,6 +74,13 @@ components:
         PageSize:
           type: number
         Results:
+          required:
+          - ResultItemTitle
+          - ResultItemAlternativeTitle
+          - ResultItemOverview
+          - ResultItemSalaryRange
+          - ResultItemUrlName
+          - JobProfileCategories
           type: array
           items:
             type: object
