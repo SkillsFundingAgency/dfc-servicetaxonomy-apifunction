@@ -143,6 +143,11 @@
         "functionType": "GetJobProfilesSummary",
         "functionName": "[concat(parameters('projectPrefix'), '-jpsummary-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-jpsummary-ai')]"
+      },
+      {
+        "functionType": "GetOccupationsWithMatchingSkillsDetailed",
+        "functionName": "[concat(parameters('projectPrefix'), '-occmsd-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occmsd-ai')]"
       }
     ]
   },
