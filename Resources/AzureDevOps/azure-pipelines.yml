@@ -13,6 +13,16 @@ pool:
   - msbuild
   - visualstudio
 
+trigger: 
+  branches:
+    include: 
+    - master
+
+pr:
+  branches:
+    include: 
+    - master
+
 stages:
 - stage: Build
   jobs:
