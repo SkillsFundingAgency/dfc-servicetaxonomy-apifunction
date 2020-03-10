@@ -74,15 +74,15 @@ components:
         PageSize:
           type: number
         Results:
-          required:
-          - ResultItemTitle
-          - ResultItemAlternativeTitle
-          - ResultItemOverview
-          - ResultItemSalaryRange
-          - ResultItemUrlName
-          - JobProfileCategories
           type: array
           items:
+            required:
+            - ResultItemTitle
+            - ResultItemAlternativeTitle
+            - ResultItemOverview
+            - ResultItemSalaryRange
+            - ResultItemUrlName
+            - JobProfileCategories
             type: object
             properties:
               ResultItemTitle:
@@ -98,6 +98,9 @@ components:
               JobProfileCategories:
                 type: array
                 items:
+                  required:
+                  - Title
+                  - Name
                   type: object
                   properties:
                     Title:

@@ -37,9 +37,13 @@ paths:
           content: {}
 components:
   schemas:
-    JobProfileSummary: 
+    JobProfileSummary:
       type: array
       items:
+        required:
+          - Url
+          - Title
+          - LastUpdated
         type: object
         properties:
           Url:
