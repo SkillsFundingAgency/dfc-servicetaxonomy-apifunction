@@ -67,7 +67,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
-                cypherQueryParameters.Add("BASE_URI", functionUrl);
+                cypherQueryParameters.Add("baseuri", functionUrl);
                 //cypherQueryParameters = GetGlobalCypherQueryParameters(base)
                 //cypherQueryParameters.Add("BASE_URI", baseUri);
 
