@@ -52,10 +52,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var functionUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 //var environmentQueryParameters = Environment.GetEnvironmentVariable("BASE_URI");
-                log.LogInformation($"Function URL is {functionUrl}");
+                log.LogInformation($"Function URL is {req.Headers["Host"].ToString()}");
                 //if (string.IsNullOrWhiteSpace(baseUri))
                 //    throw new ArgumentNullException("BASE_URI Environment Variable not set.");
-
+                
                 log.LogInformation($"Function has been triggered in {environment}.");
 
                 bool development = environment == "Development";
