@@ -49,8 +49,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
+                var functionUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
-                log.LogInformation($"Function has been triggered in {environment} environment.");
+                //var environmentQueryParameters = Environment.GetEnvironmentVariable("BASE_URI");
+
+                //if (string.IsNullOrWhiteSpace(baseUri))
+                //    throw new ArgumentNullException("BASE_URI Environment Variable not set.");
+
+                log.LogInformation($"Function has been triggered in {environment}.");
 
                 bool development = environment == "Development";
 
@@ -61,6 +67,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
+                cypherQueryParameters.Add("BASE_URI", functionUrl);
+                //cypherQueryParameters = GetGlobalCypherQueryParameters(base)
+                //cypherQueryParameters.Add("BASE_URI", baseUri);
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
@@ -109,7 +118,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 {
                     var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
 
-                    if(string.IsNullOrWhiteSpace(parameterValue))
+                    if (string.IsNullOrWhiteSpace(parameterValue))
                         throw ApiFunctionException.InternalServerError($"Required parameter {cypherParam.Name} has no value in path");
 
                     cypherPathStatementParameters.Add(cypherParam.Name, parameterValue);

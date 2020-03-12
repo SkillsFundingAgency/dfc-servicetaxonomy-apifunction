@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "DFC.ServiceTaxonomy.ApiFunction": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Function": "GetJobProfilesByTitle",
+        "BASE_URI": "http://test/lala",
+        "Neo4jPassword": "ESCO3",
+        "AZURE_FUNCTIONS_ENVIRONMENT": "Development",
+        "Neo4jUrl": "bolt://localhost:7687",
+        "Neo4jUser": "neo4j"
+      }
+    }
+  }
+}
