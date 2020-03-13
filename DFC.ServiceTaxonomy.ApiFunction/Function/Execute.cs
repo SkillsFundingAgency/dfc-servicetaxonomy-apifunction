@@ -52,15 +52,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
 
-                var host = req.Headers["X-Forwarded-Host"].ToString();
-
-                if (string.IsNullOrWhiteSpace(host))
-                    throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
-
-                var hostUriBuilder = new UriBuilder { Host = host, Scheme = "http://" };
-
-                log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
-
                 bool development = environment == "Development";
 
                 Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log);
@@ -73,7 +64,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 //Add the host in to all cypher queries
 
-                cypherQueryParameters.Add("host", hostUriBuilder.ToString());
+                cypherQueryParameters.Add("host", BuildHostFunctionUrl(req, log));
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
@@ -98,6 +89,26 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+
+        private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
+        {
+            var host = req.Headers["X-Forwarded-Host"].ToString();
+
+            if (string.IsNullOrWhiteSpace(host))
+                throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
+
+            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.Scheme))
+                throw ApiFunctionException.InternalServerError("Scheme missing in Settings");
+
+            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.ApplicationName))
+                throw ApiFunctionException.InternalServerError("ApplicationName missing in Settings");
+
+            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}/{GetFunctionName()}/Execute/" };
+
+            log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
+
+            return hostUriBuilder.ToString();
         }
 
         private static Dictionary<string, object> GetCypherPathParameters(Cypher cypherModel, PathString pathString, ILogger log)
