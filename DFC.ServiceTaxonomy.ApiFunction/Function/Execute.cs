@@ -49,16 +49,15 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
+                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
+                log.LogInformation($"Function has been triggered in {environment} environment.");
+
                 var host = req.Headers["X-Forwarded-Host"].ToString();
 
                 if (string.IsNullOrWhiteSpace(host))
                     throw new ArgumentNullException("X-Forwarded-Host not present.");
 
-                var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
-
                 log.LogInformation($"Function host is {host}");
-                
-                log.LogInformation($"Function has been triggered in {environment}.");
 
                 bool development = environment == "Development";
 
