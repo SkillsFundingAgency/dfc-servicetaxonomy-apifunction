@@ -49,12 +49,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
-                var functionUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME");
+                var host = req.Headers["X-Forwarded-Host"].ToString();
+
+                if (string.IsNullOrWhiteSpace(host))
+                    throw new ArgumentNullException("X-Forwarded-Host not present.");
+
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
-                //var environmentQueryParameters = Environment.GetEnvironmentVariable("BASE_URI");
-                log.LogInformation($"Function URL is {req.Headers["Host"].ToString()}");
-                //if (string.IsNullOrWhiteSpace(baseUri))
-                //    throw new ArgumentNullException("BASE_URI Environment Variable not set.");
+
+                log.LogInformation($"Function host is {host}");
                 
                 log.LogInformation($"Function has been triggered in {environment}.");
 
@@ -67,9 +69,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
-                cypherQueryParameters.Add("baseuri", functionUrl);
-                //cypherQueryParameters = GetGlobalCypherQueryParameters(base)
-                //cypherQueryParameters.Add("BASE_URI", baseUri);
+
+                //Add the host in to all cypher queries
+                cypherQueryParameters.Add("host", host);
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
