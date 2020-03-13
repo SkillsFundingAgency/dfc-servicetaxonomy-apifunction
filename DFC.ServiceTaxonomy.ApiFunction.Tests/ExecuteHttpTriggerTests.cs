@@ -37,6 +37,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         public ExecuteHttpTriggerTests()
         {
             _request = new DefaultHttpRequest(new DefaultHttpContext());
+            _request.Headers.Add("X-Forwarded-Host", "test.com");
+
             _executionContext =  new ExecutionContext();
 
             _config = A.Fake<IOptionsMonitor<ServiceTaxonomyApiSettings>>();
@@ -45,11 +47,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                 Function = DefaultFunctionName,
                 Neo4jUrl = "bolt://localhost:11002",
                 Neo4jUser = "NeoUser",
-                Neo4jPassword = "NeoPass"
+                Neo4jPassword = "NeoPass",
+                Scheme = "https://",
+                ApplicationName = "ServiceTaxonomy"
             });
 
             _log = A.Fake<ILogger>();
             _httpRequestHelper = A.Fake<IHttpRequestHelper>();
+
             _neo4JHelper = A.Fake<INeo4JHelper>();
             _fileHelper = A.Fake<IFileHelper>();
             _resultSummary = A.Fake<IResultSummary>();
