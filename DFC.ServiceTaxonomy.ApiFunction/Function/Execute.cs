@@ -55,9 +55,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var host = req.Headers["X-Forwarded-Host"].ToString();
 
                 if (string.IsNullOrWhiteSpace(host))
-                    throw new ArgumentNullException("X-Forwarded-Host not present.");
+                    throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
 
-                log.LogInformation($"Function host is {host}");
+                var hostUriBuilder = new UriBuilder { Host = host, Scheme = "http://" };
+
+                log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
 
                 bool development = environment == "Development";
 
@@ -70,7 +72,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
 
                 //Add the host in to all cypher queries
-                cypherQueryParameters.Add("host", host);
+
+                cypherQueryParameters.Add("host", hostUriBuilder.ToString());
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
