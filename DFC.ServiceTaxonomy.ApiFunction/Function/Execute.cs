@@ -104,7 +104,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.ApplicationName))
                 throw ApiFunctionException.InternalServerError("ApplicationName missing in Settings");
 
-            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}/{GetFunctionName()}/Execute/" };
+            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}" };
 
             log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
 
