@@ -1,0 +1,14 @@
+<policies>
+  <inbound>
+    <set-header name="X-Forwarded-Host" exists-action="override">
+      <value>@(context.Request.OriginalUrl.ToUri().Host)</value>
+    </set-header>
+    <base />
+  </inbound>
+  <outbound>
+    <base />
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>
