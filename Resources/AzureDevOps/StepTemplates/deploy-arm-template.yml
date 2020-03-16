@@ -47,7 +47,7 @@ steps:
     Contents: parameters.json
   condition: always()
 
-- task: AzurePowerShell@3
+- task: AzurePowerShell@4
   displayName: 'Azure PowerShell: Set APIM Product Level Policy'
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
