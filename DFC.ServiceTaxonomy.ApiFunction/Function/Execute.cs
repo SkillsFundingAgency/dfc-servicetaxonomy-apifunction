@@ -93,6 +93,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
         private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
         {
+            log.LogInformation($"Serialized Headers: {JsonConvert.SerializeObject(req.Headers)}");
             var host = req.Headers["X-Forwarded-Host"].ToString();
 
             if (string.IsNullOrWhiteSpace(host))
