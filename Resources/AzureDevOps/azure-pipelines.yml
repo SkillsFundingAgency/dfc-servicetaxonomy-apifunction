@@ -72,6 +72,7 @@ stages:
   - group: dfc-stax-apifunctions-dev
   - group: 'KeyVault - dfc-dev-shared-kv'
   - name: WebAppPrefix
+    value: dfc-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -149,7 +150,7 @@ stages:
       EnvironmentTag: '$(EnvironmentTag)'
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: 'dfc-sit-stax-api-rg'    
+      ResourceGroup: 'dfc-sit-stax-api-rg'
       PackageFile:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
       ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ApimPolicies"
       ApimProductId: 'service-taxonomy'
