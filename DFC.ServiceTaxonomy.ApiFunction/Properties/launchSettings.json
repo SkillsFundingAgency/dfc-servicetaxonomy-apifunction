@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "DFC.ServiceTaxonomy.ApiFunction": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Scheme": "https://",
+        "Key": "Value",
+        "Host": "test.api.com",
+        "Function": "getjobprofilebytitle",
+        "ApplicationName": "servicetaxonomy",
+        "Neo4JPassword": "Def",
+        "Neo4JUrl": "bolt:dfgld",
+        "Neo4JUser": "Abc"
+      }
+    }
+  }
+}
