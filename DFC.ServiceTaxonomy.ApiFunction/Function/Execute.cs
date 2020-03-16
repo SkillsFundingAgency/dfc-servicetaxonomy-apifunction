@@ -62,6 +62,10 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
 
+                //Add the host in to all cypher queries
+
+                cypherQueryParameters.Add("host", BuildHostFunctionUrl(req, log));
+
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
                 if (recordsResult == null)
@@ -87,6 +91,26 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
+        private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
+        {
+            var host = req.Headers["X-Forwarded-Host"].ToString();
+
+            if (string.IsNullOrWhiteSpace(host))
+                throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
+
+            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.Scheme))
+                throw ApiFunctionException.InternalServerError("Scheme missing in Settings");
+
+            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.ApplicationName))
+                throw ApiFunctionException.InternalServerError("ApplicationName missing in Settings");
+
+            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}" };
+
+            log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
+
+            return hostUriBuilder.ToString();
+        }
+
         private static Dictionary<string, object> GetCypherPathParameters(Cypher cypherModel, PathString pathString, ILogger log)
         {
             log.LogInformation("Attempting to read parameters from path");
@@ -109,7 +133,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 {
                     var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
 
-                    if(string.IsNullOrWhiteSpace(parameterValue))
+                    if (string.IsNullOrWhiteSpace(parameterValue))
                         throw ApiFunctionException.InternalServerError($"Required parameter {cypherParam.Name} has no value in path");
 
                     cypherPathStatementParameters.Add(cypherParam.Name, parameterValue);
