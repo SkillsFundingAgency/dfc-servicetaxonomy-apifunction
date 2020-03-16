@@ -135,10 +135,10 @@ RETURN
 		}, 
 		MoreInformation:
 		{
-			Registration:combinedProfiles.registration, 
-			CareerTips:jp.ncs__HtbCareerTips, 
-			ProfessionalAndIndustryBodies:jp.ncs__HtbBodies, 
-			FurtherInformation:jp.ncs__HtbFurtherInformation
+			Registrations:COALESCE(combinedProfiles.registration,[]), 
+			CareerTips:CASE jp.ncs__HtbCareerTips WHEN '' THEN [] ELSE [jp.ncs__HtbCareerTips] END,
+			ProfessionalAndIndustryBodies:CASE jp.ncs__HtbBodies WHEN '' THEN [] ELSE [jp.ncs__HtbBodies] END,
+			FurtherInformation:CASE jp.ncs__HtbFurtherInformation WHEN '' THEN [] ELSE [jp.ncs__HtbFurtherInformation] END
 		}
 	}, 
 	WhatItTakes:
