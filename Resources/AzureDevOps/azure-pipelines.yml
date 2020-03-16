@@ -54,6 +54,13 @@ stages:
           targetPath: "$(System.DefaultWorkingDirectory)/Resources/Scripts"
           artifactName: DFC.ServiceTaxonomy.ApiFunction.Resources.Scripts
 
+      - task: PublishPipelineArtifact@1
+        displayName: Publish apim policies
+        inputs:
+          targetPath: "$(System.DefaultWorkingDirectory)/Resources/ApimPolicy"
+          artifactName: DFC.ServiceTaxonomy.ApiFunction.Resources.ApimPolicies
+
+
 - stage: DeployToDevServiceTaxonomy
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to DEV_SERVICETAXONOMY
@@ -65,7 +72,6 @@ stages:
   - group: dfc-stax-apifunctions-dev
   - group: 'KeyVault - dfc-dev-shared-kv'
   - name: WebAppPrefix
-    value: dfc-dev
   jobs:
   - template: JobTemplates/deploy-environment.yml
     parameters:
@@ -75,6 +81,8 @@ stages:
       ServiceOffering: '$(ServiceOffering)'
       ResourceGroup: 'dfc-dev-stax-api-rg'
       PackageFile:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ApimPolicies"
+      ApimProductId: 'service-taxonomy'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.OpenApiDocs"
@@ -141,8 +149,10 @@ stages:
       EnvironmentTag: '$(EnvironmentTag)'
       ParentBusiness: '$(ParentBusiness)'
       ServiceOffering: '$(ServiceOffering)'
-      ResourceGroup: 'dfc-sit-stax-api-rg'
+      ResourceGroup: 'dfc-sit-stax-api-rg'    
       PackageFile:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.DeploymentPackages/DFC.ServiceTaxonomy.ApiFunction.zip"
+      ApimPoliciesPath:  "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ApimPolicies"
+      ApimProductId: 'service-taxonomy'
       ArmTemplateFolder: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.ArmTemplates/"
       ApimImportScript: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.Scripts/Import-ApimOpenApiDefinitionFromFile.ps1"
       SpecificationPath: "$(Pipeline.Workspace)/DFC.ServiceTaxonomy.ApiFunction.Resources.OpenApiDocs"
