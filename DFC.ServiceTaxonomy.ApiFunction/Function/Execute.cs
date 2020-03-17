@@ -61,10 +61,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
                 var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
-
-                //Add the host in to all cypher queries
-
-                cypherQueryParameters.Add("host", BuildHostFunctionUrl(req, log));
+                AddHostsToQueryParameters(req, log, cypherQueryParameters);
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
@@ -72,10 +69,6 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                     return new NoContentResult();
 
                 log.LogInformation("request has successfully been completed with results");
-
-                //var statementResult = await _neo4JHelper.GetResultSummaryAsync();
-                //if (statementResult != null)
-                //    log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
 
                 return new OkObjectResult(recordsResult);
             }
@@ -91,11 +84,22 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
+        private void AddHostsToQueryParameters(HttpRequest req, ILogger log, Dictionary<string, object> cypherQueryParameters)
         {
-            var host = req.Headers["X-Forwarded-Host"].ToString();
+            //Add the host in to all cypher queries
+            cypherQueryParameters.Add("apiHost", BuildApiHostFunctionUrl(req, log));
 
-            if (string.IsNullOrWhiteSpace(host))
+            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.WebsiteURL))
+                throw ApiFunctionException.InternalServerError("WebsiteURL missing in Settings");
+
+            cypherQueryParameters.Add("websiteHost", _serviceTaxonomyApiSettings.CurrentValue.WebsiteURL);
+        }
+
+        private string BuildApiHostFunctionUrl(HttpRequest req, ILogger log)
+        {
+            var apiHost = req.Headers["X-Forwarded-Host"].ToString();
+
+            if (string.IsNullOrWhiteSpace(apiHost))
                 throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
 
             if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.Scheme))
@@ -104,7 +108,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.ApplicationName))
                 throw ApiFunctionException.InternalServerError("ApplicationName missing in Settings");
 
-            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}" };
+            var hostUriBuilder = new UriBuilder { Host = apiHost, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}" };
 
             log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
 
