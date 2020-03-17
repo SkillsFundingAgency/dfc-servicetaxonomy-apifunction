@@ -328,6 +328,14 @@
               {
                 "name": "Neo4jPassword",
                 "value": "[parameters('Neo4jPassword')]"
+              },
+              {
+                "name": "Scheme",
+                "value": "https://"
+              },
+              {
+                "name": "ApplicationName",
+                "value": "servicetaxonomy"
               }
             ]
           }
