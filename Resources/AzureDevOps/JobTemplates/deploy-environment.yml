@@ -91,4 +91,4 @@ jobs:
                 DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
                 DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
                 Environment: ${{ parameters.EnvironmentName }}
-                TestTag: $${{ api.name }}
+                TestTag: ${{ api.name }}
