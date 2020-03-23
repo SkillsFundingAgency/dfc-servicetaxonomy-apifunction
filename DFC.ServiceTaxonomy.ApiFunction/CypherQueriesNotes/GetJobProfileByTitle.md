@@ -87,7 +87,7 @@ RETURN
 {
 	Title:combinedProfiles.title, 
 	LastUpdatedDate:MAX(lastModifiedDatesAsRows), 
-	Url:$host + 'getjobprofilebytitle/execute/' +  jp.ncs__JobProfileWebsiteUrl, 
+	Url:$apiHost + 'getjobprofilebytitle/execute/' +  jp.ncs__JobProfileWebsiteUrl, 
 	Soc:soc.skos__prefLabel, 
 	ONetOccupationalCode:'ToDo', 
 	AlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), 
