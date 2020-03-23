@@ -17,6 +17,8 @@ parameters:
   ApimServiceName: ''
   FunctionAppDomain: ''
   EnvironmentName: ''
+  DFCAzureDevOpsProjectGuid: ''
+  DfcServiceTaxonomyTestsBuildId: ''
   # The 'Apis' parameter is a bit special here - it requires a structured, complex parameter:  an array of arrays of objects
   # Below is a simple example of what it expects:
   # - 
@@ -84,3 +86,9 @@ jobs:
                 FunctionAppDomain: '${{ parameters.FunctionAppDomain }}'
                 PackageFile: '${{ parameters.PackageFile }}'
                 ResourceGroup: '${{ parameters.ResourceGroup }}'
+            - template: ../StepTemplates/run-functional-tests.yml
+              parameters:
+                DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
+                DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
+                Environment: ${{ parameters.EnvironmentName }}
+                TestTag: $${{ api.name }}
