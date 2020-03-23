@@ -31,7 +31,7 @@ WHERE sx.uri in ['http://data.europa.eu/esco/skill/9436db78-4331-495b-a97d-223fd
 WITH soc, o, s, st, sm, rrl, srl, r, collect(
 {
 	uri:sx.uri, 
-	skill:sx.skos__prefLabel), 
+	skill:sx.skos__prefLabel, 
 	alternativeLabels:coalesce(sx.skos__altLabel,[]), 
 	type:case head(st.skos__prefLabel) 
 			when 'skill' then 'competency' 
