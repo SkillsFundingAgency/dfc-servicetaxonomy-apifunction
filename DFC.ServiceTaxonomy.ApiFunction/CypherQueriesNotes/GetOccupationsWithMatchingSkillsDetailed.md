@@ -7,13 +7,13 @@ Here's the current query, formatted and with params replaced by literals...
 
 ```
 MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]- (s:esco__Skill ), (jc:ncs__JobCategory)-[:ncs__hasJobProfile]-(j) 
-WHERE s.uri in $skillList WITH soc, o, s, r, collect({name:jc.skos__prefLabel,uri:$websiteHost + jc.WebsiteURI}) as JobCategories
+WHERE s.uri in ['http://data.europa.eu/esco/skill/9436db78-4331-495b-a97d-223fd246de2f']  WITH soc, o, s, r, collect({name:jc.skos__prefLabel,uri:'mytesthost.com' + jc.WebsiteURI}) as JobCategories
 OPTIONAL MATCH (o)<-[re:esco__isEssentialSkillFor]-(sx)-[rst:esco__skillType]-(st:skos__Concept),(sm:esco__Skill )-[rrl:esco__skillReuseLevel]-(srl:skos__Concept) 
-WHERE sx.uri in $skillList 
+WHERE sx.uri in ['http://data.europa.eu/esco/skill/9436db78-4331-495b-a97d-223fd246de2f']  
 WITH soc, o, s, st, sm, rrl, srl, r, sx, collect(
 {
 	uri:sx.uri, 
-	skill:head(sx.skos__prefLabel), 
+	skill:sx.skos__prefLabel, 
 	alternativeLabels:coalesce(sx.skos__altLabel,[]), 
 	type:case head(st.skos__prefLabel) 
 			when 'skill' then 'competency' 
@@ -27,11 +27,11 @@ WITH soc, o, s, st, sm, rrl, srl, r, sx, collect(
 			lastModified:head(sx.dct__modified)
 }) as MatchingEssentialSkills, JobCategories
 OPTIONAL MATCH (o)<-[:esco__isOptionalSkillFor]-(sx)-[rst:esco__skillType]-(st:skos__Concept),(sm:esco__Skill )-[rrl:esco__skillReuseLevel]-(srl:skos__Concept) 
-WHERE sx.uri in $skillList
+WHERE sx.uri in ['http://data.europa.eu/esco/skill/9436db78-4331-495b-a97d-223fd246de2f'] 
 WITH soc, o, s, st, sm, rrl, srl, r, collect(
 {
 	uri:sx.uri, 
-	skill:head(sx.skos__prefLabel), 
+	skill:sx.skos__prefLabel), 
 	alternativeLabels:coalesce(sx.skos__altLabel,[]), 
 	type:case head(st.skos__prefLabel) 
 			when 'skill' then 'competency' 
@@ -45,11 +45,11 @@ WITH soc, o, s, st, sm, rrl, srl, r, collect(
 					end, relationshipType:'optional', 
 	lastModified:head(sx.dct__modified)}) as MatchingOptionalSkills, MatchingEssentialSkills, JobCategories
 MATCH (j:ncs__JobProfile) -- (o)<-[:esco__isEssentialSkillFor]-(sa) 
-WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= $minimumMatchingSkills 
+WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= 1 
 WITH o, collect(
 {
 	uri:sa.uri, 
-	skill:head(sa.skos__prefLabel), 
+	skill:sa.skos__prefLabel, 
 	alternativeLabels:coalesce(sa.skos__altLabel,[]), 
 	type:case head(st.skos__prefLabel) 
 			when 'skill' then 'competency' 
@@ -67,7 +67,7 @@ OPTIONAL MATCH (j:ncs__JobProfile) -- (o)<-[:esco__isOptionalSkillFor]-(sa)
 WITH o, collect(
 {
 	uri:sa.uri, 
-	skill:head(sa.skos__prefLabel), 
+	skill:sa.skos__prefLabel, 
 	alternativeLabels:coalesce(sa.skos__altLabel,[]), 
 	type:case head(st.skos__prefLabel) 
 			when 'skill' then 'competency' 
