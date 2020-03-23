@@ -37,6 +37,9 @@
     },
     "ApimServiceName": {
       "value": "an-apim-instance"
+    },
+    "WebsiteHostUrl": {
+      "value": "nationalcareers.service.gov.uk"
     }
   }
 }

@@ -82,7 +82,10 @@
       "metadata": {
         "description": "The name of the shared apim instance"
       }
-    }
+    },
+    "WebsiteHostUrl": {
+      "type":"string"
+    } 
   },
   "variables": {
     "ApimProductName": "Service Taxonomy",
@@ -336,6 +339,10 @@
               {
                 "name": "ApplicationName",
                 "value": "servicetaxonomy"
+              },
+              {
+                "name": "WebsiteHost",
+                "value": "[parameters('WebsiteHostUrl')]"
               }
             ]
           }

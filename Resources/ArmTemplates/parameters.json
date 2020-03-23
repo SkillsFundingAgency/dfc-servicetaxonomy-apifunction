@@ -37,6 +37,9 @@
     },
     "ApimServiceName": {
       "value": "__ApimServiceName__"
+    },
+    "WebsiteHostUrl": {
+      "value": "__WebsiteHostUrl__"
     }
   }
 }
