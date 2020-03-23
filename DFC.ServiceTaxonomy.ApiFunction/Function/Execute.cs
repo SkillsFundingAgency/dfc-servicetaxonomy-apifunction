@@ -65,7 +65,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 //Add the host in to all cypher queries
 
                 cypherQueryParameters.Add("apiHost", BuildHostFunctionUrl(req, log));
-                cypherQueryParameters.Add("websiteHost", _serviceTaxonomyApiSettings.CurrentValue.WebsiteHost);
+                cypherQueryParameters.Add("websiteHost", $"{_serviceTaxonomyApiSettings.CurrentValue.Scheme}{_serviceTaxonomyApiSettings.CurrentValue.WebsiteHost}");
 
                 object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
 
