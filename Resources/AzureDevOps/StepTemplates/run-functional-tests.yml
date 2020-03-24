@@ -14,7 +14,7 @@ steps:
     pipeline: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
     runVersion: latestFromBranch
     #TO DO: revert to master branch
-    runBranch: 'refs/heads/NCSD-3120-AddAppSettings'
+    runBranch: 'refs/heads/DST-217_compare_job_profile_api'
 - task: ExtractFiles@1
   displayName: Extract TestSuite artifact
   condition: in('${{ parameters.Environment }}', 'DEV_SERVICETAXONOMY', 'SIT_SERVICETAXONOMY', 'PP_SERVICETAXONOMY')
