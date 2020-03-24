@@ -8,5 +8,6 @@
         public string Neo4jPassword { get; set; }
         public string Scheme { get; set; }
         public string ApplicationName { get; set; }
+        public string WebsiteHost { get; set; }
     }
 }
