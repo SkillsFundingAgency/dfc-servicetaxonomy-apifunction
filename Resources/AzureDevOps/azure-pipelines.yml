@@ -1,3 +1,8 @@
+parameters:
+- name: DfcServiceTaxonomyTestBranch
+  type: string
+  default: refs/heads/master
+
 resources:
   repositories:
   - repository: self
@@ -93,6 +98,7 @@ stages:
       EnvironmentName: DEV_SERVICETAXONOMY
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
       DfcServiceTaxonomyTestsBuildId: $(DfcServiceTaxonomyTestsBuildId)
+      TestArtifactBranch: ${{ parameters.DfcServiceTaxonomyTestBranch }}
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
       # The top level -`s here defines an array of "something"
       # The inner level -'s defines an array of mappings.
@@ -165,6 +171,7 @@ stages:
       EnvironmentName: SIT_SERVICETAXONOMY
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
       DfcServiceTaxonomyTestsBuildId: $(DfcServiceTaxonomyTestsBuildId)
+      TestArtifactBranch: ${{ parameters.DfcServiceTaxonomyTestBranch }}
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
       # The top level -`s here defines an array of "something"
       # The inner level -'s defines an array of mappings.
@@ -237,6 +244,7 @@ stages:
       EnvironmentName: PP_SERVICETAXONOMY
       DFCAzureDevOpsProjectGuid: $(DFCAzureDevOpsProjectGuid)
       DfcServiceTaxonomyTestsBuildId: $(DfcServiceTaxonomyTestsBuildId)
+      TestArtifactBranch: ${{ parameters.DfcServiceTaxonomyTestBranch }}
       # The Apis parameter requires a complex object be passed in,  which requires some odd looking yaml.
       # The top level -`s here defines an array of "something"
       # The inner level -'s defines an array of mappings.
