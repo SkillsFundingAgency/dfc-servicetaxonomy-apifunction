@@ -3,6 +3,37 @@
 
 ## Current Query
 
+```
+with 'chemical' as lowerlabel
+
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
+match (node:esco__Occupation)
+with collect({Occupation:node, Score:score}) as prefocc, lowerlabel
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
+optional match (node)<-[:ncs_OccupationAltLabel]-(altocc)
+with prefocc + collect({Occupation:altocc, Score:score}) as combocc, lowerlabel
+unwind combocc as o
+with distinct o, lowerlabel
+
+with { occupations:collect(
+{
+  uri:o.Occupation.uri,
+  occupation:o.Occupation.skos__prefLabel,
+  alternativeLabels:o.Occupation.skos__altLabel,
+  lastModified:o.Occupation.dct__modified,
+  matches:
+  {
+    occupation:[preflab in o.Occupation.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:[altlab in o.Occupation.skos__altLabel where toLower(altlab) contains lowerlabel]
+  },
+  score:o.Score
+}
+)} as occupations 
+return occupations
+```
+
+## Previous Query 2
+
 Here's the current query, formatted and with params replaced by literals...
 
 ```
