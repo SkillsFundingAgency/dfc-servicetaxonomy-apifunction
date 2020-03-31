@@ -5,7 +5,7 @@
 
 ```
 with 'boat' as lowerlabel
-   
+  
 call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
 match (node)-[r:ncs__hasPrefLabel|:ncs__hasAltLabel]-(po:esco__Occupation)-[:ncs__hasAltLabel]-(AltLabels)
 with collect(distinct po) as occupations, avg(score) as averageScore, AltLabels, po, node, lowerlabel
@@ -15,15 +15,15 @@ optional match (altLabel)-[:ncs__hasAltLabel]-(o)
 with collect(distinct altLabel.skos__prefLabel) as matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
 optional match(prefLabel)-[:ncs__hasPrefLabel]-(o)
 with collect(distinct prefLabel.skos__prefLabel) as matchingPrefLabels, matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
-with {Value: [prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel]} as matchingPrefLabelCount, o, allAltLabels, matchingAltLabels, matchingPrefLabels, occupations, lowerlabel, averageScore
-with {Occupations: case 'true' when 'true' then o when 'false' then [val in occupations where size(matchingPrefLabelCount.Value) > 0] end } as filteredResults, matchingPrefLabels, matchingAltLabels, matchingPrefLabelCount, allAltLabels, occupations, lowerlabel, {Value: case 'true' when 'true' then averageScore + (size(matchingPrefLabelCount.Value) * 10) + size(matchingAltLabels) when 'false' then averageScore + size(matchingAltLabels) end } as boostedScore
+with {Value: [prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel]} as matchingPrefLabelCount, {Value: [altLab in matchingAltLabels where toLower(altLab) contains lowerlabel]} as matchingAltLabelCount, o, allAltLabels, matchingAltLabels, matchingPrefLabels, occupations, lowerlabel, averageScore
+with {Occupations: case 'true' when 'true' then o when 'false' then [val in occupations where size(matchingPrefLabelCount.Value) > 0] end } as filteredResults, matchingPrefLabels, matchingAltLabels, matchingPrefLabelCount, allAltLabels, occupations, lowerlabel, {Value: averageScore + (size(matchingPrefLabelCount.Value) * 10) + (size(matchingAltLabelCount.Value)/size(allAltLabels) * size(matchingAltLabelCount.Value)) } as boostedScore
 unwind filteredResults.Occupations as o
 with {occupations:collect(
 {
   uri:o.uri,
   occupation:o.skos__prefLabel,
   alternativeLabels:allAltLabels,
-    lastModified:o.dct__modified,
+  lastModified:o.dct__modified,
   matches:
   {
     occupation:[prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel],
