@@ -23,8 +23,8 @@ WITH
 } AS aggregatedResults 
 UNWIND aggregatedResults.Profiles AS unwoundProfiles 
 WITH unwoundProfiles, aggregatedResults 
-SKIP toInteger((1-1)*10) 
-LIMIT toInteger(10) 
+SKIP (1-1)*10
+LIMIT 10 
 WITH aggregatedResults
 {
 	PageSize:10, 
