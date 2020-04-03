@@ -15,13 +15,13 @@ OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esc
     uri:s.uri,
     skill:s.skos__prefLabel,
     alternativeLabels:s.skos__altLabel,
-    type:case head(st.skos__prefLabel)
+    type:case st.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
     relationshipType:'optional',
     skillReusability:srl.skos__prefLabel,
-    lastModified:head(s.dct__modified)
+    lastModified:s.dct__modified
 }) as MatchingOptionalSkills, JobCategories
 OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
  WITH soc, o, collect(distinct
@@ -29,13 +29,13 @@ OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esc
     uri:s.uri,
     skill:s.skos__prefLabel,
     alternativeLabels:s.skos__altLabel,
-    type:case head(st.skos__prefLabel)
+    type:case st.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
     relationshipType:'essential',
     skillReusability:srl.skos__prefLabel,
-    lastModified:head(s.dct__modified)
+    lastModified:s.dct__modified
 }) as MatchingEssentialSkills, MatchingOptionalSkills, JobCategories
 MATCH (j:ncs__JobProfile)--(o)<-[:esco__isEssentialSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= 1
 WITH soc, o, collect(distinct
@@ -43,26 +43,26 @@ WITH soc, o, collect(distinct
     uri:sa.uri,
     skill:sa.skos__prefLabel,
     alternativeLabels:sa.skos__altLabel,
-    type:case head(ocrst.skos__prefLabel)
+    type:case ocrst.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
     relationshipType:'essential',
     skillReusability:orrl.skos__prefLabel,
-    lastModified:head(sa.dct__modified)
+    lastModified:sa.dct__modified
 }) as AllEssentialSkills,MatchingEssentialSkills,MatchingOptionalSkills, JobCategories, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.ncs__Description as JobProfileDescription
 OPTIONAL MATCH (j:ncs__JobProfile)--(o)<-[:esco__isOptionalSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WITH soc, o, collect(distinct
 {
     uri:sa.uri,
     skill:sa.skos__prefLabel,
     alternativeLabels:sa.skos__altLabel,
-    type:case head(ocrst.skos__prefLabel)
+    type:case ocrst.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
     relationshipType:'optional',
     skillReusability:orrl.skos__prefLabel,
-    lastModified:head(sa.dct__modified)
+    lastModified:sa.dct__modified
 }) as AllOptionalSkills, AllEssentialSkills, MatchingEssentialSkills, MatchingOptionalSkills, JobCategories, JobProfile, JobProfileUri, JobProfileDescription
 RETURN
 {
