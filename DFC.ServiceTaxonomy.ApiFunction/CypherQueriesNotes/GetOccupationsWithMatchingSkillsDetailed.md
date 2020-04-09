@@ -9,7 +9,7 @@ Here's the current query, formatted and with params replaced by literals...
 MATCH (soc:ncs__SOCCode)-[ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
 WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
 OPTIONAL MATCH(jc:ncs__JobCategory)-[:ncs__hasJobProfile]-(j)
-WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/ + jc.ncs__WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.ncs__Description as JobProfileDescription
+WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/' + jc.ncs__WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.ncs__Description as JobProfileDescription
 OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation)<-[r:esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
 WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
 WITH soc, o, collect(distinct
@@ -47,7 +47,7 @@ WITH soc, o, collect(distinct
     uri:sa.uri,
     skill:sa.skos__prefLabel,
     alternativeLabels:sa.skos__altLabel,
-    type:case ocrst.skos__prefLabel
+    type:case ost.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
@@ -61,7 +61,7 @@ WITH soc, o, collect(distinct
     uri:sa.uri,
     skill:sa.skos__prefLabel,
     alternativeLabels:sa.skos__altLabel,
-    type:case ocrst.skos__prefLabel
+    type:case ost.skos__prefLabel
             when 'skill' then 'competency'
             when 'knowledge' then 'knowledge'
         end,
