@@ -30,6 +30,8 @@ Param(
     [Parameter(Mandatory=$true)]
     [String]$ApiName,
     [Parameter(Mandatory=$true)]
+    [String]$ApiPath,
+    [Parameter(Mandatory=$true)]
     [String]$OpenApiSpecificationFile
 )
 
@@ -40,16 +42,17 @@ try {
     Write-Host "Retrieving ApiId for API $ApiName"
     $Api = Get-AzApiManagementApi -Context $Context -ApiId $ApiName
 
-    # --- Throw if Api is null
-    if (!$Api) {
+    if (!$Api.Path -and !$ApiPath) {
+        throw "API Path is not set and has not been passed in as a parameter"
+    }
 
-        throw "Could not retrieve Api for API $ApiName"
-
+    if (!$ApiPath) {
+        $ApiPath = $Api.Path
     }
 
     # --- Import openapi definition
     Write-Host "Updating API $InstanceName\$($Api.ApiId) from definition $($OutputFile.FullName)"
-    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $($Api.ApiId) -Path $($Api.Path) -ErrorAction Stop -Verbose:$VerbosePreference
+    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $ApiName -Path $ApiPath -ErrorAction Stop -Verbose:$VerbosePreference
 }
 catch {
    throw $_
