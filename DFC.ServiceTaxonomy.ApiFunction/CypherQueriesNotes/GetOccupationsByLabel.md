@@ -4,7 +4,7 @@
 ## Current Query
 
 ```
-with toLower('boat') as lowerlabel
+with 'boat' as lowerlabel
   
 call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
 match (node)-[r:ncs__hasPrefLabel|:ncs__hasAltLabel]-(po:esco__Occupation)-[:ncs__hasAltLabel]-(AltLabels)
