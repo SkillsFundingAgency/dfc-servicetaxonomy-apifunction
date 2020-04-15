@@ -4,34 +4,31 @@
 ## Current Query
 
 ```
-with 'boat' as lowerlabel
-   
-call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
-match (node)-[r:ncs__hasPrefLabel|:ncs__hasAltLabel]-(po:esco__Occupation)-[:ncs__hasAltLabel]-(AltLabels)
-with collect(distinct po) as occupations, avg(score) as averageScore, AltLabels, po, node, lowerlabel
-with collect(distinct AltLabels.skos__prefLabel) as allAltLabels, occupations, lowerlabel, averageScore
-unwind occupations as o
-optional match (altLabel)-[:ncs__hasAltLabel]-(o)
-with collect(distinct altLabel.skos__prefLabel) as matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
-optional match(prefLabel)-[:ncs__hasPrefLabel]-(o)
-with collect(distinct prefLabel.skos__prefLabel) as matchingPrefLabels, matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
-with {Value: [prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel]} as matchingPrefLabelCount, o, allAltLabels, matchingAltLabels, matchingPrefLabels, occupations, lowerlabel, averageScore
-with {Occupations: case 'true' when 'true' then o when 'false' then [val in occupations where size(matchingPrefLabelCount.Value) > 0] end } as filteredResults, matchingPrefLabels, matchingAltLabels, matchingPrefLabelCount, allAltLabels, occupations, lowerlabel, {Value: case 'true' when 'true' then averageScore + (size(matchingPrefLabelCount.Value) * 10) + size(matchingAltLabels) when 'false' then averageScore + size(matchingAltLabels) end } as boostedScore
-unwind filteredResults.Occupations as o
-with {occupations:collect(
+with 'chemical' as lowerlabel
+
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
+match (node:esco__Occupation)
+with collect({Occupation:node, Score:score}) as prefocc, lowerlabel
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel: "+lowerlabel+"^2 ncs__altLabel: "+ lowerlabel) yield node, score
+optional match (node)<-[:ncs_OccupationAltLabel]-(altocc)
+with prefocc + collect({Occupation:altocc, Score:score}) as combocc, lowerlabel
+unwind combocc as o
+with distinct o, lowerlabel
+
+with { occupations:collect(
 {
-  uri:o.uri,
-  occupation:o.skos__prefLabel,
-  alternativeLabels:allAltLabels,
-    lastModified:o.dct__modified,
+  uri:o.Occupation.uri,
+  occupation:o.Occupation.skos__prefLabel,
+  alternativeLabels:o.Occupation.skos__altLabel,
+  lastModified:o.Occupation.dct__modified,
   matches:
   {
-    occupation:[prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel],
-    alternativeLabels:[altlab in matchingAltLabels where toLower(altlab) contains lowerlabel]
+    occupation:[preflab in o.Occupation.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:[altlab in o.Occupation.skos__altLabel where toLower(altlab) contains lowerlabel]
   },
-  Score:boostedScore.Value
+  score:o.Score
 }
-)} as occupations
+)} as occupations 
 return occupations
 ```
 
