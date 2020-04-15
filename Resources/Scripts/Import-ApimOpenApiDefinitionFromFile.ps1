@@ -39,19 +39,9 @@ try {
     # --- Build context and retrieve apiid
     Write-Host "Building APIM context for $ApimResourceGroup\$InstanceName"
     $Context = New-AzApiManagementContext -ResourceGroupName $ApimResourceGroup -ServiceName $InstanceName
-    Write-Host "Retrieving ApiId for API $ApiName"
-    $Api = Get-AzApiManagementApi -Context $Context -ApiId $ApiName
-
-    if (!$Api.Path -and !$ApiPath) {
-        throw "API Path is not set and has not been passed in as a parameter"
-    }
-
-    if (!$ApiPath) {
-        $ApiPath = $Api.Path
-    }
 
     # --- Import openapi definition
-    Write-Host "Updating API $InstanceName\$($Api.ApiId) from definition $($OutputFile.FullName)"
+    Write-Host "Updating API $InstanceName\$($ApiName) from definition $($OutputFile.FullName)"
     Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $ApiName -Path $ApiPath -ErrorAction Stop -Verbose:$VerbosePreference
 }
 catch {
