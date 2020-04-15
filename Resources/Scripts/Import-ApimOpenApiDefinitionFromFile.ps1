@@ -30,6 +30,8 @@ Param(
     [Parameter(Mandatory=$true)]
     [String]$ApiName,
     [Parameter(Mandatory=$true)]
+    [String]$ApiPath,
+    [Parameter(Mandatory=$true)]
     [String]$OpenApiSpecificationFile
 )
 
@@ -37,19 +39,10 @@ try {
     # --- Build context and retrieve apiid
     Write-Host "Building APIM context for $ApimResourceGroup\$InstanceName"
     $Context = New-AzApiManagementContext -ResourceGroupName $ApimResourceGroup -ServiceName $InstanceName
-    Write-Host "Retrieving ApiId for API $ApiName"
-    $Api = Get-AzApiManagementApi -Context $Context -ApiId $ApiName
-
-    # --- Throw if Api is null
-    if (!$Api) {
-
-        throw "Could not retrieve Api for API $ApiName"
-
-    }
 
     # --- Import openapi definition
-    Write-Host "Updating API $InstanceName\$($Api.ApiId) from definition $($OutputFile.FullName)"
-    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $($Api.ApiId) -Path $($Api.Path) -ErrorAction Stop -Verbose:$VerbosePreference
+    Write-Host "Updating API $InstanceName\$($ApiName) from definition $($OutputFile.FullName)"
+    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $ApiName -Path $ApiPath -ErrorAction Stop -Verbose:$VerbosePreference
 }
 catch {
    throw $_

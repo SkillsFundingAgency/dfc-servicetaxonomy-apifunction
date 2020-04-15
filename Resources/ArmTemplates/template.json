@@ -205,44 +205,6 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('service-taxononmy-', variables('allFunctions')[copyIndex()].functionType)]",
-      "resourceGroup": "[parameters('ApimResourceGroup')]",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "service-taxonomy-apim-product",
-        "servicetaxonomy-apim-logger"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'),'APIM/apim-api.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "apimServiceName": {
-            "value": "[parameters('ApimServiceName')]"
-          },
-          "apiName": {
-            "value": "[variables('allFunctions')[copyIndex()].functionType]"
-          },
-          "apimProductInstanceName": {
-            "value": "service-taxonomy"
-          },
-          "apimLoggerName": {
-            "value": "[reference('servicetaxonomy-apim-logger').outputs.ApimLoggerName.value]"
-          },
-          "apiSuffix": {
-            "value": "[toLower(concat('servicetaxonomy/', variables('allFunctions')[copyIndex()].functionType))]"
-          }
-        }
-      },
-      "copy": {
-        "name": "apiCount",
-        "count": "[length(variables('allFunctions'))]"
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
       "name": "[variables('allFunctions')[copyIndex()].appInsightsName]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
