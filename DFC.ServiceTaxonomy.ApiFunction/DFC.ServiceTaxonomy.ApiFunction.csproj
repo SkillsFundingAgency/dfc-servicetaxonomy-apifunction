@@ -32,6 +32,69 @@
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
   </ItemGroup>
   
+  <ItemGroup>
+    <None Remove="CypherQueries\V2\GetJobProfilesBySearchTerm.json" />
+    <None Remove="CypherQueries\V2\GetOccupationsByLabel.json" />
+    <None Remove="CypherQueries\V2\GetSkillsByLabel.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="CypherQueries\V1\GetAllOccupations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetAllOccupationsForSkill.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetAllSkills.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetAllSkillsForOccupation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetAlternativeCareersAndSkillsForOccupation.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetJobProfileByTitle.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetJobProfilesBySearchTerm.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetJobProfilesSummary.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetOccupationsByLabel.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetOccupationsWithMatchingSkills.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetOccupationsWithMatchingSkillsDetailed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetSkillById.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetSkillsByLabel.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetSkillsGapForOccupationAndGivenSkills.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V1\GetSkillsGapForOccupations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V2\GetJobProfilesBySearchTerm.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V2\GetOccupationsByLabel.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V2\GetSkillsByLabel.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
     <Copy SourceFiles="@(CypherQueryFiles)" DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
