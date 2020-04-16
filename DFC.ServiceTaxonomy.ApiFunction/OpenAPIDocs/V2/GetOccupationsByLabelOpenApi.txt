@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Service Taxonomy Get Occupations By Label
   description: Get occupations whose name (aka preferred label) or alternative label matches a search term
-  version: 1.0.0
+  version: 2.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
@@ -78,6 +78,7 @@ components:
             - alternativeLabels
             - lastModified
             - matches
+            - score
             properties: 
               uri: 
                 type: string
@@ -106,3 +107,6 @@ components:
                     items: 
                       type: "string"
                 type: "object"
+              score:
+                type: "number"
+                example: 1.034222
