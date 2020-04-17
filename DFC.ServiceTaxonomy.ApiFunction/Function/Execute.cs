@@ -104,12 +104,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (hasVersionHeader)
             {
-                //Use double to allow part version updates e.g. 2.1
-                bool canParseDouble =  double.TryParse(headerValue.ToString(), out double result);
+                //Use decimal to allow part version updates e.g. 2.1
+                bool canParseDecimal =  decimal.TryParse(headerValue.ToString(), out decimal result);
 
-                if (canParseDouble)
+                if (canParseDecimal)
                 {
-                    return $"V{result}";
+                    return $"V{result.ToString("0.##")}";
                 }
             }
 
