@@ -104,6 +104,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
             if (hasVersionHeader)
             {
+                //Use double to allow part version updates e.g. 2.1
                 bool canParseDouble =  double.TryParse(headerValue.ToString(), out double result);
 
                 if (canParseDouble)
