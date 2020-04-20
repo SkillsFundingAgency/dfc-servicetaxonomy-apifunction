@@ -91,7 +91,7 @@ RETURN
 	Soc:soc.skos__prefLabel, 
 	ONetOccupationalCode:'ToDo', 
 	AlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), 
-	Overview:jp.skos__prefLabel, 
+	Overview:jp.ncs__Description, 
 	SalaryStarter:jp.ncs__SalaryStarter, 
 	SalaryExperienced:jp.ncs__SalaryExperienced, 
 	MinimumHours:jp.ncs__MinimumHours, 
