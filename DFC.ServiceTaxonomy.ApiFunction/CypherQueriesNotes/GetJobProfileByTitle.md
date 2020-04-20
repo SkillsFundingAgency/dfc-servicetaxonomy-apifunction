@@ -109,24 +109,24 @@ RETURN
 					RelevantSubjects:COALESCE([combinedProfiles.universityRoute.relevantSubjects],[]),
 					FurtherInformation:COALESCE([combinedProfiles.universityRoute.furtherInfo],[]), 
 					EntryRequirementPreface:combinedProfiles.universityRoute.requirementsPreface, 
-					EntryRequirements:COALESCE([combinedProfiles.universityRoute.requirements.values],[]), 
-					AdditionalInformation:COALESCE([combinedProfiles.universityRoute.links],[])
+					EntryRequirements:COALESCE(combinedProfiles.universityRoute.requirements.values,[]), 
+					AdditionalInformation:COALESCE(combinedProfiles.universityRoute.links,[])
 				},
                 College:
 				{
 					RelevantSubjects:COALESCE([combinedProfiles.collegeRoute.relevantSubjects],[]),
 					FurtherInformation:COALESCE([combinedProfiles.collegeRoute.furtherInfo],[]), 
 					EntryRequirementPreface:combinedProfiles.collegeRoute.requirementsPreface, 
-					EntryRequirements:COALESCE([combinedProfiles.collegeRoute.requirements.values],[]), 
-					AdditionalInformation:COALESCE([combinedProfiles.collegeRoute.links],[])
+					EntryRequirements:COALESCE(combinedProfiles.collegeRoute.requirements.values,[]), 
+					AdditionalInformation:COALESCE(combinedProfiles.collegeRoute.links,[])
 				},
                 Apprenticeship:
                 {
                 	RelevantSubjects:COALESCE([combinedProfiles.apprenticeshipRoute.relevantSubjects],[]),
 					FurtherInformation:COALESCE([combinedProfiles.apprenticeshipRoute.furtherInfo],[]), 
 					EntryRequirementPreface:combinedProfiles.apprenticeshipRoute.requirementsPreface, 
-					EntryRequirements:COALESCE([combinedProfiles.apprenticeshipRoute.requirements.values],[]), 
-					AdditionalInformation:COALESCE([combinedProfiles.apprenticeshipRoute.links],[])
+					EntryRequirements:COALESCE(combinedProfiles.apprenticeshipRoute.requirements.values,[]), 
+					AdditionalInformation:COALESCE(combinedProfiles.apprenticeshipRoute.links,[])
                 },
 				Work:combinedProfiles.workRoute.values,
 				Volunteering:combinedProfiles.volunteeringRoute.values,
