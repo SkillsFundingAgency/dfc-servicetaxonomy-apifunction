@@ -12,15 +12,18 @@ OPTIONAL MATCH (jp)-[:ncs__hasWorkingEnvironment]-(we:ncs__WorkingEnvironment)
 OPTIONAL MATCH (jp)-[:ncs__hasWorkingLocation]-(wl:ncs__WorkingLocation)
 OPTIONAL MATCH (jp)-[:ncs__requiresHtbRegistration]-(re:ncs__Registration)
 WITH wu,we,wl,jp,soc,oc,dayToDayTasks, {values:collect('[' + re.skos__prefLabel + ' | ' + re.ncs__Description + ']'), modifiedDate:max(re.ncs__ModifiedDate)} as registration 
-OPTIONAL MATCH (jp)-[:ncs__hasHtbUniversityRoute]-(ur:ncs__UniversityRoute)-[:ncs__hasUniversityRequirement]-(urq:ncs__UniversityRequirement), (ur)-[:ncs__hasRequirementsPrefix]-(upr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (jp)-[:ncs__hasHtbUniversityRoute]-(ur:ncs__UniversityRoute), (ur)-[:ncs__hasRequirementsPrefix]-(upr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (ur)-[:ncs__hasUniversityRequirement]-(urq:ncs__UniversityRequirement)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration, {values:collect(urq.skos__prefLabel), modifiedDate:max(urq.ncs__ModifiedDate)} as universityRequirement
 OPTIONAL MATCH (ur)-[:ncs__hasUniversityLink]-(ul:ncs__UniversityLink)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration,universityRequirement,{values:collect('[' + ul.ncs__Link_text + ' | ' + ul.ncs__Link_url + ']'), modifiedDate:max(ul.ncs__ModifiedDate)} as universityLinks
-OPTIONAL MATCH (jp)-[:ncs__hasHtbCollegeRoute]-(cr:ncs__CollegeRoute)-[:ncs__hasCollegeRequirement]-(crq:ncs__CollegeRequirement), (cr)-[:ncs__hasRequirementsPrefix]-(cpr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (jp)-[:ncs__hasHtbCollegeRoute]-(cr:ncs__CollegeRoute), (cr)-[:ncs__hasRequirementsPrefix]-(cpr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (cr)-[:ncs__hasCollegeRequirement]-(crq:ncs__CollegeRequirement)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration,universityRequirement,universityLinks,cr,cpr,{values:collect(crq.skos__prefLabel), modifiedDate:max(crq.ncs__ModifiedDate)} as collegeRequirement
 OPTIONAL MATCH (cr)-[:ncs__hasCollegeLink]-(cl:ncs__CollegeLink)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration,universityRequirement,universityLinks,cr,cpr,collegeRequirement,{values:collect('[' + cl.ncs__Link_text + ' | ' + cl.ncs__Link_url + ']'), modifiedDate:max(cl.ncs__ModifiedDate)} as collegeLinks
-OPTIONAL MATCH (jp)-[:ncs__hasHtbApprenticeshipRoute]-(ar:ncs__ApprenticeshipRoute)-[:ncs__hasApprenticeshipRequirement]-(arq:ncs__ApprenticeshipRequirement), (ar)-[:ncs__hasRequirementsPrefix]-(apr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (jp)-[:ncs__hasHtbApprenticeshipRoute]-(ar:ncs__ApprenticeshipRoute), (ar)-[:ncs__hasRequirementsPrefix]-(apr:ncs__RequirementsPrefix)
+OPTIONAL MATCH (ar)-[:ncs__hasApprenticeshipRequirement]-(arq:ncs__ApprenticeshipRequirement)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration,universityRequirement,universityLinks,cr,cpr,collegeRequirement,collegeLinks,ar,apr,{values:collect(arq.skos__prefLabel), modifiedDate:max(arq.ncs__ModifiedDate)} as apprenticeshipRequirement
 OPTIONAL MATCH (ar)-[:ncs__hasApprenticeshipLink]-(al:ncs__ApprenticeshipLink)
 WITH wu,we,wl,jp,soc,oc,ur,upr,dayToDayTasks,registration,universityRequirement,universityLinks,cr,cpr,collegeRequirement,collegeLinks,ar,apr,apprenticeshipRequirement,{values:collect('[' + al.ncs__Link_text + ' | ' + al.ncs__Link_url + ']'), modifiedDate:max(al.ncs__ModifiedDate)} as apprenticeshipLinks
@@ -43,22 +46,22 @@ WITH wu,we,wl,jp,soc,oc,
         universityRoute:{
           requirements:universityRequirement,
           requirementsPreface:upr.skos__prefLabel,
-          relevantSubjects:ur.ncs__RelevantSubjects,
-          furtherInfo:ur.ncs__FurtherInfo,
+          relevantSubjects: CASE ur.ncs__RelevantSubjects WHEN '' THEN [] WHEN NULL THEN [] ELSE [ur.ncs__RelevantSubjects] END,
+          furtherInfo:CASE ur.ncs__FurtherInfo WHEN '' THEN [] WHEN NULL THEN [] ELSE [ur.ncs__FurtherInfo] END,
           links:universityLinks.values
         },
         collegeRoute:{
         	requirements:collegeRequirement,
             requirementsPreface:cpr.skos__prefLabel,
-            relevantSubjects:cr.ncs__RelevantSubjects,
-            furtherInfo:cr.ncs__FurtherInfo,
+            relevantSubjects: CASE cr.ncs__RelevantSubjects WHEN '' THEN [] WHEN NULL THEN [] ELSE [cr.ncs__RelevantSubjects] END,
+            furtherInfo: CASE cr.ncs__FurtherInfo WHEN '' THEN [] WHEN NULL THEN [] ELSE [cr.ncs__FurtherInfo] END,
             links:collegeLinks.values
         },
         apprenticeshipRoute:{
         	requirements:apprenticeshipRequirement,
             requirementsPreface:apr.skos__prefLabel,
-            relevantSubjects:ar.ncs__RelevantSubjects,
-            furtherInfo:ar.ncs__FurtherInfo,
+            relevantSubjects:CASE ar.ncs__RelevantSubjects WHEN '' THEN [] WHEN NULL THEN [] ELSE [ar.ncs__RelevantSubjects] END,
+            furtherInfo:CASE ar.ncs__FurtherInfo WHEN '' THEN [] WHEN NULL THEN [] ELSE [ar.ncs__FurtherInfo] END,
             links:apprenticeshipLinks.values
         },
         workRoute:{
@@ -106,24 +109,24 @@ RETURN
 		{
 			University:
 				{
-					RelevantSubjects:COALESCE([combinedProfiles.universityRoute.relevantSubjects],[]),
-					FurtherInformation:COALESCE([combinedProfiles.universityRoute.furtherInfo],[]), 
+					RelevantSubjects:COALESCE(combinedProfiles.universityRoute.relevantSubjects,[]),
+					FurtherInformation:COALESCE(combinedProfiles.universityRoute.furtherInfo,[]), 
 					EntryRequirementPreface:combinedProfiles.universityRoute.requirementsPreface, 
 					EntryRequirements:COALESCE(combinedProfiles.universityRoute.requirements.values,[]), 
 					AdditionalInformation:COALESCE(combinedProfiles.universityRoute.links,[])
 				},
                 College:
 				{
-					RelevantSubjects:COALESCE([combinedProfiles.collegeRoute.relevantSubjects],[]),
-					FurtherInformation:COALESCE([combinedProfiles.collegeRoute.furtherInfo],[]), 
+					RelevantSubjects:COALESCE(combinedProfiles.collegeRoute.relevantSubjects,[]),
+					FurtherInformation:COALESCE(combinedProfiles.collegeRoute.furtherInfo,[]), 
 					EntryRequirementPreface:combinedProfiles.collegeRoute.requirementsPreface, 
 					EntryRequirements:COALESCE(combinedProfiles.collegeRoute.requirements.values,[]), 
 					AdditionalInformation:COALESCE(combinedProfiles.collegeRoute.links,[])
 				},
                 Apprenticeship:
                 {
-                	RelevantSubjects:COALESCE([combinedProfiles.apprenticeshipRoute.relevantSubjects],[]),
-					FurtherInformation:COALESCE([combinedProfiles.apprenticeshipRoute.furtherInfo],[]), 
+                	RelevantSubjects:COALESCE(combinedProfiles.apprenticeshipRoute.relevantSubjects,[]),
+					FurtherInformation:COALESCE(combinedProfiles.apprenticeshipRoute.furtherInfo,[]), 
 					EntryRequirementPreface:combinedProfiles.apprenticeshipRoute.requirementsPreface, 
 					EntryRequirements:COALESCE(combinedProfiles.apprenticeshipRoute.requirements.values,[]), 
 					AdditionalInformation:COALESCE(combinedProfiles.apprenticeshipRoute.links,[])
