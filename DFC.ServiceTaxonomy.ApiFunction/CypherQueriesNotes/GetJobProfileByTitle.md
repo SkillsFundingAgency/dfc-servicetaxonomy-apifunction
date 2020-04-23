@@ -154,7 +154,7 @@ RETURN
 	}, 
 	WhatYouWillDo:
 	{ 
-		WYDDayToDayTasks:combinedProfiles.dayToDayTasks.tasks, 
+		WYDDayToDayTasks:[REDUCE(s = HEAD(combinedProfiles.dayToDayTasks.tasks), n IN TAIL(combinedProfiles.dayToDayTasks.tasks) | s + '; ' + n)], 
 		WorkingEnvironment:
 		{
 			Location:COALESCE(wl.skos_prefLabel, ''), 
@@ -323,7 +323,7 @@ RETURN
 	}, 
 	WhatYouWillDo:
 	{ 
-		WYDDayToDayTasks:combinedProfiles.dayToDayTasks.tasks, 
+		WYDDayToDayTasks:[REDUCE(s = HEAD(combinedProfiles.dayToDayTasks.tasks), n IN TAIL(combinedProfiles.dayToDayTasks.tasks) | s + '; ' + n)], 
 		WorkingEnvironment:
 		{
 			Location:COALESCE(wl.skos_prefLabel, ''), 
