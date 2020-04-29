@@ -15,6 +15,7 @@ using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Neo4j.Driver;
 
 //todo: update to func v3, core 3.1, c# 8
 //todo: nullable reference types
@@ -25,26 +26,31 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
     public class Execute
     {
         private readonly IOptionsMonitor<ServiceTaxonomyApiSettings> _serviceTaxonomyApiSettings;
+        private readonly IOptionsMonitor<ContentTypeMapSettings> _contentTypeMapSettings;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly INeo4JHelper _neo4JHelper;
         private readonly IFileHelper _fileHelper;
-
+        private readonly IQueryBuilder _queryBuilder;
         private const string typeString = "System.String";
         private const string typeInt = "System.Int32";
         private const string typeStringArray = "System.String[]";
 
+        private static string contentByIdCypher = "MATCH (n {uri:{0}}) return n;";
+        private static string contentGetAllCypher = "MATCH (n:{}) return n;";
 
-        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper)
+        public Execute(IOptionsMonitor<ServiceTaxonomyApiSettings> serviceTaxonomyApiSettings, IOptionsMonitor<ContentTypeMapSettings> contentTypeMapSettings, IHttpRequestHelper httpRequestHelper, INeo4JHelper neo4JHelper, IFileHelper fileHelper, IQueryBuilder queryBuilder)
         {
             _serviceTaxonomyApiSettings = serviceTaxonomyApiSettings ?? throw new ArgumentNullException(nameof(serviceTaxonomyApiSettings));
+            _contentTypeMapSettings = contentTypeMapSettings ?? throw new ArgumentNullException(nameof(contentTypeMapSettings));
             _httpRequestHelper = httpRequestHelper ?? throw new ArgumentNullException(nameof(httpRequestHelper));
             _neo4JHelper = neo4JHelper ?? throw new ArgumentNullException(nameof(neo4JHelper));
             _fileHelper = fileHelper ?? throw new ArgumentNullException(nameof(fileHelper));
+            _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
         }
 
         [FunctionName("Execute")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Execute/{*.}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Execute/{contentType}/{identifier}")] HttpRequest req, string contentType, Guid? id,
             ILogger log, ExecutionContext context)
         {
             try
@@ -54,20 +60,14 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
 
                 bool development = environment == "Development";
 
-                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log);
-                Task<JObject> requestBodyTask = GetRequestBody(req, log);
+                if (string.IsNullOrWhiteSpace(contentType))
+                {
+                    throw ApiFunctionException.BadRequest($"Required parameter contentType not found in path.");
+                }
 
-                Cypher cypherModel = await cypherModelTask;
+                var queryParameters = new QueryParameters { ContentType = contentType, Id = id };
 
-                var cypherPathParameters = GetCypherPathParameters(cypherModel, req.Path, log);
-                var cypherQueryParameters = GetCypherQueryParameters(cypherModel, req.Query, await requestBodyTask, log, cypherPathParameters);
-
-                //Add the host in to all cypher queries
-
-                cypherQueryParameters.Add("apiHost", BuildHostFunctionUrl(req, log));
-                cypherQueryParameters.Add("websiteHost", _serviceTaxonomyApiSettings.CurrentValue.WebsiteHost);
-
-                object recordsResult = await ExecuteCypherQuery(cypherModel, cypherQueryParameters, log);
+                object recordsResult = await ExecuteCypherQuery(queryParameters, log);
 
                 if (recordsResult == null)
                     return new NoContentResult();
@@ -92,85 +92,45 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
+        private async Task<object> ExecuteCypherQuery(QueryParameters queryParameters, ILogger log)
         {
-            var host = req.Headers["X-Forwarded-Host"].ToString();
-
-            if (string.IsNullOrWhiteSpace(host))
-                throw ApiFunctionException.InternalServerError("X-Forwarded-Host header not present.");
-
-            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.Scheme))
-                throw ApiFunctionException.InternalServerError("Scheme missing in Settings");
-
-            if (string.IsNullOrWhiteSpace(_serviceTaxonomyApiSettings.CurrentValue.ApplicationName))
-                throw ApiFunctionException.InternalServerError("ApplicationName missing in Settings");
-
-            var hostUriBuilder = new UriBuilder { Host = host, Scheme = _serviceTaxonomyApiSettings.CurrentValue.Scheme, Path = $"{_serviceTaxonomyApiSettings.CurrentValue.ApplicationName}" };
-
-            log.LogInformation($"Function host is {hostUriBuilder.ToString()}");
-
-            return hostUriBuilder.ToString();
-        }
-
-        private static Dictionary<string, object> GetCypherPathParameters(Cypher cypherModel, PathString pathString, ILogger log)
-        {
-            log.LogInformation("Attempting to read parameters from path");
-
-            var cypherPathStatementParameters = new Dictionary<string, object>();
-
-            if (cypherModel.QueryParams == null)
-                return cypherPathStatementParameters;
-
-            var pathParams = cypherModel.QueryParams.Where(x => x.PathOrdinalPosition.HasValue);
-
-            if (!pathParams.Any())
-                return cypherPathStatementParameters;
-
-            var pathParameters = pathString.Value.Replace("/Execute/", string.Empty).Split('/');
-
-            foreach (var cypherParam in pathParams)
-            {
-                try
-                {
-                    var parameterValue = pathParameters[cypherParam.PathOrdinalPosition.Value];
-
-                    if (string.IsNullOrWhiteSpace(parameterValue))
-                        throw ApiFunctionException.InternalServerError($"Required parameter {cypherParam.Name} has no value in path");
-
-                    cypherPathStatementParameters.Add(cypherParam.Name, parameterValue);
-                }
-                catch (Exception)
-                {
-                    throw ApiFunctionException.BadRequest($"Required parameter {cypherParam.Name} not found in path parameters");
-                }
-            }
-
-            return cypherPathStatementParameters;
-        }
-
-        private string GetFunctionName()
-        {
-            string functionToProcess = _serviceTaxonomyApiSettings.CurrentValue.Function;
-
-            if (string.IsNullOrWhiteSpace(functionToProcess))
-                throw ApiFunctionException.InternalServerError("Missing function name in settings");
-
-            return functionToProcess;
-        }
-
-        private async Task<object> ExecuteCypherQuery(Cypher cypherModel,
-            Dictionary<string, object> cypherQueryParameters, ILogger log)
-        {
-            log.LogInformation($"Attempting to query neo4j with the following query: {cypherModel.Query}");
+            log.LogInformation($"Attempting to query neo4j with the following query: Content Type: {queryParameters.ContentType} Identifier: {queryParameters.Id}");
 
             try
             {
-                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(cypherModel.Query, cypherQueryParameters);
+                //Could move in to helper class
+                var queryToExecute = this.BuildQuery(queryParameters);
+                return await _neo4JHelper.ExecuteCypherQueryInNeo4JAsync();
             }
             catch (Exception ex)
             {
                 throw ApiFunctionException.InternalServerError("Unable To run query", ex);
             }
+        }
+
+        private string BuildQuery(QueryParameters queryParameters)
+        {
+            if (!queryParameters.Id.HasValue)
+            {
+                //GetAll Query
+                return string.Format(contentGetAllCypher, MapContentTypeToNamespace(queryParameters.ContentType));
+            }
+            else
+            {
+
+            }
+        }
+
+        private string MapContentTypeToNamespace(string contentType)
+        {
+            _contentTypeMapSettings.CurrentValue.Values.TryGetValue(contentType, out string mappedValue);
+
+            if (string.IsNullOrWhiteSpace(mappedValue))
+            {
+                throw ApiFunctionException.BadRequest($"Content Type {contentType} is not mapped in AppSettings");
+            }
+
+            return mappedValue;
         }
 
         private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, bool development, ILogger log)

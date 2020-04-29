@@ -32,6 +32,16 @@
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
   </ItemGroup>
   
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
     <Copy SourceFiles="@(CypherQueryFiles)" DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
