@@ -6,14 +6,14 @@
 ```
 with 'baker' as lowerlabel
 call db.index.fulltext.queryNodes("JobProfiles", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
-MATCH (node)-[:ncs__relatedOccupation]-(oc:esco__Occupation)
+MATCH (node)-[:relatedOccupation]-(oc:esco__Occupation)
 WITH node,oc
 {
 	ResultItemTitle:node.skos__prefLabel,
 	ResultItemAlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), 
-	ResultItemOverview:node.ncs__Description, 
-	ResultItemSalaryRange:'£' + node.ncs__SalaryStarter + ' to ' + '£' + node.ncs__SalaryExperienced, 
-	ResultItemUrlName:'somedomain.com' + 'getjobprofilesbysearchterm/execute/' + node.ncs__JobProfileWebsiteUrl, 
+	ResultItemOverview:node.Description, 
+	ResultItemSalaryRange:'£' + node.SalaryStarter + ' to ' + '£' + node.SalaryExperienced, 
+	ResultItemUrlName:'somedomain.com' + 'getjobprofilesbysearchterm/execute/' + node.JobProfileWebsiteUrl, 
 	JobProfileCategories:['ToDo']
 } as jobProfiles 
 WITH 
