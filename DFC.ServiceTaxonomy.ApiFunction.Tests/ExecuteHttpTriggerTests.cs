@@ -402,7 +402,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             //Assert
             Assert.True(result is OkObjectResult);
             Assert.Single(executeCalls);
-            Assert.Equal("Librarian", actualParams["canonicalName"]);
+            Assert.Equal("librarian", actualParams["canonicalName"]);
         }
 
         [Fact]
