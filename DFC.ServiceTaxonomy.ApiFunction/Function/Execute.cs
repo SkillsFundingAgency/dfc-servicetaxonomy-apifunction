@@ -126,7 +126,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             if (!pathParams.Any())
                 return cypherPathStatementParameters;
 
-            var pathParameters = pathString.Value.Replace("/Execute/", string.Empty).Split('/');
+            var pathParameters = pathString.Value.ToLowerInvariant().Replace("/execute/", string.Empty).Split('/');
 
             foreach (var cypherParam in pathParams)
             {
