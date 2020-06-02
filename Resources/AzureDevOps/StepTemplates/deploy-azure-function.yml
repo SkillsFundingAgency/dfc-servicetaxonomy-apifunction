@@ -62,5 +62,5 @@ steps:
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: '${{ parameters.PSScriptPath }}/Set-ApimProductAndLogger.ps1'
-    ScriptArguments: '-ApimResourceGroup ${{ parameters.SharedResourceGroup }} -InstanceName ${{ parameters.ApimServiceName }} -ApiId ${{ parameters.ApiName }} -ApiProductId ${{ parameters.ApimProductId }} -ApimLoggerName ${{ parameters.ApimLoggerName }}'
+    ScriptArguments: "-ApimResourceGroup ${{ parameters.SharedResourceGroup }} -InstanceName ${{ parameters.ApimServiceName }} -ApiId '${{ parameters.ApiName }}${{ parameters.ApiVersion }}' -ApiProductId ${{ parameters.ApimProductId }} -ApimLoggerName ${{ parameters.ApimLoggerName }}"
     azurePowerShellVersion: LatestVersion
