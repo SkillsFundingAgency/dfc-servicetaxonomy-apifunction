@@ -92,6 +92,7 @@ jobs:
                 ApimLoggerName: '${{ parameters.ApimLoggerName }}'
                 ApiVersion: '${{ api.apiVersion }}'
                 ApiName: '${{ api.apiName }}'
+                ApiTitle: '${{ api.apiTitle }}'
             # - template: ../StepTemplates/run-functional-tests.yml
             #   parameters:
             #     DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
