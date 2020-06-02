@@ -1,0 +1,108 @@
+﻿openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Occupations With Matching Skills
+  description: 'Returns a list of occupations that match a supplied list of skills'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Occupations With Matching Skills
+  description: Returns a list of occupations that match a supplied list of skills
+paths:
+  /Execute/:
+    post:
+      tags:
+      - Occupation
+      summary: Get Occupations With Matching Skills.
+      description: Returns a list of occupations that match a supplied list of skills
+      operationId: GetOccupationsWithMatchingSkills
+      requestBody:
+        description: enter esco skill uri to retrieve all Occupations for the Skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBody'
+
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Occupation'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    RequestBody:
+      type: object
+      properties:
+        skillList:
+          type: array
+          items:
+            type: string
+            example: http://data.europa.eu/esco/skill/114e1eff-215e-47df-8e10-45a5b72f8197
+        minimumMatchingSkills:
+          type: integer
+          example: 1
+    Occupation: 
+      type: "object"
+      properties:
+        matchingOccupations: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
+              occupation: 
+                type: string
+                example: renewable energy consultant
+              jobProfileTitle: 
+                type: string
+                example: renewable energy consultant
+              jobProfileUri: 
+                type: string
+                example: http://nationalcareers.service.gov.uk/jobprofile/20ef1426-f85d-4c03-b14d-89d1ad273e28
+              totalOccupationEssentialSkills: 
+                type: integer
+                example: 1
+              totalOccupationOptionalSkills: 
+                type: integer
+                example: 1
+              matchingEssentialSkills: 
+                type: integer
+                example: 1
+              matchingOptionalSkills: 
+                type: integer
+                example: 1
+              socCode:
+                type:   integer
+                example: 2419
+              lastModified: 
+                type: string
+                example: 2017-01-17T14:18:17Z
+            required:
+              - uri
+              - occupation
+              - jobProfileTitle
+              - jobProfileUri
+              - totalOccupationEssentialSkills
+              - totalOccupationOptionalSkills
+              - matchingEssentialSkills
+              - matchingOptionalSkills
+              - socCode
+              - lastModified
+      required:
+       - matchingOccupations

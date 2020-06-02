@@ -1,0 +1,71 @@
+﻿openapi: 3.0.1
+info:
+  title: Service Taxonomy Get All Skills
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get All Skills
+  description: Returns all skills
+paths:
+  /Execute/:
+    get:
+      tags:
+      - Skill
+      summary: Get all skills.
+      description: Returns all skills
+      operationId: GetAllSkills
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    Skill: 
+      type: "object"
+      required:
+      - skills
+      properties:
+        skills: 
+          type: array
+          items: 
+            type: object
+            required:
+            - uri
+            - skill
+            - skillType
+            - alternativeLabels
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
+              skill: 
+                type: string
+                example: "identify customer's needs"
+              skillType: 
+                type: string
+                example: knowledge
+                enum:
+                  - knowledge
+                  - competency
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "understand customer needs"

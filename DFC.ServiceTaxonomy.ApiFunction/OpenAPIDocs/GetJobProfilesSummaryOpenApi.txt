@@ -1,0 +1,54 @@
+openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Job Profile Summary
+  description: 'Returns a Job Profile Summary'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Job Profile Summary
+  description: Returns job profile summary
+paths:
+  /Execute/:
+    get:
+      tags:
+      - Job Profile Sumary
+      summary: Get job profile summary.
+      description: Return job profile summary
+      operationId: GetJobProfileSummary
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/JobProfileSummary'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    JobProfileSummary:
+      type: array
+      items:
+        required:
+          - Url
+          - Title
+          - LastUpdated
+        type: object
+        properties:
+          Url:
+            type: string
+          Title:
+            type: string
+          LastUpdated:
+            type: string

@@ -1,0 +1,125 @@
+openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Skills By Label
+  description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
+  version: 2.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Skills By Label
+  description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
+paths:
+  /Execute/:
+    post:
+      tags:
+      - Skill
+      summary: Get Skills By Label
+      description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
+      operationId: GetSkillsByLabelV2
+      parameters:
+        - in: query
+          name: matchAltLabels
+          schema:
+            type: boolean
+            default: false
+          description: Find skills where the search term is part of an alternative (or hidden) label
+          required: false
+          allowEmptyValue: false
+      requestBody:
+        description: Supply the search term
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBody'
+            example:   # Sample object
+                "label": "toxic"
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    RequestBody:
+      required:
+      - label
+      type: "object"
+      properties:
+        label: 
+          type: string
+          example: "toxic"
+    Skill: 
+      type: "object"
+      required:
+      - skills
+      properties:
+        skills: 
+          type: array
+          items: 
+            type: object
+            required:
+            - uri
+            - skill
+            - alternativeLabels
+            - lastModified
+            - skillType
+            - skillReusability
+            - matches
+            - score
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f"
+              skill: 
+                type: string
+                example: toxicology
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+              lastModified: 
+                type: string
+                example: 2016-12-20T19:32:45Z
+              skillType: 
+                type: string
+                example: knowledge
+              skillReusability: 
+                type: string
+                example: cross-sectoral
+              matches: 
+                required:
+                - skill
+                - alternativeLabels
+                - hiddenLabels
+                properties: 
+                  skill: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                  alternativeLabels: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                  hiddenLabels: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                type: "object"
+              score:
+                type: "number"
+                example: 1.034222

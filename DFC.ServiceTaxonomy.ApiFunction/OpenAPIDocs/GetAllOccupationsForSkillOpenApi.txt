@@ -1,0 +1,106 @@
+﻿openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Occupations For Given Skill
+  description: 'Sample Description for Query'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Occupations For Given Skill
+  description: Returns all occupation for a given skill
+paths:
+  /Execute/:
+    post:
+      tags:
+      - Skill
+      summary: Get occupations for a given skill.
+      description: Returns occupation for a given skill
+      operationId: GetOccupationsForSkill
+      requestBody:
+        description: enter esco skill uri to retrieve all Occupations for the Skill
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillRequestBody'
+            example:   # Sample object
+                "skill": "http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d"
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    SkillRequestBody: 
+      required:
+      - skill
+      type: "object"
+      properties:
+        skill: 
+          type: string
+          example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
+    Skill: 
+      type: "object"
+      properties:
+        uri: 
+          type: string
+          example: http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d
+        skill: 
+          type: string
+          example: identify customer's needs
+        skilltype: 
+          type: string
+          example: knowledge
+          enum:
+               - knowledge
+               - competency
+        skillReusability: 
+          type: string
+          example: Occupation-specific
+          enum:
+            - transversal
+            - cross-sectoral
+            - sector-specific
+            - occupation-specific
+        alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+        lastModified: 
+          type: string
+          example: 03-12-2019T00:00:00Z
+        occupations: 
+          type: array
+          items: 
+            type: object
+            properties: 
+              uri: 
+                type: string
+                example: http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197
+              occupation: 
+                type: string
+                example: renewable energy consultant
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+                  example: "alt 1"
+              lastModified: 
+                type: string
+                example: 03-12-2019T00:00:00Z
