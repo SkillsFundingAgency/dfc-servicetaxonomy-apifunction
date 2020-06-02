@@ -155,17 +155,17 @@
       {
         "functionType": "GetJobProfilesBySearchTermV2",
         "functionName": "[concat(parameters('projectPrefix'), '-jpbyterm-v2-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpbyterm-ai')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpbyterm-v2-ai')]"
       },
       {
         "functionType": "GetOccupationsByLabelV2",
         "functionName": "[concat(parameters('projectPrefix'), '-occbylabel-v2-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-ai')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-v2-ai')]"
       },
       {
         "functionType": "GetSkillsByLabelV2",
         "functionName": "[concat(parameters('projectPrefix'), '-skillsbylabel-v2-fa')]",
-        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-ai')]"
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-v2-ai')]"
       }
     ]
   },
