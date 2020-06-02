@@ -68,7 +68,7 @@ try {
     # import api from OpenAPI Specs
     Write-Host  "[IMPORT] Importing OpenAPI: $OpenApiSpecificationFile "
     $api = Import-AzApiManagementApi -Context $context -SpecificationPath $OpenApiSpecificationFile -SpecificationFormat OpenApi -Path $ApiPath -ApiId $ApiName -ApiVersion $ApiVersion -ApiVersionSetId $versionSetId -ErrorAction Stop -Verbose:$VerbosePreference
-    Write-Host  "[IMPORT] Imported API: $api.ApiId " 
+    Write-Host  "[IMPORT] Imported API: "$api.ApiId" " 
     
 
     # # --- Import openapi definition
