@@ -6,14 +6,14 @@ info:
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get Skills By Label
+- name: Get Skills By Label V2
   description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
 paths:
   /Execute/:
     post:
       tags:
       - Skill
-      summary: Get Skills By Label
+      summary: Get Skills By Label V2
       description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
       operationId: GetSkillsByLabelV2
       parameters:

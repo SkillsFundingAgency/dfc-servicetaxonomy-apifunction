@@ -6,14 +6,14 @@ info:
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get Job Profiles by search term
+- name: Get Job Profiles by search term V2
   description: Returns job profile by search term
 paths:
   /Execute/{searchTerm}:
     get:
       tags:
       - Job Profile
-      summary: Get job profiles by search term.
+      summary: Get job profiles by search term V2.
       description: Return job profiles by search term
       operationId: GetJobProfileBySearchTermV2
       parameters:
