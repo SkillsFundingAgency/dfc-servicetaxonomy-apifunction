@@ -1,21 +1,21 @@
 openapi: 3.0.1
 info:
-  title: Service Taxonomy Get Skills By Label V2
+  title: Service Taxonomy Get Skills By Label
   description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
   version: 2.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get Skills By Label V2
+- name: Get Skills By Label
   description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
 paths:
   /Execute/:
     post:
       tags:
       - Skill
-      summary: Get Skills By Label V2
+      summary: Get Skills By Label
       description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
-      operationId: GetSkillsByLabelV2
+      operationId: GetSkillsByLabel
       parameters:
         - in: query
           name: matchAltLabels

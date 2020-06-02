@@ -90,6 +90,8 @@ jobs:
                 ResourceGroup: '${{ parameters.ResourceGroup }}'
                 ApimProductId: '${{ parameters.ApimProductId }}'
                 ApimLoggerName: '${{ parameters.ApimLoggerName }}'
+                ApiVersion: '${{ api.apiVersion }}'
+                ApiName: '${{ api.apiName }}'
             # - template: ../StepTemplates/run-functional-tests.yml
             #   parameters:
             #     DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}

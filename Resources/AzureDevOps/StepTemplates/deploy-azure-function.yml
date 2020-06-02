@@ -12,6 +12,8 @@ parameters:
   FunctionAppDomain: ''
   PackageFile: ''
   PSScriptPath: '$(Agent.BuildDirectory)/s/dfc-devops/PSScripts'
+  ApiVersion: ''
+  ApiName: ''
 
 steps:
 - checkout: dfc-devops
@@ -51,7 +53,7 @@ steps:
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: '${{ parameters.ApimImportScript }}'
-    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.FunctionType }}' -OpenApiSpecificationFile '${{ parameters.SpecificationPath }}/${{ parameters.FunctionType }}OpenApi.txt' -ApiPath 'servicetaxonomy/${{ parameters.FunctionType }}'"
+    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.ApiName }}' -OpenApiSpecificationFile '${{ parameters.SpecificationPath }}/${{ parameters.FunctionType }}OpenApi.txt' -ApiPath 'servicetaxonomy/${{ parameters.FunctionType }}' -ApiVersion ${{ parameters.ApiVersion }}"
     azurePowerShellVersion: LatestVersion
 
 - task: AzurePowerShell@4

@@ -1,21 +1,21 @@
 openapi: 3.0.1
 info:
-  title: Service Taxonomy Get Job Profiles by Search Term V2
+  title: Service Taxonomy Get Job Profiles by Search Term
   description: 'Returns a Job Profile for a search term'
   version: 2.0.0
 servers:
 - url: __FunctionAppUrl__
 tags:
-- name: Get Job Profiles by search term V2
+- name: Get Job Profiles by search term
   description: Returns job profile by search term
 paths:
   /Execute/{searchTerm}:
     get:
       tags:
       - Job Profile
-      summary: Get job profiles by search term V2.
+      summary: Get job profiles by search term
       description: Return job profiles by search term
-      operationId: GetJobProfileBySearchTermV2
+      operationId: GetJobProfileBySearchTerm
       parameters:
       - in: path
         name: searchTerm
