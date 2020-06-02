@@ -46,9 +46,17 @@ try {
     Write-Host "Building APIM context for $ApimResourceGroup\$InstanceName"
     $Context = New-AzApiManagementContext -ResourceGroupName $ApimResourceGroup -ServiceName $InstanceName
 
+    # --- get a version set
+    Write-Host "Getting version set for $ApiPath"
+    $versionSets = Get-AzApiManagementApiVersionSet -Context $Context | Where-Object { $_.DisplayName -eq $ApiName }
+    if (!$versionSets) {
+        New-AzApiManagementApiVersionSet -Context $Context -Scheme Header -HeaderName "version" -Description $ApiName -Name $ApiName
+    }
+    $versionSet = Get-AzApiManagementApiVersionSet -Context $Context | Where-Object { $_.DisplayName -eq $ApiName }
+
     # --- Import openapi definition
     Write-Host "Updating API $InstanceName\$($ApiName) from definition $($OutputFile.FullName)"
-    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $ApiName -Path $ApiPath -ApiVersion $ApiVersion -ErrorAction Stop -Verbose:$VerbosePreference
+    Import-AzApiManagementApi -Context $Context -SpecificationFormat OpenApi -SpecificationPath $OpenApiSpecificationFile -ApiId $ApiName -Path $ApiPath -ApiVersion $ApiVersion -ApiVersionSetId $versionSet.ApiVersionSetId -ErrorAction Stop -Verbose:$VerbosePreference
 }
 catch {
    throw $_
