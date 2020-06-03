@@ -44,8 +44,7 @@ stages:
           SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
           BuildPlatform: 'any cpu'
           BuildConfiguration: 'release'
-          DotNetCoreVersion: '3.1.100'
-          PublishWebApp: true
+          PublishWebApp: false
           TestSuffix: 'Tests'
 
       - task: PublishPipelineArtifact@1
