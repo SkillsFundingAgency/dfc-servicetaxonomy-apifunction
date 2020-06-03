@@ -202,7 +202,9 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             log.LogInformation("Generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory)}\CypherQueries\{apiVersion}\{functionName}.json";
+            // todo: remove once Tom comes back
+            //var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory)}\CypherQueries\{apiVersion}\{functionName}.json";
+            var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory.Replace("Execute\\",""))}\CypherQueries\{apiVersion}\{functionName}.json";
 
             string cypherQueryJsonConfig;
 
