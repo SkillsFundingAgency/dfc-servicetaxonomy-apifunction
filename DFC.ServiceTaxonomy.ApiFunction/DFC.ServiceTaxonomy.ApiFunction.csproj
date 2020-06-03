@@ -13,12 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="CypherQueries\*.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -29,13 +23,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="CypherQueries\V2\GetJobProfilesBySearchTerm.json" />
-    <None Remove="CypherQueries\V2\GetOccupationsByLabel.json" />
-    <None Remove="CypherQueries\V2\GetSkillsByLabel.json" />
+    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\V1\*.json" />
+    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\V2\*.json" />
   </ItemGroup>
   
   <ItemGroup>
