@@ -45,5 +45,4 @@
     <Copy SourceFiles="@(CypherQueryFiles2)" DestinationFolder="$(PublishDir)Execute\CypherQueries\V2\" />
   </Target>
 
-
 </Project>
