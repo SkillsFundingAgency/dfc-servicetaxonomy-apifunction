@@ -42,11 +42,8 @@
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles1 to $(PublishDir)Execute\CypherQueries\V1\" />
     <Copy SourceFiles="@(CypherQueryFiles1)" DestinationFolder="$(PublishDir)Execute\CypherQueries\V1\" />
-  </Target>
-
-  <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
-    <Message Text="Copying CypherQueryFiles2 to $(PublishDir)Execute\CypherQueries\V2\" />
     <Copy SourceFiles="@(CypherQueryFiles2)" DestinationFolder="$(PublishDir)Execute\CypherQueries\V2\" />
   </Target>
+
 
 </Project>
