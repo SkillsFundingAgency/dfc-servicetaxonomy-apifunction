@@ -44,7 +44,7 @@ stages:
           SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
           BuildPlatform: 'any cpu'
           BuildConfiguration: 'release'
-          PublishWebApp: false
+          PublishWebApp: true
           TestSuffix: 'Tests'
 
       - task: PublishPipelineArtifact@1
