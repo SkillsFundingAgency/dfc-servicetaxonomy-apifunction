@@ -59,7 +59,7 @@ try {
     if($null -eq $versionSetLookup)
     {
         Write-Host "[VERSION SET] Version set NOT FOUND for: $ApiTitle, creating a new one. "
-        $versionSet = New-AzApiManagementApiVersionSet -Context $context -Name "$ApiTitle" -Scheme Header -HeaderName "version" -Description "$ApiTitle" -ErrorAction Stop -Verbose:$VerbosePreference
+        $versionSet = New-AzApiManagementApiVersionSet -Context $context -Name "$ApiTitle" -Scheme Header -HeaderName "x-version" -Description "$ApiTitle" -ErrorAction Stop -Verbose:$VerbosePreference
         $versionSetId = $versionSet.Id
         Write-Host "[VERSION SET] Created new version set, id: $versionSetId"
     }

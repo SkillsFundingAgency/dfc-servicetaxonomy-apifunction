@@ -109,17 +109,17 @@ stages:
             apiName: GetJobProfilesSummary
             apiTitle: "Service Taxonomy Get Job Profile Summary"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
-            apiVersion: v1
+            apiVersion: V1
           - name: GetOccupationsWithMatchingSkillsDetailed
             apiName: GetOccupationsWithMatchingSkillsDetailed
             apiTitle: "Service Taxonomy Get Occupations With Matching Skills Detailed"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa'
-            apiVersion: v1
+            apiVersion: V1
           - name: GetAllSkillsForOccupation
             apiName: GetAllSkillsForOccupation
             apiTitle: "Service Taxonomy Get Skills For Occupation"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
-            apiVersion: v1
+            apiVersion: V1
         -
           - name: GetOccupationsByLabel
             apiName: GetOccupationsByLabel
@@ -129,7 +129,7 @@ stages:
             # This causes the generated deployment job to delay execution until the 'GetJobProfilesSummary' deployment job has finished.
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetJobProfilesSummary
           - name: GetOccupationsByLabelV2
             apiName: GetOccupationsByLabel
@@ -139,57 +139,57 @@ stages:
             # This causes the generated deployment job to delay execution until the 'GetJobProfilesSummary' deployment job has finished.
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetOccupationsByLabel
           - name: GetOccupationsWithMatchingSkills
             apiName: GetOccupationsWithMatchingSkills
             apiTitle: "Service Taxonomy Get Occupations With Matching Skills"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsWithMatchingSkillsDetailed
           - name: GetSkillsGapForOccupationAndGivenSkills
             apiName: GetSkillsGapForOccupationAndGivenSkills
             apiTitle: "Service Taxonomy Get skills gap analysis between an occupation and a supplied set of skills"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetAllSkillsForOccupation
         -
           - name: GetSkillsByLabel
             apiName: GetSkillsByLabel
             apiTitle: "Service Taxonomy Get Skills By Label"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsByLabel
           - name: GetSkillsByLabelV2
             apiName: GetSkillsByLabel
             apiTitle: "Service Taxonomy Get Skills By Label"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-v2-fa'
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetSkillsByLabel
           - name: GetSkillById
             apiName: GetSkillById
             apiTitle: "Service Taxonomy Get Skill By ID"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetJobProfileByTitle
             apiName: GetJobProfileByTitle
             apiTitle: "Service Taxonomy Get Job Profile by Title"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetSkillsGapForOccupationAndGivenSkills
         -
           - name: GetJobProfilesBySearchTerm
             apiName: GetJobProfilesBySearchTerm
             apiTitle: "Service Taxonomy Get Job Profiles by Search Term"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetSkillsByLabel
           - name: GetJobProfilesBySearchTermV2
             apiName: GetJobProfilesBySearchTerm
             apiTitle: "Service Taxonomy Get Job Profiles by Search Term"
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-v2-fa'
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetJobProfilesBySearchTerm
 
 
@@ -235,13 +235,13 @@ stages:
         -
           - name: GetJobProfilesSummary
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpsummary-fa'
-            apiVersion: v1
+            apiVersion: V1
           - name: GetOccupationsWithMatchingSkillsDetailed
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occmsd-fa'
-            apiVersion: v1
+            apiVersion: V1
           - name: GetAllSkillsForOccupation
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsocc-fa'
-            apiVersion: v1
+            apiVersion: V1
         -
           - name: GetOccupationsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occbylabel-fa'
@@ -249,7 +249,7 @@ stages:
             # This causes the generated deployment job to delay execution until the 'GetJobProfilesSummary' deployment job has finished.
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetJobProfilesSummary
           - name: GetOccupationsByLabelV2
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occbylabel-v2-fa'
@@ -257,41 +257,41 @@ stages:
             # This causes the generated deployment job to delay execution until the 'GetJobProfilesSummary' deployment job has finished.
             # As you add items to this array, please reference them back to the task in the same place in the previous
             # array element, so it gives us a partitioned deployment window!
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetJobProfilesSummary
           - name: GetOccupationsWithMatchingSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-occsmatchskills-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsWithMatchingSkillsDetailed
           - name: GetSkillsGapForOccupationAndGivenSkills
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-sgoccsgskills-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetAllSkillsForOccupation
         -
           - name: GetSkillsByLabel
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsByLabel
           - name: GetSkillsByLabelV2
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillsbylabel-v2-fa'
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetOccupationsByLabel
           - name: GetSkillById
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-skillbyid-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetOccupationsWithMatchingSkills
           - name: GetJobProfileByTitle
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbytitle-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetSkillsGapForOccupationAndGivenSkills
         -
           - name: GetJobProfilesBySearchTerm
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-fa'
-            apiVersion: v1
+            apiVersion: V1
             dependsOn: GetSkillsByLabel
           - name: GetJobProfilesBySearchTermV2
             azureFunctionName: '${{ variables.WebAppPrefix }}-stax-jpbyterm-v2-fa'
-            apiVersion: v2
+            apiVersion: V2
             dependsOn: GetSkillsByLabel
 
 - stage: DeployToPPServiceTaxonomy
