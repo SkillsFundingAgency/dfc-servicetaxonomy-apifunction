@@ -44,6 +44,7 @@ stages:
           SolutionBaseName: 'DFC.ServiceTaxonomy.ApiFunction'
           BuildPlatform: 'any cpu'
           BuildConfiguration: 'release'
+          DotNetCoreVersion: '3.1.100'
           PublishWebApp: true
           TestSuffix: 'Tests'
 
