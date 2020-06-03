@@ -33,7 +33,6 @@
   
   <ItemGroup>
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\V1\*.json" />
-    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
     <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\V2\*.json" />
   </ItemGroup>
   

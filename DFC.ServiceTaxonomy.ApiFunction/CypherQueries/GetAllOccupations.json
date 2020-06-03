@@ -1,3 +1,0 @@
-﻿{
-  "query": "MATCH (o:esco__Occupation) WITH { occupations:collect({ uri:o.uri, occupation:o.skos__prefLabel, alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:o.dct__modified }) } as occupations return occupations"
-}
