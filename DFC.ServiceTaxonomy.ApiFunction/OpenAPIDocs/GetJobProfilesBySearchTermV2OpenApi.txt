@@ -13,7 +13,7 @@ paths:
     get:
       tags:
       - Job Profile
-      summary: Get job profiles by search term.
+      summary: Get job profiles by search term
       description: Return job profiles by search term
       operationId: GetJobProfileBySearchTerm
       parameters:

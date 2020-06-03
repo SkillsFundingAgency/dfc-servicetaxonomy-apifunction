@@ -90,10 +90,13 @@ jobs:
                 ResourceGroup: '${{ parameters.ResourceGroup }}'
                 ApimProductId: '${{ parameters.ApimProductId }}'
                 ApimLoggerName: '${{ parameters.ApimLoggerName }}'
-            - template: ../StepTemplates/run-functional-tests.yml
-              parameters:
-                DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
-                DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
-                Environment: ${{ parameters.EnvironmentName }}
-                TestArtifactBranch: ${{ parameters.TestArtifactBranch }}
-                TestTag: ${{ api.name }}
+                ApiVersion: '${{ api.apiVersion }}'
+                ApiName: '${{ api.apiName }}'
+                ApiTitle: '${{ api.apiTitle }}'
+            # - template: ../StepTemplates/run-functional-tests.yml
+            #   parameters:
+            #     DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
+            #     DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
+            #     Environment: ${{ parameters.EnvironmentName }}
+            #     TestArtifactBranch: ${{ parameters.TestArtifactBranch }}
+            #     TestTag: ${{ api.name }}
