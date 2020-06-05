@@ -70,6 +70,7 @@ stages:
   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to DEV_SERVICETAXONOMY
   variables:
+  - template: VariableTemplates/DevEnvironmentVariables.yml
   - group: dfc-shared-all
   - group: dfc-stax-shared-all
   - group: dfc-shared-dev
@@ -198,6 +199,7 @@ stages:
   #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to SIT_SERVICETAXONOMY
   variables:
+  - template: VariableTemplates/SitEnvironmentVariables.yml
   - group: dfc-shared-all
   - group: dfc-stax-shared-all
   - group: dfc-shared-sit
@@ -329,6 +331,7 @@ stages:
   #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Deploy to PP_SERVICETAXONOMY
   variables:
+  - template: VariableTemplates/PPEnvironmentVariables.yml
   - group: dfc-shared-all
   - group: dfc-stax-shared-all
   - group: dfc-shared-pp
