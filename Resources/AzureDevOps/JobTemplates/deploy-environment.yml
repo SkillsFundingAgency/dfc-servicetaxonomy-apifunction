@@ -93,10 +93,10 @@ jobs:
                 ApiVersion: '${{ api.apiVersion }}'
                 ApiName: '${{ api.apiName }}'
                 ApiTitle: '${{ api.apiTitle }}'
-            # - template: ../StepTemplates/run-functional-tests.yml
-            #   parameters:
-            #     DFCAzureDevOpsProjectGuid: ${{ parameters.DFCAzureDevOpsProjectGuid }}
-            #     DfcServiceTaxonomyTestsBuildId: ${{ parameters.DfcServiceTaxonomyTestsBuildId }}
-            #     Environment: ${{ parameters.EnvironmentName }}
-            #     TestArtifactBranch: ${{ parameters.TestArtifactBranch }}
-            #     TestTag: ${{ api.name }}
+            - template: ../steptemplates/run-functional-tests.yml
+              parameters:
+                dfcazuredevopsprojectguid: ${{ parameters.dfcazuredevopsprojectguid }}
+                dfcservicetaxonomytestsbuildid: ${{ parameters.dfcservicetaxonomytestsbuildid }}
+                environment: ${{ parameters.environmentname }}
+                testartifactbranch: ${{ parameters.testartifactbranch }}
+                testtag: ${{ api.name }}
