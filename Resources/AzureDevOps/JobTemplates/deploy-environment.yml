@@ -93,7 +93,7 @@ jobs:
                 ApiVersion: '${{ api.apiVersion }}'
                 ApiName: '${{ api.apiName }}'
                 ApiTitle: '${{ api.apiTitle }}'
-            - template: ../Steptemplates/run-functional-tests.yml
+            - template: ../StepTemplates/run-functional-tests.yml
               parameters:
                 dfcazuredevopsprojectguid: ${{ parameters.dfcazuredevopsprojectguid }}
                 dfcservicetaxonomytestsbuildid: ${{ parameters.dfcservicetaxonomytestsbuildid }}
