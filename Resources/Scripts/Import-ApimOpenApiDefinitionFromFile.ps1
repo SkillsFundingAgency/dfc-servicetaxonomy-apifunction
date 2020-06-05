@@ -72,7 +72,12 @@ try {
     
     # import api from OpenAPI Specs
     Write-Host  "[IMPORT] Importing OpenAPI: $OpenApiSpecificationFile "
-    $api = Import-AzApiManagementApi -Context $context -SpecificationPath $OpenApiSpecificationFile -SpecificationFormat OpenApi -Path $ApiPath -ApiId "$ApiName-$ApiVersion" -ApiVersion $ApiVersion -ApiVersionSetId $versionSetId -ErrorAction Stop -Verbose:$VerbosePreference
+    $MyApiVersion = $ApiVersion
+    $ApiId = "$ApiName-$ApiVersion"
+    if ($ApiVersion -eq "V1") {
+        $MyApiVersion = "Original"   
+    }
+    $api = Import-AzApiManagementApi -Context $context -SpecificationPath $OpenApiSpecificationFile -SpecificationFormat OpenApi -Path $ApiPath -ApiId $ApiId -ApiVersion $MyApiVersion -ApiVersionSetId $versionSetId -ErrorAction Stop -Verbose:$VerbosePreference
     Write-Host  "[IMPORT] Imported API: "$api.ApiId" " 
     
 
