@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Service Taxonomy Get Skills By Label
+  title: Service Taxonomy Get Skills By Label V2
   description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
   version: 2.0.0
 servers:
