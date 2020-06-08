@@ -54,7 +54,7 @@ steps:
   inputs:
     azureSubscription: '${{ parameters.AzureSubscription }}'
     ScriptPath: '${{ parameters.ApimImportScript }}'
-    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.ApiName }}' -OpenApiSpecificationFile '${{ parameters.SpecificationPath }}/${{ parameters.FunctionType }}OpenApi.txt' -ApiPath 'servicetaxonomy/${{ parameters.FunctionType }}' -ApiVersion ${{ parameters.ApiVersion }} -ApiTitle '${{ parameters.ApiTitle }}'"
+    ScriptArguments: "-ApimResourceGroup '${{ parameters.SharedResourceGroup }}' -InstanceName '${{ parameters.ApimServiceName }}' -ApiName '${{ parameters.ApiName }}' -OpenApiSpecificationFile '${{ parameters.SpecificationPath }}/${{ parameters.FunctionType }}OpenApi.txt' -ApiPath 'servicetaxonomy/${{ parameters.ApiName }}' -ApiVersion ${{ parameters.ApiVersion }} -ApiTitle '${{ parameters.ApiTitle }}'"
     azurePowerShellVersion: LatestVersion
 
 - task: AzurePowerShell@4
