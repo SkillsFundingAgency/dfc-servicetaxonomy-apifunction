@@ -17,6 +17,13 @@ paths:
       description: Return job profiles by search term
       operationId: GetJobProfileBySearchTerm
       parameters:
+      - in: header
+        name: X-Version
+        schema:
+          type: string
+          format: string
+          default: V2
+        required: true
       - in: path
         name: searchTerm
         schema:
