@@ -17,6 +17,14 @@ paths:
       description: Get occupations whose name (aka preferred label) or alternative label matches a search term
       operationId: GetOccupationsByLabel
       parameters:
+        - in: header
+          name: x-version
+          schema:
+            type: string
+            default: V2
+          description: version of the API
+          required: true
+          allowEmptyValue: false
         - in: query
           name: matchAltLabels
           schema:

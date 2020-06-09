@@ -17,6 +17,14 @@ paths:
       description: Get skills whose name (aka preferred label) or alternative label or hidden label matches a search term
       operationId: GetSkillsByLabel
       parameters:
+        - in: header
+          name: x-version
+          schema:
+            type: string
+            default: V2
+          description: version of the API
+          required: true
+          allowEmptyValue: false
         - in: query
           name: matchAltLabels
           schema:
