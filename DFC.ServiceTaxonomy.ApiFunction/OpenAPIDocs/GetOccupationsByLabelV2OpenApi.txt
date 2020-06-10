@@ -1,0 +1,120 @@
+openapi: 3.0.1
+info:
+  title: Service Taxonomy Get Occupations By Label V2
+  description: Get occupations whose name (aka preferred label) or alternative label matches a search term
+  version: 2.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Occupations By Label
+  description: Get occupations whose name (aka preferred label) or alternative label matches a search term
+paths:
+  /Execute/:
+    post:
+      tags:
+      - Occupation
+      summary: Get Occupations By Label
+      description: Get occupations whose name (aka preferred label) or alternative label matches a search term
+      operationId: GetOccupationsByLabel
+      parameters:
+        - in: header
+          name: x-version
+          schema:
+            type: string
+            default: V2
+          description: version of the API
+          required: true
+          allowEmptyValue: false
+        - in: query
+          name: matchAltLabels
+          schema:
+            type: boolean
+            default: false
+          description: Find occupations where the search term is part of an alternative label
+          required: false
+          allowEmptyValue: false
+      requestBody:
+        description: Supply the search term
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestBody'
+            example:   # Sample object
+                "label": "toxic"
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Occupation'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    RequestBody:
+      required:
+      - label
+      type: "object"
+      properties:
+        label: 
+          type: string
+          example: "toxic"
+    Occupation: 
+      type: "object"
+      required:
+      - occupations
+      properties:
+        occupations: 
+          type: array
+          items: 
+            type: object
+            required:
+            - uri
+            - occupation
+            - alternativeLabels
+            - lastModified
+            - matches
+            - score
+            properties: 
+              uri: 
+                type: string
+                example: "http://data.europa.eu/esco/occupation/c95121e9-e9f7-40a9-adcb-6fda1e82bbd2"
+              occupation: 
+                type: string
+                example: hazardous waste technician
+              alternativeLabels: 
+                type: array
+                items: 
+                  type: string
+              lastModified: 
+                type: string
+                example: 2016-12-20T19:32:45Z
+              matches: 
+                required:
+                 - occupation
+                 - alternativeLabels
+                properties: 
+                  occupation: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                  alternativeLabels: 
+                    type: "array"
+                    items: 
+                      type: "string"
+                type: "object"
+              score:
+                type: "number"
+                example: 1.034222

@@ -13,7 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="CypherQueries\*.json">
+    <Content Include="CypherQueries\V1\*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CypherQueries\V2\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -29,11 +32,17 @@
   </ItemGroup>
   
   <ItemGroup>
-    <CypherQueryFiles Include="$(ProjectDir)\CypherQueries\*.json" />
+    <CypherQueryFiles1 Include="$(ProjectDir)\CypherQueries\V1\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CypherQueryFiles2 Include="$(ProjectDir)\CypherQueries\V2\*.json" />
   </ItemGroup>
   
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
-    <Message Text="Copying CypherQueryFiles to $(PublishDir)Execute\CypherQueries\" />
-    <Copy SourceFiles="@(CypherQueryFiles)" DestinationFolder="$(PublishDir)Execute\CypherQueries\" />
+    <Message Text="Copying CypherQueryFiles1 to $(PublishDir)Execute\CypherQueries\V1\" />
+    <Copy SourceFiles="@(CypherQueryFiles1)" DestinationFolder="$(PublishDir)Execute\CypherQueries\V1\" />
+    <Copy SourceFiles="@(CypherQueryFiles2)" DestinationFolder="$(PublishDir)Execute\CypherQueries\V2\" />
   </Target>
+
 </Project>

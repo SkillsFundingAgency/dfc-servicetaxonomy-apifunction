@@ -15,7 +15,7 @@ paths:
       - Occupation
       summary: Get all skills for an occupation.
       description: Returns all skills for an occupation
-      operationId: GetSkillsForOccupation
+      operationId: getallskillsforoccupation
       requestBody:
         description: enter esco occupation uri to retrieve all Skills for the Occupation
         content:

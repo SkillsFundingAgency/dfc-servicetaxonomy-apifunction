@@ -151,6 +151,21 @@
         "functionType": "GetOccupationsWithMatchingSkillsDetailed",
         "functionName": "[concat(parameters('projectPrefix'), '-occmsd-fa')]",
         "appInsightsName": "[concat(parameters('projectPrefix'), '-occmsd-ai')]"
+      },
+      {
+        "functionType": "GetJobProfilesBySearchTermV2",
+        "functionName": "[concat(parameters('projectPrefix'), '-jpbyterm-v2-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-jpbyterm-v2-ai')]"
+      },
+      {
+        "functionType": "GetOccupationsByLabelV2",
+        "functionName": "[concat(parameters('projectPrefix'), '-occbylabel-v2-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-occbylabel-v2-ai')]"
+      },
+      {
+        "functionType": "GetSkillsByLabelV2",
+        "functionName": "[concat(parameters('projectPrefix'), '-skillsbylabel-v2-fa')]",
+        "appInsightsName": "[concat(parameters('projectPrefix'), '-skillsbylabel-v2-ai')]"
       }
     ]
   },

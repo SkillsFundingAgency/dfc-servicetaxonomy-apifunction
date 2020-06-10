@@ -1,0 +1,19 @@
+{
+  "query": "with $searchTerm as lowerlabel call db.index.fulltext.queryNodes(\"JobProfiles\", \"skos__prefLabel:\"+lowerlabel + \"\") yield node, score MATCH (node)-[:ncs__relatedOccupation]-(oc:esco__Occupation) WITH node,oc { ResultItemTitle:node.skos__prefLabel, ResultItemAlternativeTitle:REDUCE(s = HEAD(oc.skos__altLabel), n IN TAIL( oc.skos__altLabel) | s + ', ' + n), ResultItemOverview:node.ncs__Description, ResultItemSalaryRange:'�' + node.ncs__SalaryStarter + ' to ' + '�' + node.ncs__SalaryExperienced, ResultItemUrlName:$apiHost + 'getjobprofilesbysearchterm/execute/' + node.ncs__JobProfileWebsiteUrl, JobProfileCategories:['ToDo'] } as jobProfiles WITH { TotalResults:size(collect(jobProfiles)), Profiles:collect(jobProfiles) } AS aggregatedResults UNWIND aggregatedResults.Profiles AS unwoundProfiles WITH unwoundProfiles, aggregatedResults SKIP ($page-1)*$pageSize LIMIT $pageSize WITH aggregatedResults { PageSize:$pageSize, CurrentPage:$page, Count:aggregatedResults.TotalResults, Results:collect(unwoundProfiles) } AS finalResult RETURN finalResult",
+  "queryParams": [
+    {
+      "name": "searchTerm",
+      "pathOrdinalPosition": 0
+    },
+    {
+      "name": "pageSize",
+      "default": "10",
+      "type": "System.Int32"
+    },
+    {
+      "name": "page",
+      "default": "1",
+      "type": "System.Int32"
+    }
+  ]
+}

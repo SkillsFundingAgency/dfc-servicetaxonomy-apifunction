@@ -49,12 +49,13 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
         {
             try
             {
+                var apiVersion = GetApiVersion(req);
                 var environment = Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT");
                 log.LogInformation($"Function has been triggered in {environment} environment.");
 
                 bool development = environment == "Development";
 
-                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log);
+                Task<Cypher> cypherModelTask = GetCypherQuery(GetFunctionName(), context, development, log, apiVersion);
                 Task<JObject> requestBodyTask = GetRequestBody(req, log);
 
                 Cypher cypherModel = await cypherModelTask;
@@ -90,6 +91,31 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 log.LogError(e.ToString());
                 return new InternalServerErrorResult();
             }
+        }
+
+        /// <summary>
+        /// Get the API version from the Version header
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        private string GetApiVersion(HttpRequest req)
+        {
+            bool hasVersionHeader = req.Headers.TryGetValue("x-version", out var headerValue);
+
+            if (hasVersionHeader)
+            {
+                ////Use decimal to allow part version updates e.g. 2.1
+                //bool canParseDecimal =  decimal.TryParse(headerValue.ToString().TrimStart('V'), out decimal result);
+
+                //if (canParseDecimal)
+                //{
+                //    return $"V{result.ToString("0.##")}";
+                //}
+                return headerValue.ToString().ToUpper();
+            }
+
+            //Default to 1 if no header present
+            return "V1";
         }
 
         private string BuildHostFunctionUrl(HttpRequest req, ILogger log)
@@ -173,11 +199,11 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
         }
 
-        private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, bool development, ILogger log)
+        private async Task<Cypher> GetCypherQuery(string functionName, ExecutionContext context, bool development, ILogger log, string apiVersion)
         {
             log.LogInformation("Generating file name and dir to read json config");
 
-            var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory)}\CypherQueries\{functionName}.json";
+            var queryFileNameAndDir = $@"{(development ? context.FunctionAppDirectory : context.FunctionDirectory)}\CypherQueries\{apiVersion}\{functionName}.json";
 
             string cypherQueryJsonConfig;
 
@@ -189,7 +215,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (Exception ex)
             {
-                throw ApiFunctionException.InternalServerError("Unable to read query file", ex);
+                throw ApiFunctionException.InternalServerError($"Unable to read query file for requested function: {functionName} version: {apiVersion}", ex);
             }
 
             log.LogInformation("Attempting to deserialize json config to cypher model");
