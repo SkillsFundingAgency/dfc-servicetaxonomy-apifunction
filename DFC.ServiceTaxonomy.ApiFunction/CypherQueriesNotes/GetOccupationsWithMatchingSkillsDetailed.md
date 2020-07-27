@@ -6,11 +6,11 @@
 Here's the current query, formatted and with params replaced by literals...
 
 ```
-MATCH (soc:ncs__SOCCode)-[ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
+MATCH (soc:SOCCode)-[hasSocCode]-(j:JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
 WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
-OPTIONAL MATCH(jc:ncs__JobCategory)-[:ncs__hasJobProfile]-(j)
-WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/' + jc.ncs__WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.ncs__Description as JobProfileDescription
-OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation)<-[r:esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
+OPTIONAL MATCH(jc:JobCategory)-[:hasJobProfile]-(j)
+WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/' + jc.WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.Description as JobProfileDescription
+OPTIONAL MATCH (soc:SOCCode)-[:hasSocCode]-(j:JobProfile)--(o:esco__Occupation)<-[r:esco__isOptionalSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
 WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
 WITH soc, o, collect(distinct
 {
@@ -25,7 +25,7 @@ WITH soc, o, collect(distinct
     skillReusability:srl.skos__prefLabel,
     lastModified:s.dct__modified
 }) as MatchingOptionalSkills, JobCategories, JobProfile, JobProfileUri, JobProfileDescription
-OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation)<-[r:esco__isEssentialSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
+OPTIONAL MATCH (soc:SOCCode)-[:hasSocCode]-(j:JobProfile)--(o:esco__Occupation)<-[r:esco__isEssentialSkillFor]-(s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) 
 WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
 WITH soc, o, collect(distinct
 {
@@ -40,7 +40,7 @@ WITH soc, o, collect(distinct
     skillReusability:srl.skos__prefLabel,
     lastModified:s.dct__modified
 }) as MatchingEssentialSkills, MatchingOptionalSkills, JobCategories, JobProfile, JobProfileUri, JobProfileDescription
-OPTIONAL MATCH (j:ncs__JobProfile)--(o)<-[:esco__isEssentialSkillFor]-(sa:esco__Skill)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(sa)-[ocrst:esco__skillType]-(ost:skos__Concept) 
+OPTIONAL MATCH (j:JobProfile)--(o)<-[:esco__isEssentialSkillFor]-(sa:esco__Skill)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(sa)-[ocrst:esco__skillType]-(ost:skos__Concept) 
 WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= $minimumMatchingSkills
 WITH soc, o, collect(distinct
 {
@@ -55,7 +55,7 @@ WITH soc, o, collect(distinct
     skillReusability:ost.skos__prefLabel,
     lastModified:sa.dct__modified
 }) as AllEssentialSkills,MatchingEssentialSkills,MatchingOptionalSkills, JobCategories, JobProfile, JobProfileUri, JobProfileDescription
-OPTIONAL MATCH (j:ncs__JobProfile)--(o)<-[:esco__isOptionalSkillFor]-(sa:esco__Skill)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(sa)-[ocrst:esco__skillType]-(ost:skos__Concept) 
+OPTIONAL MATCH (j:JobProfile)--(o)<-[:esco__isOptionalSkillFor]-(sa:esco__Skill)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(sa)-[ocrst:esco__skillType]-(ost:skos__Concept) 
 WITH soc, o, collect(distinct
 {
     uri:sa.uri,
@@ -87,10 +87,10 @@ RETURN
 ````
 Previous Query
 ```
-MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
-MATCH(jc:ncs__JobCategory)-[:ncs__hasJobProfile]-(j)
-WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/' + jc.ncs__WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl
-OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isOptionalSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
+MATCH (soc:SOCCode)-[:hasSocCode]-(j:JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor|:esco__isOptionalSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
+MATCH(jc:JobCategory)-[:hasJobProfile]-(j)
+WITH COLLECT({Uri:'https://nationalcareers.service.gov.uk/' + jc.WebsiteURI, Name:jc.skos__prefLabel}) as JobCategories, soc, o, s, st, srl, rrl
+OPTIONAL MATCH (soc:SOCCode)-[:hasSocCode]-(j:JobProfile)--(o:esco__Occupation )<-[r:esco__isOptionalSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
  WITH soc, o, collect(distinct
 {
     uri:s.uri,
@@ -104,7 +104,7 @@ OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esc
     skillReusability:srl.skos__prefLabel,
     lastModified:head(s.dct__modified)
 }) as MatchingOptionalSkills, JobCategories
-OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
+OPTIONAL MATCH (soc:SOCCode)-[:hasSocCode]-(j:JobProfile)--(o:esco__Occupation )<-[r:esco__isEssentialSkillFor]- (s:esco__Skill)-[rrl:esco__skillReuseLevel]-(srl:skos__Concept),(s)-[rst:esco__skillType]-(st:skos__Concept) WHERE s.uri in ['http://data.europa.eu/esco/skill/f8180a0a-fba3-43de-bab2-f25cb9d64ad7']
  WITH soc, o, collect(distinct
 {
     uri:s.uri,
@@ -118,7 +118,7 @@ OPTIONAL MATCH (soc:ncs__SOCCode)-[:ncs__hasSocCode]-(j:ncs__JobProfile)--(o:esc
     skillReusability:srl.skos__prefLabel,
     lastModified:head(s.dct__modified)
 }) as MatchingEssentialSkills, MatchingOptionalSkills, JobCategories
-MATCH (j:ncs__JobProfile)--(o)<-[:esco__isEssentialSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= 1
+MATCH (j:JobProfile)--(o)<-[:esco__isEssentialSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WHERE size(MatchingOptionalSkills) + size(MatchingEssentialSkills) >= 1
 WITH soc, o, collect(distinct
 {
     uri:sa.uri,
@@ -131,8 +131,8 @@ WITH soc, o, collect(distinct
     relationshipType:'essential',
     skillReusability:orrl.skos__prefLabel,
     lastModified:head(sa.dct__modified)
-}) as AllEssentialSkills,MatchingEssentialSkills,MatchingOptionalSkills, JobCategories, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.ncs__Description as JobProfileDescription
-OPTIONAL MATCH (j:ncs__JobProfile)--(o)<-[:esco__isOptionalSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WITH soc, o, collect(distinct
+}) as AllEssentialSkills,MatchingEssentialSkills,MatchingOptionalSkills, JobCategories, j.skos__prefLabel as JobProfile, j.uri as JobProfileUri, j.Description as JobProfileDescription
+OPTIONAL MATCH (j:JobProfile)--(o)<-[:esco__isOptionalSkillFor]-(sa)-[orrl:esco__skillReuseLevel]-(osrl:skos__Concept),(s)-[ocrst:esco__skillType]-(ost:skos__Concept) WITH soc, o, collect(distinct
 {
     uri:sa.uri,
     skill:sa.skos__prefLabel,
