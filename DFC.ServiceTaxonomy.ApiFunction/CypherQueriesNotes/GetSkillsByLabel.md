@@ -7,16 +7,16 @@
 with toLower('toxic') as lowerlabel
    
 call db.index.fulltext.queryNodes("SkillLabels", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
-match (node:ncs__SkillLabel)-[:ncs__hasPrefLabel|:ncs__hasAltLabel|:ncs__hasHiddenLabel]-(s:esco__Skill)-[:ncs__hasAltLabel|:ncs__hasHiddenLabel]-(AltLabels),(skillreuselevel)-[:esco__skillReuseLevel]-(s)-[:esco__skillType]->(skilltype)
+match (node:SkillLabel)-[:hasPrefLabel|:hasAltLabel|:hasHiddenLabel]-(s:esco__Skill)-[:hasAltLabel|:hasHiddenLabel]-(AltLabels),(skillreuselevel)-[:esco__skillReuseLevel]-(s)-[:esco__skillType]->(skilltype)
 with collect(distinct s) as skills, avg(score) as averageScore, AltLabels, node, lowerlabel, skilltype, skillreuselevel
 with collect(distinct AltLabels.skos__prefLabel) as allAltLabels, skills, lowerlabel, averageScore, skilltype, skillreuselevel
 unwind skills as sk
-optional match (altLabel)-[:ncs__hasAltLabel]-(sk)
+optional match (altLabel)-[:hasAltLabel]-(sk)
 with collect(distinct altLabel.skos__prefLabel) as matchingAltLabels, allAltLabels, lowerlabel, skills, skilltype,
 sk, averageScore, skillreuselevel
-optional match(prefLabel)-[:ncs__hasPrefLabel]-(sk)
+optional match(prefLabel)-[:hasPrefLabel]-(sk)
 with collect(distinct prefLabel.skos__prefLabel) as matchingPrefLabels, matchingAltLabels, allAltLabels, lowerlabel, skills, sk, averageScore, skilltype, skillreuselevel
-optional match(hiddenLabel)-[:ncs__hasHiddenLabel]-(sk)
+optional match(hiddenLabel)-[:hasHiddenLabel]-(sk)
 with collect(distinct hiddenLabel.skos__prefLabel) as matchingHiddenLabels, matchingPrefLabels, matchingAltLabels, allAltLabels, lowerlabel, skills, sk, averageScore, skilltype, skillreuselevel
 with {Value: [prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel]} as matchingPrefLabelCount, {Value: [altLab in matchingAltLabels where toLower(altLab) contains lowerlabel]} as matchingAltLabelCount, {Value: [hiddenLab in matchingHiddenLabels where toLower(hiddenLab) contains lowerlabel]} as matchingHiddenLabelCount, sk, allAltLabels, matchingAltLabels, matchingPrefLabels, matchingHiddenLabels, lowerlabel, skills, averageScore, skilltype, skillreuselevel
 with {Skills: case 'true' when 'true' then sk when 'false' then [val in skills where size(matchingPrefLabelCount.Value) > 0] end } as filteredResults, matchingPrefLabels, matchingAltLabels, matchingPrefLabelCount, allAltLabels, lowerlabel, {Value: averageScore + (size(matchingPrefLabelCount.Value) * 10) + ((size(matchingAltLabelCount.Value) - size(matchingHiddenLabelCount.Value))/size(allAltLabels) * size(matchingAltLabelCount.Value)) } as boostedScore, skilltype, skillreuselevel, matchingHiddenLabels
