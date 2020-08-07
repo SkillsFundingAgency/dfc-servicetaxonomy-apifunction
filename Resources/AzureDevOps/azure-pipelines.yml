@@ -194,7 +194,8 @@ stages:
             dependsOn: GetSkillsByLabel
 
 - stage: DeployToSitServiceTaxonomy
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  #condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  condition: eq(dependencies.Build.result,'Succeeded')
   displayName: Deploy to SIT_SERVICETAXONOMY
   variables:
   - template: VariableTemplates/SitEnvironmentVariables.yml
