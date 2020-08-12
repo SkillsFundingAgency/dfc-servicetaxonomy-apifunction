@@ -83,12 +83,12 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
             }
             catch (ApiFunctionException e)
             {
-                log.LogError(e.ToString());
+                log.LogError(e, e.ToString());
                 return e.ActionResult;
             }
             catch (Exception e)
             {
-                log.LogError(e.ToString());
+                log.LogError(e, e.ToString());
                 return new InternalServerErrorResult();
             }
         }
