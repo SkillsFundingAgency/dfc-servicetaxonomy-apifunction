@@ -15,7 +15,6 @@ using DFC.ServiceTaxonomy.ApiFunction.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using System.IO;
 
 //todo: update to func v3, core 3.1, c# 8
 //todo: nullable reference types
@@ -79,8 +78,8 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Function
                 //var statementResult = await _neo4JHelper.GetResultSummaryAsync();
                 //if (statementResult != null)
                 //    log.LogInformation($"Query: {statementResult.Query.Text}\nResults available after: {statementResult.ResultAvailableAfter}");
-                throw new InvalidDataException("Something badly went wrong!");
-                //return new OkObjectResult(recordsResult);
+
+                return new OkObjectResult(recordsResult);
             }
             catch (ApiFunctionException e)
             {
