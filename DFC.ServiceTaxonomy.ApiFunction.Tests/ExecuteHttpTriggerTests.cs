@@ -24,6 +24,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
     public class ExecuteHttpTriggerTests
     {
         private const string DefaultFunctionName = "GetAllSkills";
+        private const string DefaultApiVersion = "V1";
         private readonly Execute _executeFunction;
         private readonly ILogger _log;
         private readonly HttpRequest _request;
@@ -62,7 +63,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             A.CallTo(() => _neo4JHelper.GetResultSummaryAsync()).Returns(_resultSummary);
 
             const string  query = "{\"query\": \"QUERY HERE\"}";
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(query);
 
             _executeFunction = new Execute(_config, _httpRequestHelper, _neo4JHelper, _fileHelper);
         }
@@ -117,7 +118,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns("bad json");
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns("bad json");
             
             var result = await RunFunction();
 
@@ -136,7 +137,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns(@"{ ""occupation"": ""http://data.europa.eu/esco/occupation/5793c124-c037-47b2-85b6-dd4a705968dc"" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(cypherConfig);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(cypherConfig);
            
             var result = await RunFunction();
 
@@ -153,7 +154,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
         {
             var query = "{\"query\": \"QUERY HERE\", \"queryParams\": [{\"name\": \"occupation\"}]}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllSkills.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(query);
 
             var result = await RunFunction();
 
@@ -172,7 +173,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             var query = $"{{\"query\": \"{expectedQueryText}\"}}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(query);
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
 
@@ -231,7 +232,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                     }}
                 ]}}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(new object());
 
@@ -265,7 +266,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
                     }}
                 ]}}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultFunctionName}.json")).Returns(cypherConfig);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\{DefaultFunctionName}.json")).Returns(cypherConfig);
 
             var dictionaryOfRecords = new Dictionary<string, object> { { "occupations", new object[0] } };
 
@@ -315,7 +316,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var expectedJson = @"{""occupations"":[{""uri"":""http://data.europa.eu/esco/occupation/114e1eff-215e-47df-8e10-45a5b72f8197"",""occupation"":""renewable energy consultant"",""alternativeLabels"":[""alt 1"",""alt 2"",""alt 3""],""lastModified"":""05-12-2019T00:00:00Z""}]}";
             var query = @"{""query"": ""QUERY HERE""}";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetAllOccupations.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\GetAllOccupations.json")).Returns(query);
 
             var record = new Dictionary<string, object>
             {
@@ -347,7 +348,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetOccupationsByLabel.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\GetOccupationsByLabel.json")).Returns(query);
 
             var record = new Dictionary<string, object>
             {
@@ -384,7 +385,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
             var query = @"{""query"": ""QUERY HERE"",""queryParams"": [{""name"": ""canonicalName"",""pathOrdinalPosition"": 0}]}";
             _request.Path = "/Execute/Librarian";
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetJobProfileByTitle.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\GetJobProfileByTitle.json")).Returns(query);
             A.CallTo(() => _neo4JHelper.ExecuteCypherQueryInNeo4JAsync(A<string>.Ignored, A<IDictionary<string, object>>.Ignored)).Returns(Task.CompletedTask);
 
             var result = await RunFunction();
@@ -414,7 +415,7 @@ namespace DFC.ServiceTaxonomy.ApiFunction.Tests
 
             A.CallTo(() => _httpRequestHelper.GetBodyFromHttpRequestAsync(_request)).Returns("{\"label\": \"toxic\" }");
 
-            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync("\\CypherQueries\\GetSkillsByLabel.json")).Returns(query);
+            A.CallTo(() => _fileHelper.ReadAllTextFromFileAsync($"\\CypherQueries\\{DefaultApiVersion}\\GetSkillsByLabel.json")).Returns(query);
 
             var record = new Dictionary<string, object>
             {

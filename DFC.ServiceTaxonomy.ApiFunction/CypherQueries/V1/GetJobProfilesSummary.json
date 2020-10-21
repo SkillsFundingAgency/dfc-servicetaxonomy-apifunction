@@ -1,0 +1,3 @@
+{
+  "query": "MATCH (jp:JobProfile)-[:hasSocCode]->(soc:SOCCode), (jp)-[:relatedOccupation]-(oc:esco__Occupation) OPTIONAL MATCH (dtd:DayToDayTask)<-[:hasDayToDayTask]-(jp) OPTIONAL MATCH (jp)-[:hasWorkingUniform]-(wu:WorkingUniform) OPTIONAL MATCH (jp)-[:hasWorkingEnvironment]-(we:WorkingEnvironment) OPTIONAL MATCH (jp)-[:hasWorkingLocation]-(wl:WorkingLocation) WITH jp, {Values:[jp.ModifiedDate, wu.ModifiedDate, soc.ModifiedDate, dtd.ModifiedDate, we.ModifiedDate, wl.ModifiedDate]} as ModifiedDates UNWIND ModifiedDates.Values as ModifiedDatesAsRows WITH { Url:$apiHost + '/getjobprofilessummary/Execute/' + jp.JobProfileWebsiteUrl, Title:jp.skos__prefLabel, LastUpdated:MAX(ModifiedDatesAsRows) } as profileUpdates RETURN collect(profileUpdates)"
+}

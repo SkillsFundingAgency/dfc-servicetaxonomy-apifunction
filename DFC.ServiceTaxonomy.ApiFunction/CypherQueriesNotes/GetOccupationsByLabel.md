@@ -1,7 +1,41 @@
 
 # GetOccupationsByLabel Query Notes
 
-## Current Query
+## Current Query (V2)
+
+```
+with toLower('boat') as lowerlabel
+  
+call db.index.fulltext.queryNodes("OccupationLabels", "skos__prefLabel:"+ "*" + lowerlabel + "*") yield node, score
+match (node)-[r:hasPrefLabel|:hasAltLabel]-(po:esco__Occupation)-[:hasAltLabel]-(AltLabels)
+with collect(distinct po) as occupations, avg(score) as averageScore, AltLabels, po, node, lowerlabel
+with collect(distinct AltLabels.skos__prefLabel) as allAltLabels, occupations, lowerlabel, averageScore
+unwind occupations as o
+optional match (altLabel)-[:hasAltLabel]-(o)
+with collect(distinct altLabel.skos__prefLabel) as matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
+optional match(prefLabel)-[:hasPrefLabel]-(o)
+with collect(distinct prefLabel.skos__prefLabel) as matchingPrefLabels, matchingAltLabels, allAltLabels, occupations, lowerlabel, o, averageScore
+with {Value: [prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel]} as matchingPrefLabelCount, {Value: [altLab in matchingAltLabels where toLower(altLab) contains lowerlabel]} as matchingAltLabelCount, o, allAltLabels, matchingAltLabels, matchingPrefLabels, occupations, lowerlabel, averageScore
+with {Occupations: case 'true' when 'true' then o when 'false' then [val in occupations where size(matchingPrefLabelCount.Value) > 0] end } as filteredResults, matchingPrefLabels, matchingAltLabels, matchingPrefLabelCount, allAltLabels, occupations, lowerlabel, {Value: averageScore + (size(matchingPrefLabelCount.Value) * 10) + (size(matchingAltLabelCount.Value)/size(allAltLabels) * size(matchingAltLabelCount.Value)) } as boostedScore
+unwind filteredResults.Occupations as o
+with {occupations:collect(
+{
+  uri:o.uri,
+  occupation:o.skos__prefLabel,
+  alternativeLabels:allAltLabels,
+  lastModified:o.dct__modified,
+  matches:
+  {
+    occupation:[prefLab in matchingPrefLabels where toLower(prefLab) contains lowerlabel],
+    alternativeLabels:[altlab in matchingAltLabels where toLower(altlab) contains lowerlabel]
+  },
+  Score:boostedScore.Value
+}
+)} as occupations
+return occupations
+```
+
+## Previous Query (V1)
 
 Here's the current query, formatted and with params replaced by literals...
 
