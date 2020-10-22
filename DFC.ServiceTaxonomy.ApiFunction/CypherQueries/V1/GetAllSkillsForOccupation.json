@@ -1,5 +1,5 @@
 ﻿{
-  "query": "MATCH (o:esco__Occupation)-[:esco__isOptionalSkillFor|esco__isEssentialSkillFor]-(s:esco__Skill)-[:skos__broader]->(d:skos__Concept) where o.uri = $uri AND d.skos__notation starts with 'S' WITH distinct d as ddistinct, o WITH collect({uri:ddistinct.uri, skill:ddistinct.skos__prefLabel, alternativeLabels:[], type:'competency', skillReusability:'', lastModified:datetime() }) as skills,o RETURN { uri:o.uri, occupation:o.skos__prefLabel, alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:o.dct__modified, skills:skills }",
+  "query": "MATCH (o:esco__Occupation)-[:esco__isEssentialSkillFor]-(s:esco__Skill)-[:skos__broader]->(d:skos__Concept) where o.uri = $uri AND d.skos__notation starts with 'S' WITH distinct d as ddistinct, o WITH collect({uri:ddistinct.uri, skill:ddistinct.skos__prefLabel, alternativeLabels:[], type:'competency', skillReusability:'', lastModified:datetime() }) as skills,o RETURN { uri:o.uri, occupation:o.skos__prefLabel, alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:o.dct__modified, skills:skills }",
   "queryParams": [
     {
       "name": "uri"

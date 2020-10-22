@@ -2,7 +2,7 @@
 
 ## New Match Skills Query
 ```
-MATCH (o:esco__Occupation)-[:esco__isOptionalSkillFor|esco__isEssentialSkillFor]-(s:esco__Skill)-[:skos__broader]->(d:skos__Concept)
+MATCH (o:esco__Occupation)-[:esco__isEssentialSkillFor]-(s:esco__Skill)-[:skos__broader]->(d:skos__Concept)
   where o.uri = 'http://data.europa.eu/esco/occupation/3a55ef85-5abf-48e2-884b-5efaf881bfb1' AND d.skos__notation starts with 'S'
 WITH distinct d as ddistinct, o
 WITH collect({uri:ddistinct.uri, skill:ddistinct.skos__prefLabel, alternativeLabels:[], type:'competency', skillReusability:'cross-sectoral', lastModified:datetime() }) as skills,o 
