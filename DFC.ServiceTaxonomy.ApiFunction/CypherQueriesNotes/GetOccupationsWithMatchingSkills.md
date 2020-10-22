@@ -21,7 +21,7 @@ UNWIND filteredMatches as mat1
 
 UNWIND mat1.Occupations as mat2
 
-WITH { values: apoc.agg.slice(mat2, 0, 50) } as restrictedResults
+WITH { values: apoc.agg.slice(mat2, 0, 10) } as restrictedResults
 
 UNWIND restrictedResults.values as mat3
 
