@@ -14,7 +14,6 @@ MATCH (o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkill
 WITH o, collect({uri:d.uri, rel:type(r)}  ) as allSkillDets
 WITH o, allSkillDets, [ x in allSkillDets WHERE x.rel ='esco__isEssentialSkillFor' ] as allEssentialSkills
 OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sx:esco__Skill ) -[:skos__broader]->(d) where d.skos__notation starts with 'S' and d.uri in $skillList
-OPTIONAL MATCH(d)<-[:skos__broader]-(c) where not exists (c.skos__notation)
 WITH o, allEssentialSkills,
         collect(distinct d.uri) as matchingSkills,
         collect(distinct{uri:d.uri,
@@ -24,8 +23,7 @@ WITH o, allEssentialSkills,
                          skillReusability:'',
                          relationshipType:case({uri:d.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
                          lastModified:'' }) as matchingSkillDetails
-OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sm:esco__Skill ) -[:skos__broaderTransitive]->(dm) where dm.skos__notation starts with 'S' and not (dm.uri in matchingSkills) 
-OPTIONAL MATCH(dm)<-[:skos__broader]-(c2) where not exists (c2.skos__notation)
+OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sm:esco__Skill ) -[:skos__broader]->(dm) where dm.skos__notation starts with 'S' and not (dm.uri in matchingSkills) 
 WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
         collect(distinct dm.uri) as MissingSkillsUris,
         collect(distinct{uri:dm.uri,
