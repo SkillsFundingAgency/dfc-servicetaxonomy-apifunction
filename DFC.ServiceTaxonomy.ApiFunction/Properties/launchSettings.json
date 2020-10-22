@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "DFC.ServiceTaxonomy.ApiFunction": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Scheme": "http://",
+        "Function": "GetOccupationsByLabel",
+        "ApplicationName": "ServiceTaxonomy",
+        "Neo4jPassword": "escodb",
+        "WebsiteHost": "http://somehost.com",
+        "Neo4jUrl": "bolt://localhost:7687",
+        "Neo4jUser": "neo4j"
+      }
+    }
+  }
+}
