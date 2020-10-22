@@ -1,6 +1,6 @@
 ﻿# GetAllSkillsForOccupation
 
-##N ew Match Skills Query
+## New Match Skills Query
 ```
 MATCH (o:esco__Occupation)-[:esco__isOptionalSkillFor|esco__isEssentialSkillFor]-(s:esco__Skill)-[:skos__broaderTransitive]->(d:skos__Concept) where o.uri = 'http://data.europa.eu/esco/occupation/3a55ef85-5abf-48e2-884b-5efaf881bfb1' 
 MATCH (d)<-[:skos__broader]-(c) where not exists (c.skos__notation) AND d.skos__notation starts with 'S'
