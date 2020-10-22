@@ -22,7 +22,7 @@ WITH o, allEssentialSkills,
                          type:'',
                          skillReusability:'',
                          relationshipType:case({uri:d.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
-                         lastModified:'' }) as matchingSkillDetails
+                         lastModified:datetime() }) as matchingSkillDetails
 OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sm:esco__Skill ) -[:skos__broader]->(dm) where dm.skos__notation starts with 'S' and not (dm.uri in matchingSkills) 
 WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
         collect(distinct dm.uri) as MissingSkillsUris,
@@ -32,7 +32,7 @@ WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
                          type:'',
                          skillReusability:'', 
                          relationshipType:case({uri:dm.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
-                         lastModified:''}) as missingSkills
+                         lastModified:datetime()}) as missingSkills
 return 
 { uri:o.uri, occupation:o.skos__prefLabel, 
   jobProfileTitle:o.skos__prefLabel, jobProfileUri:'', alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:o.dct__modified, matchingSkills:case size(matchingSkills) when 0 then [] else matchingSkillDetails end, missingSkills:missingSkills } as results
