@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "DFC.ServiceTaxonomy.ApiFunction": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "Value",
+        "Function": "GetSkillsGapForOccupationAndGivenSkills",
+        "Neo4jPassword": "escodb",
+        "Neo4jUrl": "bolt://localhost:7687",
+        "Neo4jUser": "neo4j",
+        "scheme": "testing",
+        "ApplicationName": "app"
+      }
+    }
+
+  }
+}

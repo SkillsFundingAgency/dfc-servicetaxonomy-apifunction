@@ -110,7 +110,7 @@ WITH o, allEssentialSkills,
                          alternativeLabels:coalesce(d.skos__altLabel,[]),
                          type:'',
                          skillReusability:'',
-                         relationshipType:case({uri:d.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'esco__isEssentialSkillFor' else 'esco__isOptionalSkillFor' end,
+                         relationshipType:case({uri:d.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
                          lastModified:'' }) as matchingSkillDetails
 OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sm:esco__Skill ) -[:skos__broaderTransitive]->(dm) -[:skos__broader]-(c) where not exists (c.skos__notation) and dm.skos__notation starts with 'S' and not (dm.uri in matchingSkills) 
 OPTIONAL MATCH(dm)<-[:skos__broader]-(c2) where not exists (c2.skos__notation)
@@ -121,7 +121,7 @@ WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
                          alternativeLabels:coalesce( dm.skos__altLabel,[]),
                          type:'',
                          skillReusability:'', 
-                         relationshipType:case({uri:dm.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'esco__isEssentialSkillFor' else 'esco__isOptionalSkillFor' end,
+                         relationshipType:case({uri:dm.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
                          lastModified:''}) as missingSkills
 return 
 { uri:o.uri, occupation:o.skos__prefLabel, 
