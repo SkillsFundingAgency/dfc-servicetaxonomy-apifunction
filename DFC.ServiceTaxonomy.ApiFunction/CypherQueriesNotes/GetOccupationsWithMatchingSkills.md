@@ -10,7 +10,7 @@ $minimumMatchingSkills : the minimum number of skill groups that need to match b
 Here's the query, formatted...
 
 ```
-MATCH (la {esco__language:'en'})<-[:dct__description]-(o:esco__Occupation)-[:esco__isOptionalSkillFor|esco__isEssentialSkillFor]-(s2:esco__Skill)-[:skos__broaderTransitive]->(bg2:skos__Concept)
+MATCH (la {esco__language:'en'})<-[:dct__description]-(o:esco__Occupation)-[:esco__isOptionalSkillFor|esco__isEssentialSkillFor]-(s2:esco__Skill)-[:skos__broader]->(bg2:skos__Concept)
   where bg2.uri in $skillList
   
 WITH { NumberOfMatches : COUNT(distinct bg2), o:o, Description: la.esco__nodeLiteral } as occupationMatches ORDER BY occupationMatches.NumberOfMatches DESC
