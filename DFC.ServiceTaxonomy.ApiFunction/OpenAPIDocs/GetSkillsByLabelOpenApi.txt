@@ -32,7 +32,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RequestBody'
             example:   # Sample object
-                "label": "toxic"
+                "label": "vocational"
         required: true
       responses:
         200:
@@ -62,7 +62,7 @@ components:
       properties:
         label: 
           type: string
-          example: "toxic"
+          example: "vocational"
     Skill: 
       type: "object"
       required:
@@ -83,10 +83,10 @@ components:
             properties: 
               uri: 
                 type: string
-                example: "http://data.europa.eu/esco/skill/b70ab677-5781-40b5-9198-d98f4a34310f"
+                example: "http://data.europa.eu/esco/skill/S1.3.1"
               skill: 
                 type: string
-                example: toxicology
+                example: "teaching academic or vocational subjects"
               alternativeLabels: 
                 type: array
                 items: 

@@ -52,6 +52,75 @@ return skills
 
 Here's the current query, formatted and with params replaced by literals...
 
+This version includes skill pref label in matches - it the one in use currently
+
+```
+with toLower('processing') as lowerlabel
+match (ca:skos__Concept) <-[:skos__broader]- (s:esco__Skill) where ca.skos__notation starts with 'S'
+and ( toLower(ca.skos__prefLabel) contains lowerlabel or
+case toLower('true')
+  when 'true' then
+    toLower(s.skos__prefLabel) contains lowerlabel
+  else
+    false
+  end )
+with distinct ca as c, collect(s.skos__prefLabel) as skillLabels, lowerlabel
+with { skills:collect(
+{
+  uri:c.uri,
+  skill:c.skos__prefLabel,
+  skillType: '',
+  skillReusability: '',
+  alternativeLabels:[],
+  lastModified:'0001-01-01T00:00:00Z',
+  matches:
+  {
+    skill:[preflab in c.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:coalesce([altlab in skillLabels where toLower(altlab) contains lowerlabel],[]),
+    hiddenLabels:[]
+  }
+}
+)} as skills 
+return skills
+```
+
+This version includes skill pref and alt labels in matches - needs some work to collect all relevant labels
+
+```
+with toLower('processing') as lowerlabel
+match (ca:skos__Concept) <-[:skos__broader]- (s:esco__Skill) where ca.skos__notation starts with 'S'
+and ( toLower(ca.skos__prefLabel) contains lowerlabel or
+case toLower('true')
+  when 'true' then
+    toLower(s.skos__prefLabel) contains lowerlabel
+    or any(alt in s.skos__altLabel where toLower(alt) contains lowerlabel)
+    or any(hidden in s.skos__hiddenLabel where toLower(hidden) contains lowerlabel)
+  else
+    false
+  end )
+with distinct ca as c, s, [s.skos__prefLabel]+s.skos__altLabel as skillLabels, lowerlabel
+with { skills:collect(
+{
+  uri:c.uri,
+  skill:c.skos__prefLabel,
+  skillType: '',
+  skillReusability: '',
+  alternativeLabels:[],
+  lastModified:'0001-01-01T00:00:00Z',
+  matches:
+  {
+    skill:[preflab in c.skos__prefLabel where toLower(preflab) contains lowerlabel],
+    alternativeLabels:coalesce([altlab in skillLabels where toLower(altlab) contains lowerlabel],[]),
+    hiddenLabels:coalesce([hidlab in c.skos__hiddenLabel where toLower(hidlab) contains lowerlabel],[])
+  }
+}
+)} as skills 
+return skills
+```
+
+
+This is the prev version of V1 (using low level skills)
+
 ```
 with toLower('toxic') as lowerlabel
 match (skillreuselevel)<-[:esco__skillReuseLevel]-(s:esco__Skill)-[:esco__skillType]->(skilltype)
