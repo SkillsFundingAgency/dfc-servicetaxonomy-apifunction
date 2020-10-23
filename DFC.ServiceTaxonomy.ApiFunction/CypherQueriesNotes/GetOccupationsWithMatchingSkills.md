@@ -15,7 +15,7 @@ MATCH (la {esco__language:'en'})<-[:dct__description]-(o:esco__Occupation)-[r:es
 with o, la, o.uri as occupationsMatchingEssential, collect(distinct bg2.uri) as essentialUris
 MATCH (o)-[r3:esco__isEssentialSkillFor]-(s3:esco__Skill)-[:skos__broader]->(bg3:skos__Concept) WHERE bg3.skos__notation starts with 'S'
 with o, la, occupationsMatchingEssential,essentialUris, collect(distinct bg3.uri) as allEssentialSkills
-MATCH (la {esco__language:'en'})<-[:dct__description]-(ooptional:esco__Occupation)-[r:esco__isOptionalSkillFor]-(s2:esco__Skill)-[:skos__broader]->(bg2:skos__Concept)
+OPTIONAL MATCH (la {esco__language:'en'})<-[:dct__description]-(ooptional:esco__Occupation)-[r:esco__isOptionalSkillFor]-(s2:esco__Skill)-[:skos__broader]->(bg2:skos__Concept)
   where bg2.uri in ['http://data.europa.eu/esco/skill/S7.2.1','http://data.europa.eu/esco/skill/S7.1.2','http://data.europa.eu/esco/skill/S7.1.1']
   and ooptional.uri in occupationsMatchingEssential
   and not bg2.uri in essentialUris
