@@ -38,6 +38,10 @@
   <ItemGroup>
     <CypherQueryFiles2 Include="$(ProjectDir)\CypherQueries\V2\*.json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   
   <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish">
     <Message Text="Copying CypherQueryFiles1 to $(PublishDir)Execute\CypherQueries\V1\" />
