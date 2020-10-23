@@ -10,11 +10,11 @@ Here's the current query, formatted and with params replaced by literals...
 
 1. Currently in use
 
-MATCH (o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (s:esco__Skill ) -[:skos__broader]->(d) where d.skos__notation starts with 'S' and o.uri = $occupation
-WITH o, collect({uri:d.uri, rel:type(r)}  ) as allSkillDets
-WITH o, allSkillDets, [ x in allSkillDets WHERE x.rel ='esco__isEssentialSkillFor' ] as allEssentialSkills
+MATCH (la {esco__language:'en'})<-[:dct__description]-(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (s:esco__Skill ) -[:skos__broader]->(d) where d.skos__notation starts with 'S' and o.uri = $occupation
+WITH o, la.esco__nodeLiteral as description, collect({uri:d.uri, rel:type(r)}  ) as allSkillDets
+WITH o, description, allSkillDets, [ x in allSkillDets WHERE x.rel ='esco__isEssentialSkillFor' ] as allEssentialSkills
 OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sx:esco__Skill ) -[:skos__broader]->(d) where d.skos__notation starts with 'S' and d.uri in $skillList
-WITH o, allEssentialSkills,
+WITH o, description, allEssentialSkills,
         collect(distinct d.uri) as matchingSkills,
         collect(distinct{uri:d.uri,
                          skill:d.skos__prefLabel,
@@ -24,7 +24,7 @@ WITH o, allEssentialSkills,
                          relationshipType:case({uri:d.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
                          lastModified:datetime() }) as matchingSkillDetails
 OPTIONAL MATCH(o:esco__Occupation ) <-[r:esco__isEssentialSkillFor|esco__isOptionalSkillFor]- (sm:esco__Skill ) -[:skos__broader]->(dm) where dm.skos__notation starts with 'S' and not (dm.uri in matchingSkills) 
-WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
+WITH o, description, allEssentialSkills, matchingSkills,matchingSkillDetails,
         collect(distinct dm.uri) as MissingSkillsUris,
         collect(distinct{uri:dm.uri,
                          skill:dm.skos__prefLabel,
@@ -34,7 +34,7 @@ WITH o, allEssentialSkills, matchingSkills,matchingSkillDetails,
                          relationshipType:case({uri:dm.uri,rel:'esco__isEssentialSkillFor'} in allEssentialSkills) when true then 'essential' else 'optional' end,
                          lastModified:datetime()}) as missingSkills
 return 
-{ uri:o.uri, occupation:o.skos__prefLabel, 
+{ uri:o.uri, occupation:o.skos__prefLabel, description:description,
   jobProfileTitle:o.skos__prefLabel, jobProfileUri:'', alternativeLabels:coalesce(o.skos__altLabel,[]), lastModified:o.dct__modified, matchingSkills:case size(matchingSkills) when 0 then [] else matchingSkillDetails end, missingSkills:missingSkills } as results
 
 2 possible replacement.
