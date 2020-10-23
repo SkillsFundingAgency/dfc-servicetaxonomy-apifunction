@@ -28,5 +28,6 @@ with occupationsMatchingEssential, essentialUris, essentialsMatches, optionalWit
 with collect(ranking) as collectedRanking
 with {filteredMatches:[val in collectedRanking where val.rank > 800]} as filteredRanking
 UNWIND filteredRanking.filteredMatches as mat
+WITH mat ORDER BY mat.rank DESC
 RETURN { matchingOccupations: collect({uri:mat.occ.uri, occupation:mat.occ.skos__prefLabel, jobProfileTitle:mat.occ.skos__prefLabel, jobProfileUri:mat.occ.uri, jobProfileDescription:mat.description, matchingEssentialSkills:0, matchingOptionalSkills:0, socCode:9999, totalOccupationEssentialSkills:mat.rank, totalOccupationOptionalSkills:0, lastModified:mat.occ.dct__modified})} as results
 ```
