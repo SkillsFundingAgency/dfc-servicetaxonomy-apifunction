@@ -69,10 +69,10 @@ with { skills:collect(
 {
   uri:c.uri,
   skill:c.skos__prefLabel,
-  skillType: '',
-  skillReusability: '',
+  skillType: 'unknown',
+  skillReusability: 'unknown',
   alternativeLabels:[],
-  lastModified:'0001-01-01T00:00:00Z',
+  lastModified:datetime(),
   matches:
   {
     skill:[preflab in c.skos__prefLabel where toLower(preflab) contains lowerlabel],
