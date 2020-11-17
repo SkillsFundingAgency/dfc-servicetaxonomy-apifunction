@@ -1,0 +1,63 @@
+openapi: 3.0.1
+info:
+  title: Service Taxonomy AutoComplete Get Job Profiles by Search Term V1
+  description: 'Returns a Job Profile for a search term, without using an analyzer'
+  version: 1.0.0
+servers:
+- url: __FunctionAppUrl__
+tags:
+- name: Get Job Profiles by search term
+  description: Returns job profile by search term
+paths:
+  /Execute/{searchTerm}:
+    get:
+      tags:
+      - Job Profile
+      summary: Get job profiles by search term
+      description: Return job profiles by search term
+      operationId: GetJobProfileBySearchTerm
+      parameters:
+      - in: path
+        name: searchTerm
+        schema:
+          type: string
+        description: Find job profiles where the label or description contain the search term
+        required: true
+        allowEmptyValue: false
+      - in: query
+        name: size
+        schema:
+          type: integer
+          default: 5
+        description: The page number to search from
+        required: false
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/JobProfileSearchResult'
+        204:
+          description: No content can be found.
+          content: {}
+        400:
+          description: Missing data from body or parameters have not been supplied for query.
+          content: {}
+        422:
+          description: Unprocessable Entity - Unable to read/deserialize data.
+          content: {}
+        500:
+          description: Missing App Settings or Config Files.
+          content: {}
+components:
+  schemas:
+    JobProfileSearchResult: 
+      required:
+      - Values
+      type: object
+      properties:
+        Values:
+          type: array
+          items:
+            type: string
