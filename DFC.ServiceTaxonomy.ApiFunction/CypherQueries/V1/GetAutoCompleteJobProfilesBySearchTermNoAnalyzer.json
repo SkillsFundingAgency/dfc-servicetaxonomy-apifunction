@@ -1,0 +1,14 @@
+{
+  "query": "with $searchTerm as lowerlabel call db.index.fulltext.queryNodes(\"JobProfiles2\", \"skos__prefLabel:\"+lowerlabel+ \"*\") yield node, score with distinct node.skos__prefLabel as values limit $size return {values:collect(values)}",
+  "queryParams": [
+    {
+      "name": "searchTerm",
+      "pathOrdinalPosition": 0
+    },
+    {
+      "name": "size",
+      "default": 5,
+      "type": "System.Int32"
+    }
+  ]
+}
